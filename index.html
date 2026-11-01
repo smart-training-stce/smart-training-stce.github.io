@@ -4889,13 +4889,13 @@ function renderContentTab(el, p){
     <div id="miniModuleList"></div>
     <button class="add-module-btn" id="addModuleManualBtn">${i18n('btn_add_unit_manual')}</button>
 
-    <div class="step-divider" style="margin-top:22px;">
+    ${(p.translationOf || p.language === 'en') ? '' : `    <div class="step-divider" style="margin-top:22px;">
       <h3 style="margin:0;">${i18n('step3_translate_title')}</h3>
       <div class="hint" style="margin-top:2px;">${i18n('step3_translate_hint')}</div>
     </div>
     <div class="row" style="margin-top:10px;">
       <button class="btn btn-ghost" id="translateProgramBtn" type="button">${i18n('btn_translate_program')}</button>
-    </div>
+    </div>`}
   </div>
   <div class="step-divider" style="margin-top:22px;">
     <h3 style="margin:0;color:#9a3b41;">${i18n('danger_zone_header')}</h3>
@@ -4973,7 +4973,7 @@ function renderContentTab(el, p){
   });
   document.getElementById('uploadSyllabusBtn').addEventListener('click', () => document.getElementById('syllabusFileInput').click());
   document.getElementById('syllabusFileInput').addEventListener('change', (e) => handleSyllabusFile(e.target.files[0]));
-  document.getElementById('translateProgramBtn').addEventListener('click', () => translateProgramWithAI(p));
+  { const tb = document.getElementById('translateProgramBtn'); if(tb) tb.addEventListener('click', () => translateProgramWithAI(p)); }
   document.getElementById('uploadSplitMaterialBtn').addEventListener('click', () => document.getElementById('splitMaterialFileInput').click());
   document.getElementById('splitMaterialFileInput').addEventListener('change', (e) => {
     handleSplitMaterialUpload(e.target.files[0], p);
@@ -5414,7 +5414,7 @@ function renderMiniModuleList(el, p){
       <span class="t">${escapeHtml(localized(m.title, state.lang))}</span>
       <div class="row">
         <button class="btn btn-ghost edit-m-btn" data-mid="${m.id}">${i18n('btn_edit')}</button>
-        <button class="btn btn-danger del-m-btn" data-mid="${m.id}">${i18n('btn_delete')}</button>
+        <button class="btn btn-danger del-m-btn" data-mid="${m.id}" data-idx="${p.modules.indexOf(m)}">${i18n('btn_delete')}</button>
       </div>
     </div>`).join('');
   el.querySelectorAll('.edit-m-btn').forEach(b => b.addEventListener('click', () => {
@@ -5424,7 +5424,9 @@ function renderMiniModuleList(el, p){
   }));
   el.querySelectorAll('.del-m-btn').forEach(b => b.addEventListener('click', async () => {
     if(!confirm(i18n('confirm_delete_unit'))) return;
-    p.modules = p.modules.filter(m => m.id !== b.dataset.mid);
+    const delIdx = Number(b.dataset.idx);
+    if(Number.isInteger(delIdx) && p.modules[delIdx] && p.modules[delIdx].id === b.dataset.mid) p.modules.splice(delIdx, 1);
+    else p.modules = p.modules.filter(m => m.id !== b.dataset.mid);
     await savePrograms();
     renderAll();
   }));
@@ -6352,6 +6354,8 @@ function migrateLegacyTranslatedModules(target, p){
 // الأصلي وسط ترجمة متوقفة، الاستكمال لسه بيعرف صح أي وحدة خلصت وأي وحدة محتاجة
 // ترجمة — رقم الترتيب (index) بيُستخدم فقط لعرض "وحدة X من Y" على الشاشة.
 async function translateProgramWithAI(p){
+  // النسخة المترجمة نفسها ما تتترجمش تاني (كانت بتعمل نسخة تالتة)
+  if(p.translationOf || p.language === 'en') return;
   if(state.aiBuildInProgress){
     alert(i18n('alert_build_in_progress'));
     return;
@@ -6411,8 +6415,13 @@ async function translateProgramWithAI(p){
         // translationOf = معرّف البرنامج الأصلي، translationStatus = حالة الترجمة
         // على مستوى البرنامج كله ('in_progress' | 'complete' | 'complete_with_errors').
         translationOf: p.id,
-        translationStatus: 'in_progress'
+        translationStatus: 'in_progress',
+        // بتظهر في الواجهة الإنجليزي على طول، ومربوطة بالبرنامج العربي
+        language: 'en',
+        groupId: p.groupId || p.id
       };
+      if(!p.language) p.language = 'ar';
+      if(!p.groupId) p.groupId = p.id;
       state.programs.push(target);
       // حفظ فوري هنا: لو حصل أي قطع نت أو إغلاق صفحة بعد الخطوة دي، العنوان
       // والسيلابس المترجمين ميضيعوش، وهيكون فيه برنامج "مكمَّل" جاهز للاستكمال.
@@ -9977,5 +9986,7 @@ window.addEventListener('appinstalled', () => {
     }catch(e){ console.error('module3d_close_failed', e); }
   };
 </script>
+<script type="module" src="stce-3d.js"></script>
+<script type="module" src="stce-3d-elec.js"></script>
 </body>
 </html>
