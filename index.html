@@ -7207,14 +7207,16 @@ async function ttsCacheKey(text, provider, voice, lang){
 
 // بيرجّع {handled:true, player} لو الصوت اتشغّل من المخزن (أو لو طلب أحدث
 // سبقه)، أو {handled:false} في أي حالة تانية عشان speakSmart تكمّل عادي.
+// بنتأكد إن الصوت موجود في المخزن بطلب HEAD سريع (من غير ما نحمّل الملف)، وبعدين
+// بنشغّله مباشرة من رابطه وهو بيتحمّل (streaming). قبل كده كنا بنستنى الملف كله
+// يتحمّل في 3.5 ثانية، وده ماكانش بيلحق مع ملفات Gemini الكبيرة على نت الموبايل،
+// فكانت المنصة بتشغّل Azure بدل الصوت المتخزن.
 async function fetchCachedAudio(key){
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), TTS_CACHE_READ_TIMEOUT_MS);
   try{
-    const resp = await fetch(`${TTS_CACHE_URL}/a/${key}`, { method: 'GET', signal: ctrl.signal });
-    if(!resp || resp.status !== 200) return null;
-    const blob = await resp.blob();
-    return (blob && blob.size) ? blob : null;
+    const resp = await fetch(`${TTS_CACHE_URL}/a/${key}`, { method: 'HEAD', signal: ctrl.signal });
+    return (resp && resp.status === 200) ? `${TTS_CACHE_URL}/a/${key}` : null;
   }catch(e){ return null; }
   finally{ clearTimeout(timer); }
 }
@@ -7237,8 +7239,9 @@ async function tryPlayFromTtsCache(text, provider, tts, myGen, legacyText){
     const hit = blobs.findIndex(b => !!b);
     if(hit < 0) return { handled: false };
     if(myGen !== speechGeneration) return { handled: true, player: null };
-    const url = URL.createObjectURL(blobs[hit]);
+    const url = blobs[hit];
     currentAudio = new Audio(url);
+    currentAudio.preload = 'auto';
     currentAudio.volume = 1;
     if(lookups[hit].kind === 'gemini'){ try{ currentAudio.playbackRate = 1; }catch(e){} }
     else applyTtsRate(currentAudio);
