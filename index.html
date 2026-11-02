@@ -492,14 +492,14 @@
 <div class="modal-overlay hidden" id="voiceSettingsOverlay">
   <div class="modal-box card">
     <h3 style="margin-top:0;" data-i18n="vso_title">إعدادات صوت ودردشة المحاضر الذكي</h3>
-    <p class="hint" data-i18n="vso_desc">افتراضيًا المنصة بتستخدم صوت النطق المدمج في المتصفح (ده صوت آلي الطابع ومش قابل للتعديل). لو عايزة صوت طبيعي، اختاري مصدر صوت تاني من تحت.</p>
+    <p class="hint" data-i18n="vso_desc">افتراضيًا المنصة بتستخدم صوت النطق المدمج في المتصفح (ده صوت آلي الطابع ومش قابل للتعديل). لو عايز صوت طبيعي، اختار مصدر صوت تاني من تحت.</p>
     <label class="small" data-i18n="vso_sourceLabel">مصدر الصوت</label>
     <select id="ttsProvider">
       <option value="browser" data-i18n="tts_opt_browser">صوت المتصفح الافتراضي (آلي)</option>
       <option value="azure" data-i18n="tts_opt_azure">Microsoft Azure — صوت مصري طبيعي (Salma / Shakir)</option>
       <option value="elevenlabs" data-i18n="tts_opt_eleven">ElevenLabs</option>
     </select>
-    <label class="small" style="margin-top:10px;">سرعة كلام المحاضر (بتتطبق فورًا للتجربة، وبتتحفظ لما تدوسي حفظ)</label>
+    <label class="small" style="margin-top:10px;">سرعة كلام المحاضر (بتتطبق فورًا للتجربة، وبتتحفظ لما تدوس حفظ)</label>
     <select id="ttsSpeechRate">
       <option value="0.8">أبطأ (0.8)</option>
       <option value="0.85">بطيء شوية (0.85)</option>
@@ -520,11 +520,11 @@
       <label class="small" data-i18n="azure_region_label">Azure Region (مثال: eastus, westeurope — زي ما هو مكتوب في حسابك)</label>
       <input type="text" id="azureRegion" placeholder="eastus">
       </div>
-      <label class="small" data-i18n="azure_voice_label">اختاري صوت</label>
+      <label class="small" data-i18n="azure_voice_label">اختار صوت</label>
       <select id="azureVoicePreset">
         <option value="ar-EG-SalmaNeural" data-i18n="azure_voice_salma">Salma — حريمي مصري</option>
         <option value="ar-EG-ShakirNeural" data-i18n="azure_voice_shakir">Shakir — رجالي مصري</option>
-        <option value="custom" data-i18n="azure_voice_custom">مخصص — حطي اسم الصوت بنفسك</option>
+        <option value="custom" data-i18n="azure_voice_custom">مخصص — حط اسم الصوت بنفسك</option>
       </select>
       <input type="text" id="azureVoiceName" placeholder="اسم الصوت، مثال: ar-EG-SalmaNeural" style="display:none;margin-top:8px;" data-i18n-placeholder="azureVoiceName_ph">
       <label class="small" style="margin-top:14px;" data-i18n="azure_voice_en_label">الصوت الإنجليزي (بيتستخدم تلقائي لما الواجهة تكون إنجليزي)</label>
@@ -533,10 +533,10 @@
         <option value="en-US-AvaNeural" data-i18n="azure_voice_en_ava">Ava — حريمي، طبيعي وجذاب</option>
         <option value="en-US-GuyNeural" data-i18n="azure_voice_en_guy">Guy — رجالي محترف</option>
         <option value="en-US-JennyNeural" data-i18n="azure_voice_en_jenny">Jenny — حريمي محترف</option>
-        <option value="custom" data-i18n="azure_voice_custom">مخصص — حطي اسم الصوت بنفسك</option>
+        <option value="custom" data-i18n="azure_voice_custom">مخصص — حط اسم الصوت بنفسك</option>
       </select>
       <input type="text" id="azureVoiceNameEn" placeholder="اسم الصوت، مثال: en-US-AndrewNeural" style="display:none;margin-top:8px;" data-i18n-placeholder="azureVoiceNameEn_ph">
-      <div class="hint" style="margin-top:6px;" data-i18n="azure_free_hint">فيه باقة مجانية من Azure (حوالي نص مليون حرف شهريًا). اعملي حساب على Azure، فعّلي خدمة "Speech"، وجيبي المفتاح والـ Region من هناك.</div>
+      <div class="hint" style="margin-top:6px;" data-i18n="azure_free_hint">فيه باقة مجانية من Azure (حوالي نص مليون حرف شهريًا). اعمل حساب على Azure، فعّل خدمة "Speech"، وجيبي المفتاح والـ Region من هناك.</div>
     </div>
 
     <div id="elevenFields" style="display:none;margin-top:10px;">
@@ -545,7 +545,7 @@
       <label class="small" data-i18n="eleven_apikey_label">ElevenLabs API Key</label>
       <input type="password" id="ttsApiKey" placeholder="sk_...">
       </div>
-      <label class="small" data-i18n="eleven_voice_label">اختاري صوت</label>
+      <label class="small" data-i18n="eleven_voice_label">اختار صوت</label>
       <select id="ttsVoicePreset">
         <option value="pNInz6obpgDQGcFmaJgB" data-i18n="el_v_adam">Adam — رجالي</option>
         <option value="ErXwobaYiN019PkySvjV" data-i18n="el_v_antoni">Antoni — رجالي</option>
@@ -553,7 +553,7 @@
         <option value="VR6AewLTigWG4xSOukaG" data-i18n="el_v_arnold">Arnold — رجالي</option>
         <option value="21m00Tcm4TlvDq8ikWAM" data-i18n="el_v_rachel">Rachel — حريمي</option>
         <option value="EXAVITQu4vr4xnSDxMaL" data-i18n="el_v_bella">Bella — حريمي</option>
-        <option value="custom" data-i18n="el_v_custom">مخصص — حطي Voice ID بنفسك</option>
+        <option value="custom" data-i18n="el_v_custom">مخصص — حط Voice ID بنفسك</option>
       </select>
       <input type="text" id="ttsVoiceId" placeholder="Voice ID" style="display:none;margin-top:8px;">
     </div>
@@ -569,7 +569,7 @@
       <div id="geminiTtsBox" style="margin-top:8px;">
         <label class="small">صوت Gemini</label>
         <input type="text" id="geminiTtsVoice" dir="ltr" placeholder="Kira" style="width:100%;">
-        <div class="hint" style="margin-top:2px;">اكتبي اسم الصوت زي ما هو في AI Studio (مثلاً Kira). لما تدوسي حفظ، المنصة هتدوّر عليه في مكتبة أصوات Gemini.</div>
+        <div class="hint" style="margin-top:2px;">اكتب اسم الصوت زي ما هو في AI Studio (مثلاً Kira). لما تدوس حفظ، المنصة هتدوّر عليه في مكتبة أصوات Gemini.</div>
         <label class="small" style="margin-top:6px;">أسلوب الكلام</label>
         <textarea id="geminiTtsStyle" rows="2" dir="rtl" style="width:100%;font-family:inherit;"></textarea>
         <button class="btn btn-ghost" id="geminiTtsSaveBtn" type="button" style="margin-top:6px;">حفظ إعدادات Gemini</button>
@@ -598,10 +598,10 @@
     <p class="hint" data-i18n="mso_desc">من غير مفاتيح، المنصة بتعرض صور توضيحية (مكتوب عليها اسم الموضوع بس) ورابط بحث يوتيوب. لو حطيتي المفاتيح دي، الذكاء الاصطناعي هيجيب صور حقيقية وفيديو حقيقي مطابق لكل وحدة في السيلابس تلقائي.</p>
     <label class="small" data-i18n="pexels_label">Pexels API Key (صور — مجاني)</label>
     <input type="password" id="pexelsApiKey" placeholder="اختياري" data-i18n-placeholder="ph_optional">
-    <div class="hint" data-i18n="pexels_hint">تقدري تاخدي مفتاح مجاني من pexels.com/api</div>
+    <div class="hint" data-i18n="pexels_hint">تقدر تاخد مفتاح مجاني من pexels.com/api</div>
     <label class="small" data-i18n="youtube_label">YouTube Data API Key (فيديو — مجاني بحد استخدام يومي)</label>
     <input type="password" id="youtubeApiKey" placeholder="اختياري" data-i18n-placeholder="ph_optional">
-    <div class="hint" data-i18n="youtube_hint">من Google Cloud Console، فعّلي "YouTube Data API v3" واعملي مفتاح.</div>
+    <div class="hint" data-i18n="youtube_hint">من Google Cloud Console، فعّل "YouTube Data API v3" واعملي مفتاح.</div>
     <div class="hint" style="color:#9a3b41;margin-top:10px;" data-i18n="media_security_hint">⚠️ نفس تنبيه الأمان اللي في إعدادات الصوت: المفتاحين دول بيشتغلوا من متصفح أي حد بيفتح المنصة، يعني ظاهرين لأي حد يفتح أدوات المطور. المفتاحين دول (Pexels/YouTube) بيبقى أقصى ضرر ممكن هو استهلاك حد الاستخدام المجاني بتاعهم، مش فلوسك.</div>
     <div class="row" style="margin-top:16px;">
       <button class="btn btn-primary" id="saveMediaBtn" data-i18n="btn_save">حفظ</button>
@@ -655,8 +655,8 @@
 -->
 <div class="modal-overlay hidden" id="splitPreviewOverlay">
   <div class="modal-box card" style="max-width:720px;">
-    <h3 style="margin-top:0;" data-i18n="split_preview_title">راجعي الوحدات المقترحة قبل الإضافة</h3>
-    <p class="hint" data-i18n="split_preview_hint">الذكاء الاصطناعي حدد نقط التقسيم بس - محتوى كل وحدة هنا هو نص الملف الأصلي حرفيًا من غير أي تلخيص أو تعديل. راجعي العناوين والمحتوى، عدّلي أو دمجي وحدة مع اللي قبلها أو استثنيها، وبعدين أكدي الإضافة.</p>
+    <h3 style="margin-top:0;" data-i18n="split_preview_title">راجع الوحدات المقترحة قبل الإضافة</h3>
+    <p class="hint" data-i18n="split_preview_hint">الذكاء الاصطناعي حدد نقط التقسيم بس - محتوى كل وحدة هنا هو نص الملف الأصلي حرفيًا من غير أي تلخيص أو تعديل. راجع العناوين والمحتوى، عدّلي أو دمجي وحدة مع اللي قبلها أو استثنيها، وبعدين أكدي الإضافة.</p>
     <div id="splitPreviewList"></div>
     <div class="row" style="margin-top:16px;">
       <button class="btn btn-primary" id="confirmSplitBtn" data-i18n="btn_confirm_split">✔ تأكيد إضافة الوحدات</button>
@@ -697,12 +697,12 @@
 <div class="modal-overlay hidden" id="voiceChoiceOverlay">
   <div class="modal-box card" style="text-align:center;">
     <h3 style="margin-top:0;" data-i18n="vco_title">قبل ما نبدأ 👋</h3>
-    <p class="hint" style="font-size:14px;" data-i18n="vco_desc">اختاري صوت المدرب الذكي اللي هيشرحلك ويكلمك في المنصة:</p>
+    <p class="hint" style="font-size:14px;" data-i18n="vco_desc">اختار صوت المدرب الذكي اللي هيشرحلك ويكلمك في المنصة:</p>
     <div class="row" style="justify-content:center;margin-top:16px;">
       <button class="btn btn-primary" id="voiceChoiceMale" data-i18n="vco_male">🔊 صوت رجالي</button>
       <button class="btn btn-ghost" id="voiceChoiceFemale" data-i18n="vco_female">🔊 صوت حريمي</button>
     </div>
-    <div class="hint" style="margin-top:14px;" data-i18n="vco_change_hint">تقدري تغيّريه في أي وقت من "⚙️ صوت AI" في الهيدر.</div>
+    <div class="hint" style="margin-top:14px;" data-i18n="vco_change_hint">تقدر تغيّره في أي وقت من "⚙️ صوت AI" في الهيدر.</div>
   </div>
 </div>
 
@@ -831,7 +831,7 @@ const translations = {
     voiceSettingsBtn: "⚙️ صوت AI",
     mediaSettingsBtn_t: "صور وفيديوهات حقيقية",
     mediaSettingsBtn: "🖼️ صور وفيديو",
-    replayIntroBtn_t: "شاهدي الفيديو التعريفي تاني",
+    replayIntroBtn_t: "شاهد الفيديو التعريفي تاني",
     replayIntroBtn: "▶️ الفيديو التعريفي",
     installAppBtn_t: "ثبّت المنصة كتطبيق على جهازك",
     installAppBtn: "📲 تثبيت التطبيق",
@@ -840,32 +840,32 @@ const translations = {
     chatToggle: "💬 اسأل المدرب الذكي",
     chatHeadTitle: "🎓 المدرب الذكي",
     chatVoiceToggle: "🔊 صوت",
-    chatMicBtn_t: "اتكلمي بدل ما تكتبي",
+    chatMicBtn_t: "اتكلم بدل ما تكتب",
     chatInput_ph: "اكتب سؤالك عن الوحدة الحالية...",
     chatSend: "إرسال",
     vso_title: "إعدادات صوت ودردشة المحاضر الذكي",
-    vso_desc: "افتراضيًا المنصة بتستخدم صوت النطق المدمج في المتصفح (ده صوت آلي الطابع ومش قابل للتعديل). لو عايزة صوت طبيعي، اختاري مصدر صوت تاني من تحت.",
+    vso_desc: "افتراضيًا المنصة بتستخدم صوت النطق المدمج في المتصفح (ده صوت آلي الطابع ومش قابل للتعديل). لو عايزة صوت طبيعي، اختار مصدر صوت تاني من تحت.",
     vso_sourceLabel: "مصدر الصوت",
     tts_opt_browser: "صوت المتصفح الافتراضي (آلي)",
     tts_opt_azure: "Microsoft Azure — صوت مصري طبيعي (Salma / Shakir)",
     tts_opt_eleven: "ElevenLabs",
     azure_apikey_label: "Azure Speech API Key",
     azure_region_label: "Azure Region (مثال: eastus, westeurope — زي ما هو مكتوب في حسابك)",
-    azure_voice_label: "اختاري صوت",
+    azure_voice_label: "اختار صوت",
     azure_voice_salma: "Salma — حريمي مصري",
     azure_voice_shakir: "Shakir — رجالي مصري",
-    azure_voice_custom: "مخصص — حطي اسم الصوت بنفسك",
+    azure_voice_custom: "مخصص — حط اسم الصوت بنفسك",
     azureVoiceName_ph: "اسم الصوت، مثال: ar-EG-SalmaNeural",
-    azure_free_hint: "فيه باقة مجانية من Azure (حوالي نص مليون حرف شهريًا). اعملي حساب على Azure، فعّلي خدمة \"Speech\"، وجيبي المفتاح والـ Region من هناك.",
+    azure_free_hint: "فيه باقة مجانية من Azure (حوالي نص مليون حرف شهريًا). اعمل حساب على Azure، فعّل خدمة \"Speech\"، وجيب المفتاح والـ Region من هناك.",
     eleven_apikey_label: "ElevenLabs API Key",
-    eleven_voice_label: "اختاري صوت",
+    eleven_voice_label: "اختار صوت",
     el_v_adam: "Adam — رجالي",
     el_v_antoni: "Antoni — رجالي",
     el_v_josh: "Josh — رجالي",
     el_v_arnold: "Arnold — رجالي",
     el_v_rachel: "Rachel — حريمي",
     el_v_bella: "Bella — حريمي",
-    el_v_custom: "مخصص — حطي Voice ID بنفسك",
+    el_v_custom: "مخصص — حط Voice ID بنفسك",
     tts_security_hint: "🔒 مفاتيح الصوت مش بتتخزن في المنصة ولا في Firebase. هي محفوظة كـ Secret في سيرفر الصوت stce-tts-proxy على Cloudflare، والمنصة بتطلب الصوت منه بس.",
     aiWorkerUrl_label: "رابط سيرفر الذكاء الاصطناعي (لتشغيل \"المدرب الذكي\" اللي بيرد على أسئلة المتدربين)",
     aiWorkerUrl_hint: "ده رابط سيرفر وسيط صغير ومجاني (Cloudflare Worker) بيحمل مفتاح Gemini بشكل سري تمامًا - مش هيظهر في كود المنصة العام خالص، على عكس مفاتيح الصوت.",
@@ -873,12 +873,12 @@ const translations = {
     clearTtsBtn: "مسح المفاتيح",
     btn_close: "إغلاق",
     mso_title: "صور وفيديوهات حقيقية للمحتوى",
-    mso_desc: "من غير مفاتيح، المنصة بتعرض صور توضيحية (مكتوب عليها اسم الموضوع بس) ورابط بحث يوتيوب. لو حطيتي المفاتيح دي، الذكاء الاصطناعي هيجيب صور حقيقية وفيديو حقيقي مطابق لكل وحدة في السيلابس تلقائي.",
+    mso_desc: "من غير مفاتيح، المنصة بتعرض صور توضيحية (مكتوب عليها اسم الموضوع بس) ورابط بحث يوتيوب. لو حطيت المفاتيح دي، الذكاء الاصطناعي هيجيب صور حقيقية وفيديو حقيقي مطابق لكل وحدة في السيلابس تلقائي.",
     pexels_label: "Pexels API Key (صور — مجاني)",
     ph_optional: "اختياري",
-    pexels_hint: "تقدري تاخدي مفتاح مجاني من pexels.com/api",
+    pexels_hint: "تقدر تاخد مفتاح مجاني من pexels.com/api",
     youtube_label: "YouTube Data API Key (فيديو — مجاني بحد استخدام يومي)",
-    youtube_hint: "من Google Cloud Console، فعّلي \"YouTube Data API v3\" واعملي مفتاح.",
+    youtube_hint: "من Google Cloud Console، فعّل \"YouTube Data API v3\" واعمل مفتاح.",
     media_security_hint: "⚠️ نفس تنبيه الأمان اللي في إعدادات الصوت: المفتاحين دول بيشتغلوا من متصفح أي حد بيفتح المنصة، يعني ظاهرين لأي حد يفتح أدوات المطور. المفتاحين دول (Pexels/YouTube) بيبقى أقصى ضرر ممكن هو استهلاك حد الاستخدام المجاني بتاعهم، مش فلوسك.",
     bso_title: "حساب البنك لاستقبال الاشتراكات",
     bso_desc: "البيانات دي هتظهر للمتدرب قبل ما يرفع إيصال الدفع.",
@@ -892,25 +892,25 @@ const translations = {
     apo_new: "كلمة السر الجديدة",
     apo_confirm: "تأكيد كلمة السر الجديدة",
     vco_title: "قبل ما نبدأ 👋",
-    vco_desc: "اختاري صوت المدرب الذكي اللي هيشرحلك ويكلمك في المنصة:",
+    vco_desc: "اختار صوت المدرب الذكي اللي هيشرحلك ويكلمك في المنصة:",
     vco_male: "🔊 صوت رجالي",
     vco_female: "🔊 صوت حريمي",
-    vco_change_hint: "تقدري تغيّريه في أي وقت من \"⚙️ صوت AI\" في الهيدر.",
+    vco_change_hint: "تقدر تغيّره في أي وقت من \"⚙️ صوت AI\" في الهيدر.",
     intro_skip: "تخطي ⏭",
     intro_prev: "◀ السابق",
     intro_next: "التالي ▶",
-    err_image_read: "مقدرناش نقرا الصورة دي، جربي صورة تانية.",
-    auth_welcome: "أهلًا بيكي 👋",
-    auth_choice_q: "قبل ما نكمّل، سجّلتي بياناتك في المنصة دي قبل كده؟",
+    err_image_read: "مقدرناش نقرا الصورة دي، جرب صورة تانية.",
+    auth_welcome: "أهلًا بيك 👋",
+    auth_choice_q: "قبل ما نكمّل، سجّلت بياناتك في المنصة دي قبل كده؟",
     auth_choice_returning: "✅ أيوه، عندي حساب بالفعل",
     auth_choice_new: "🆕 لأ، أول مرة أدخل",
     nav_back: "→ رجوع",
     auth_tab_new: "مستخدم جديد",
     auth_tab_have: "عندي حساب بالفعل",
     reg_title: "بيانات التسجيل",
-    reg_subtitle: "سجّلي بياناتك مرة واحدة عشان تقدري تشتركي في البرامج",
+    reg_subtitle: "سجّل بياناتك مرة واحدة عشان تقدر تشترك في البرامج",
     reg_fullname: "الاسم بالكامل",
-    reg_name_hint: "⚠️ الاسم ده هو اللي هيتكتب في شهادتك بعد ما تخلّصي التدريب، اكتبيه بالظبط زي ما عايزاه يظهر.",
+    reg_name_hint: "⚠️ الاسم ده هو اللي هيتكتب في شهادتك بعد ما تخلّص التدريب، اكتبه بالظبط زي ما عايزاه يظهر.",
     reg_cert_lang: "لغة الشهادة",
     lang_ar: "عربي",
     lang_en: "إنجليزي (English)",
@@ -918,23 +918,23 @@ const translations = {
     reg_phone: "رقم الموبايل",
     reg_national_id: "الرقم القومي",
     reg_national_id_img: "صورة بطاقة الرقم القومي",
-    upload_tap_image: "دوسي هنا لاختيار صورة",
+    upload_tap_image: "دوس هنا لاختيار صورة",
     reg_email: "البريد الإلكتروني (اختياري)",
     reg_password: "كلمة السر",
     reg_password_confirm: "تأكيد كلمة السر",
-    reg_password_hint: "هتستخدمي الاسم وكلمة السر دول لو دخلتي المنصة تاني من نفس الجهاز.",
+    reg_password_hint: "هتستخدم الاسم وكلمة السر دول لو دخلت المنصة تاني من نفس الجهاز.",
     reg_submit: "تسجيل والمتابعة",
-    err_name_phone_required: "من فضلك اكتبي الاسم ورقم الموبايل",
+    err_name_phone_required: "من فضلك اكتب الاسم ورقم الموبايل",
     err_password_min: "كلمة السر لازم تكون 4 حروف/أرقام على الأقل",
     err_password_mismatch: "كلمة السر وتأكيدها مش متطابقين",
-    err_db_not_ready: "لسه مقدرناش نجهز الاتصال بقاعدة البيانات، جربي تاني بعد شوية.",
+    err_db_not_ready: "لسه مقدرناش نجهز الاتصال بقاعدة البيانات، جرب تاني بعد شوية.",
     login_bound_title: "حسابك مربوط بجهازك",
     login_bound_desc: "لحماية بياناتك، حساب كل متدرب بيشتغل بس على الجهاز اللي سجّل بيه أول مرة، ومش ممكن الدخول عليه بالاسم وكلمة السر من جهاز تاني.",
-    login_bound_hint: "لو ده جهازك الأصلي وشايفة الشاشة دي، يبقى غالبًا مسحتي بيانات المتصفح. الحل الوحيد دلوقتي إنك تتواصلي مع المسؤول عن المنصة عشان يساعدك.",
-    login_go_register: "سجّلي بيانات جديدة بدل ما تستنيها",
+    login_bound_hint: "لو ده جهازك الأصلي وشايفة الشاشة دي، يبقى غالبًا مسحت بيانات المتصفح. الحل الوحيد دلوقتي إنك تتواصل مع المسؤول عن المنصة عشان يساعدك.",
+    login_go_register: "سجّل بيانات جديدة بدل ما تستناها",
     programs_title: "البرامج التدريبية",
-    programs_welcome: "أهلاً {name} — اختاري برنامج وابدأي",
-    badge_rejected_retry: "تم الرفض — جرّبي تاني",
+    programs_welcome: "أهلاً {name} — اختار برنامج وابدأ",
+    badge_rejected_retry: "تم الرفض — جرّب تاني",
     btn_reupload_receipt: "إعادة رفع الإيصال",
     btn_enroll_now: "الاشتراك في البرنامج",
     badge_pending: "قيد المراجعة",
@@ -950,40 +950,40 @@ const translations = {
     err_subscription_expired: "انتهت مدة الاشتراك في البرنامج ده.",
     cert_preparing: "⏳ بيتم التجهيز...",
     back_to_programs: "→ رجوع للبرامج",
-    bank_box_title: "🏦 حوّلي المبلغ على الحساب ده الأول",
+    bank_box_title: "🏦 حوّل المبلغ على الحساب ده الأول",
     btn_copy_acc: "📋 نسخ رقم الحساب",
-    enroll_transfer_hint: "بعد التحويل، ارفعي اسكرين شوت بإيصال الدفع تحت، وهيتم مراجعته وقبولك في البرنامج.",
+    enroll_transfer_hint: "بعد التحويل، ارفع اسكرين شوت بإيصال الدفع تحت، وهيتم مراجعته وقبولك في البرنامج.",
     enroll_screenshot_label: "اسكرين شوت الدفع",
     btn_submit_for_review: "إرسال للمراجعة",
     copied: "✔ اتنسخ",
-    err_copy_manual: "اختاري رقم الحساب وانسخيه يدوي.",
+    err_copy_manual: "اختار رقم الحساب وانسخه يدوي.",
     submitting: "بيتم الإرسال...",
     back_to_all_programs: "→ رجوع لكل البرامج",
     units_count: "{n} وحدة",
     btn_download_program_pdf: "⬇️ تحميل المادة العلمية للبرنامج كامل PDF",
     done_check: "✔ تم الإنجاز",
     preparing_unit_x_of_y: "⏳ بيتم تجهيز الوحدة {i} من {total}...",
-    err_file_prep: "حصلت مشكلة في تجهيز الملف، جربي تاني.",
+    err_file_prep: "حصلت مشكلة في تجهيز الملف، جرب تاني.",
     suggested_videos: "🎥 فيديوهات مقترحة عن الموضوع ده",
     subscription_ended_for: "⏳ انتهت مدة الاشتراك في برنامج \"{title}\".",
     back_to_programs_list: "الرجوع لقائمة البرامج",
     no_units_yet: "لسه مفيش وحدات في البرنامج ده.",
-    days_left_to_close: "⏳ متبقي {n} يوم على إغلاق البرنامج — خلّصي البرنامج قبل ما المدة تخلص",
+    days_left_to_close: "⏳ متبقي {n} يوم على إغلاق البرنامج — خلّص البرنامج قبل ما المدة تخلص",
     ai_hero_greet: "👋 مرحبًا {name}",
-    ai_hero_text: "أنا مساعدك الذكي في وحدة \"{title}\". اختاري تحت إيه اللي محتاجاه، أو اكتبي سؤالك مباشرة.",
+    ai_hero_text: "أنا مساعدك الذكي في وحدة \"{title}\". اختار تحت إيه اللي محتاجاه، أو اكتب سؤالك مباشرة.",
     program_completion_pct: "نسبة إنجاز البرنامج",
-    qa_summarize_prompt: "لخّصي لي الوحدة دي في نقط سريعة",
+    qa_summarize_prompt: "لخّص لي الوحدة دي في نقط سريعة",
     qa_summarize_label: "تلخيص الدرس",
-    qa_quiz_prompt: "اعملي لي سؤال اختبار سريع عن الوحدة دي وانتظري إجابتي",
+    qa_quiz_prompt: "اعمل لي سؤال اختبار سريع عن الوحدة دي وانتظر إجابتي",
     qa_quiz_label: "اختبار سريع",
-    qa_explain_prompt: "اشرحيلي أهم فكرة في الوحدة دي بطريقة مبسطة جدًا",
+    qa_explain_prompt: "اشرحلي أهم فكرة في الوحدة دي بطريقة مبسطة جدًا",
     qa_explain_label: "شرح مبسط",
     qa_example_prompt: "اديني مثال تطبيقي واقعي على الموضوع ده",
     qa_example_label: "مثال تطبيقي",
     mark_done_done: "✔ متعلّم",
     mark_done_todo: "وضع علامة إنه اتعلم",
     btn_start_quiz: "ابدأ الاختبار",
-    btn_listen_explain: "🔊 استمعي للشرح بصوت المحاضر الذكي",
+    btn_listen_explain: "🔊 استمع للشرح بصوت المحاضر الذكي",
     btn_download_unit_pdf: "⬇️ تحميل المادة العلمية PDF",
     ai_preparing_explanation: "⏳ المحاضر الذكي بيحضّر شرح الوحدة...",
     ai_preparing_voice: "⏳ بيجهز الصوت...",
@@ -992,25 +992,25 @@ const translations = {
     btn_submit_answers: "تسليم الإجابات",
     btn_back_to_content: "رجوع للمحتوى",
     your_score: "نتيجتك: {correct} من {total}",
-    chat_no_unit: "افتحي وحدة الأول عشان أقدر أساعدك فيها.",
-    chat_greeting: "أهلاً! أنا المدرب الذكي، اسأليني أي حاجة عن \"{title}\".",
+    chat_no_unit: "افتح وحدة الأول عشان أقدر أساعدك فيها.",
+    chat_greeting: "أهلاً! أنا المدرب الذكي، اسألني أي حاجة عن \"{title}\".",
     chat_typing: "بيكتب...",
-    chat_system_prompt: "أنت المدرب الذكي داخل منصة تدريب اسمها \"STCE\"، ودورك تحل محل المحاضر البشري.\nجاوبي على أسئلة المتدرب بشكل واضح ومباشر.\nاتكلمي بأسلوب رسمي ومحترف يليق بمدرب مهني متخصص — عربية فصحى سليمة 100%، من غير ألفاظ عامية أو ألقاب ودّية زي \"يا بطل\" أو \"يا قمر\" أو \"يا فندم\"، ومن غير إيموجي. خاطبي المتدرب بصيغة محايدة ومباشرة (من غير كنية أو مبالغة في الحماس)، بجدّية ووضوح، مع الحفاظ على أسلوب تعليمي واضح ومفيد.\nمحتوى الوحدة الحالية (\"{title}\") اللي المفروض تعتمدي عليه في إجابتك:\n---\n{content}\n---\nلو السؤال متعلق بالمحتوى ده، اشرحي بالتفصيل. لو السؤال عام أو برة نطاق الوحدة، جاوبي بأفضل ما تقدري ونبّهي بلطف إنه خارج محتوى الوحدة الحالية.\nمهم جدًا: اكتبي ردك كفقرات كلام عادي متصل، من غير أي رموز تنسيق خالص (من غير **، من غير ##، من غير نقط أو شرطات أول السطر زي - أو •). الرد ده بيتعرض كنص عادي وبيتقري بصوت مسموع كمان، فأي رمز من دول هيتقري بصوته الحرفي (زي \"نجمة\") ويبوّظ الكلام.\nكمان عشان الرد بيتقري بصوت مسموع: متستخدميش علامات تنصيص ولا أقواس ولا شرطة مائلة / ولا رموز زي % أو & أو = أو إيموجي، واكتبي الأرقام والنسب بالكلام لما يكون ممكن، وخلي الجمل قصيرة وطبيعية كأنك بتتكلمي مع المتدرب وجهًا لوجه.",
+    chat_system_prompt: "أنت المدرب الذكي داخل منصة تدريب اسمها \"STCE\"، ودورك تحل محل المحاضر البشري.\nجاوب على أسئلة المتدرب بشكل واضح ومباشر.\nاتكلم بأسلوب رسمي ومحترف يليق بمدرب مهني متخصص — عربية فصحى سليمة 100%، من غير ألفاظ عامية أو ألقاب ودّية زي \"يا بطل\" أو \"يا قمر\" أو \"يا فندم\"، ومن غير إيموجي. خاطب المتدرب بصيغة محايدة ومباشرة (من غير كنية أو مبالغة في الحماس)، بجدّية ووضوح، مع الحفاظ على أسلوب تعليمي واضح ومفيد.\nمحتوى الوحدة الحالية (\"{title}\") اللي المفروض تعتمد عليه في إجابتك:\n---\n{content}\n---\nلو السؤال متعلق بالمحتوى ده، اشرح بالتفصيل. لو السؤال عام أو برة نطاق الوحدة، جاوب بأفضل ما تقدر ونبّه بلطف إنه خارج محتوى الوحدة الحالية.\nمهم جدًا: اكتب ردك كفقرات كلام عادي متصل، من غير أي رموز تنسيق خالص (من غير **، من غير ##، من غير نقط أو شرطات أول السطر زي - أو •). الرد ده بيتعرض كنص عادي وبيتقري بصوت مسموع كمان، فأي رمز من دول هيتقري بصوته الحرفي (زي \"نجمة\") ويبوّظ الكلام.\nكمان عشان الرد بيتقري بصوت مسموع: متستخدميش علامات تنصيص ولا أقواس ولا شرطة مائلة / ولا رموز زي % أو & أو = أو إيموجي، واكتب الأرقام والنسب بالكلام لما يكون ممكن، وخلي الجمل قصيرة وطبيعية كأنك بتتكلم مع المتدرب وجهًا لوجه.",
     err_reply_generic: "معلش، حصل خطأ في الرد.",
-    err_connection_generic: "معلش، حصلت مشكلة في الاتصال. جربي تاني بعد شوية.",
-    err_ai_worker_not_set: "لسه محطتش رابط سيرفر الذكاء الاصطناعي. ادخلي على \"⚙️ صوت AI\" في وضع المحاضر وحطي الرابط.",
-    err_ai_server_busy: "السيرفر الذكي مزدحم أو وصلنا للحد المسموح به من الطلبات دلوقتي، جربي تاني بعد شوية.",
+    err_connection_generic: "معلش، حصلت مشكلة في الاتصال. جرب تاني بعد شوية.",
+    err_ai_worker_not_set: "لسه محطتش رابط سيرفر الذكاء الاصطناعي. ادخل على \"⚙️ صوت AI\" في وضع المحاضر وحط الرابط.",
+    err_ai_server_busy: "السيرفر الذكي مزدحم أو وصلنا للحد المسموح به من الطلبات دلوقتي، جرب تاني بعد شوية.",
     pdf_extracting: "بيتم استخراج النص من ملف PDF...",
     pdf_scanned_ocr_start: "الملف ده يبان ماسوح ضوئيًا (Scanned) ومفيهوش نص مباشر، بيتم قراءته بالـOCR دلوقتي، العملية ممكن تاخد وقت أطول شوية...",
     pdf_ocr_page_progress: "جاري قراءة صفحة {i} من {total} بالـOCR...",
-    pdf_low_confidence: "معلش، الملف PDF ده جودة المسح فيه ضعيفة جدًا ومقدرتش أقرا منه نص واضح وموثوق. جربي نسخة بجودة مسح أوضح، أو ملف تاني.",
+    pdf_low_confidence: "معلش، الملف PDF ده جودة المسح فيه ضعيفة جدًا ومقدرتش أقرا منه نص واضح وموثوق. جرب نسخة بجودة مسح أوضح، أو ملف تاني.",
     ocr_loading_lib: "بيتم تحميل مكتبة قراءة الصور (OCR)...",
     ocr_reading_image: "بيتم قراءة النص من الصورة بالـOCR، العملية ممكن تاخد وقت شوية...",
-    ocr_image_low_confidence: "معلش، مقدرتش أقرا نص واضح وموثوق من الصورة دي. جربي صورة أوضح، إضاءة أحسن، أو زاوية تصوير مباشرة أكتر.",
+    ocr_image_low_confidence: "معلش، مقدرتش أقرا نص واضح وموثوق من الصورة دي. جرب صورة أوضح، إضاءة أحسن، أو زاوية تصوير مباشرة أكتر.",
     file_reading: "بيتم قراءة الملف...",
-    file_no_clear_text: "معلش، مقدرتش ألاقي نص واضح في الملف ده. جربي ملف تاني أو صورة/مسح بجودة أوضح.",
-    file_loaded_ok: "تم تحميل السيلابس من الملف، تقدري تعدّليه قبل ما تبني المادة العلمية.",
-    file_read_error: "معلش، مقدرتش أقرا الملف ده. جربي ملف txt أو docx أو pdf أو صورة تاني.",
+    file_no_clear_text: "معلش، مقدرتش ألاقي نص واضح في الملف ده. جرب ملف تاني أو صورة/مسح بجودة أوضح.",
+    file_loaded_ok: "تم تحميل السيلابس من الملف، تقدر تعدّله قبل ما تبني المادة العلمية.",
+    file_read_error: "معلش، مقدرتش أقرا الملف ده. جرب ملف txt أو docx أو pdf أو صورة تاني.",
     nav_dashboard: "📊 لوحة التحكم",
     nav_trainees: "👥 المتدربين وتقييمهم",
     nav_clients: "🏢 العملاء",
@@ -1023,13 +1023,13 @@ const translations = {
     btn_export_backup: "💾 تنزيل نسخة احتياطية من البرامج",
     btn_import_backup: "📤 استرجاع نسخة احتياطية",
     new_program_default_title: "برنامج جديد",
-    backup_read_fail: "مقدرتش أقرا الملف \"{name}\" خالص. جربي تختاريه تاني.",
-    backup_invalid_json: "الملف \"{name}\" مش JSON صحيح (يعني مش نفس الملف اللي نزّلتيه من زرار \"تنزيل نسخة احتياطية\"). لو متأكدة إنه هو، ممكن يكون اتعدّل أو اتقطع لما اتبعت/اتنقل. جربي تنزيلي نسخة جديدة بزرار التنزيل وارفعيها على طول من غير ما تفتحيها أو تشاركيها.",
-    backup_missing_data: "الملف \"{name}\" اتقرا صح كـ JSON، لكن مفيهوش بيانات المنصة المتوقعة (زي البرامج أو الطلبات). تأكدي إنه فعلاً ملف بدأ اسمه بـ \"stce-backup\"، مش ملف تاني.",
+    backup_read_fail: "مقدرتش أقرا الملف \"{name}\" خالص. جرب تختاره تاني.",
+    backup_invalid_json: "الملف \"{name}\" مش JSON صحيح (يعني مش نفس الملف اللي نزّلته من زرار \"تنزيل نسخة احتياطية\"). لو متأكدة إنه هو، ممكن يكون اتعدّل أو اتقطع لما اتبعت/اتنقل. جرب تنزيلي نسخة جديدة بزرار التنزيل وارفعها على طول من غير ما تفتحها أو تشاركها.",
+    backup_missing_data: "الملف \"{name}\" اتقرا صح كـ JSON، لكن مفيهوش بيانات المنصة المتوقعة (زي البرامج أو الطلبات). تأكد إنه فعلاً ملف بدأ اسمه بـ \"stce-backup\"، مش ملف تاني.",
     backup_confirm_restore: "هيتم استرجاع النسخة الاحتياطية من ملف \"{name}\"، وده هيستبدل كل البرامج والطلبات الحالية. تكملي؟",
     backup_restore_success: "تم استرجاع النسخة الاحتياطية بنجاح.",
-    backup_restore_save_fail: "اتقرا الملف صح، لكن حصلت مشكلة وقت حفظ البيانات المسترجعة. جربي تاني.",
-    dashboard_backup_warning: "⚠️ التخزين مش مضمون 100% إنه يفضل موجود لما ترجعي تفتحي المنصة تاني. عشان متفقديش شغلك، خدي نسخة احتياطية دلوقتي وكل مرة تضيفي/تعدّلي فيها برنامج.",
+    backup_restore_save_fail: "اتقرا الملف صح، لكن حصلت مشكلة وقت حفظ البيانات المسترجعة. جرب تاني.",
+    dashboard_backup_warning: "⚠️ التخزين مش مضمون 100% إنه يفضل موجود لما ترجع تفتح المنصة تاني. عشان متفقديش شغلك، خد نسخة احتياطية دلوقتي وكل مرة تضيف/تعدّل فيها برنامج.",
     btn_export_backup_now: "💾 تنزيل نسخة احتياطية الآن",
     nav_dashboard_title: "لوحة التحكم",
     stat_programs_available: "برامج متاحة",
@@ -1044,9 +1044,9 @@ const translations = {
     badge_approved_short: "مقبول",
     badge_rejected_short: "مرفوض",
     dashboard_no_requests_yet: "لسه مفيش طلبات تسجيل على برامج.",
-    dashboard_shared_registry_hint: "دلوقتي بيانات كل متدرب سجّل بياناته بتتخزن في سجل مشترك تقدري تشوفيه هنا، حتى لو لسه ما قدّمش على أي برنامج.",
+    dashboard_shared_registry_hint: "دلوقتي بيانات كل متدرب سجّل بياناته بتتخزن في سجل مشترك تقدر تشوفه هنا، حتى لو لسه ما قدّمش على أي برنامج.",
     nav_trainees_title: "المتدربين وتقييمهم",
-    trainee_search_ph: "دوّري بالاسم أو رقم الموبايل أو الجهة أو الرقم القومي...",
+    trainee_search_ph: "دوّر بالاسم أو رقم الموبايل أو الجهة أو الرقم القومي...",
     btn_export_csv: "📊 تصدير Excel (CSV)",
     list_separator: "، ",
     deleted_program: "برنامج محذوف",
@@ -1056,11 +1056,11 @@ const translations = {
     btn_reset_password: "🔑 إعادة تعيين كلمة السر",
     btn_reset_device: "📱 مسح الحساب عشان يسجّل من جهاز جديد",
     no_search_matches: "مفيش نتايج مطابقة للبحث.",
-    prompt_new_password_for: "اكتبي كلمة سر جديدة لـ \"{name}\" (لو نسي كلمة سره القديمة):",
-    password_changed_for: "اتغيرت كلمة سر \"{name}\". قوليلها الكلمة الجديدة عشان تدخل بيها.",
+    prompt_new_password_for: "اكتب كلمة سر جديدة لـ \"{name}\" (لو نسي كلمة سره القديمة):",
+    password_changed_for: "اتغيرت كلمة سر \"{name}\". قولها الكلمة الجديدة عشان تدخل بيها.",
     confirm_reset_device: "هيتمسح حساب \"{name}\" بالكامل (بياناته وتقدمه في كل البرامج) عشان يقدر يسجّل بيانات جديدة من جهازه الجديد. متأكدة؟",
     account_deleted_msg: "اتمسح حساب \"{name}\". لما يفتح المنصة من جهازه الجديد، هيقدر يسجّل بيانات جديدة عادي.",
-    err_generic_retry: "حصلت مشكلة، جربي تاني.",
+    err_generic_retry: "حصلت مشكلة، جرب تاني.",
     csv_name: "الاسم",
     csv_org: "الجهة",
     csv_phone: "رقم الموبايل",
@@ -1069,11 +1069,11 @@ const translations = {
     csv_cert_lang: "لغة الشهادة",
     csv_registered_at: "تاريخ التسجيل",
     nav_clients_title: "العملاء",
-    clients_desc: "كل عميل هنا بياخد لينك خاص بيه يديه لمتدربينه، وبياناته (برامجه ومتدربينه) معزولة تمامًا عن STCE وعن أي عميل تاني. لو حبيتي توقفي خدمة عميل (مثلًا اشتراكه اتأخر)، دوسي \"إيقاف الخدمة\" وهيتقفل عليه وعلى متدربينه فورًا.",
+    clients_desc: "كل عميل هنا بياخد لينك خاص بيه يديه لمتدربينه، وبياناته (برامجه ومتدربينه) معزولة تمامًا عن STCE وعن أي عميل تاني. لو حبيت توقف خدمة عميل (مثلًا اشتراكه اتأخر)، دوس \"إيقاف الخدمة\" وهيتقفل عليه وعلى متدربينه فورًا.",
     client_name_label: "اسم العميل / الجهة",
     client_name_ph: "مثال: أكاديمية كذا للتدريب",
     client_email_label: "إيميل حساب أدمن العميل",
-    client_email_hint: "بعد إضافته هنا، لازم كمان تعملي له حساب دخول بنفس الإيميل ده من Firebase Authentication (بالظبط زي ما عملتي لحسابك انتي)، وتديله كلمة السر بنفسك.",
+    client_email_hint: "بعد إضافته هنا، لازم كمان تعمل له حساب دخول بنفس الإيميل ده من Firebase Authentication (بالظبط زي ما عملت لحسابك انت)، وتديله كلمة السر بنفسك.",
     btn_add_client: "+ إضافة عميل جديد",
     clients_current_header: "العملاء الحاليين",
     clients_none_yet: "لسه مفيش عملاء متضافين.",
@@ -1083,45 +1083,45 @@ const translations = {
     btn_copy_link: "📋 نسخ اللينك",
     btn_suspend_service: "إيقاف الخدمة",
     btn_activate_service: "تفعيل الخدمة",
-    err_client_name_email_required: "من فضلك اكتبي اسم العميل وإيميله",
-    client_added_msg: "تمام، اتضاف العميل. اللينك بتاعه:\\n{link}\\n\\nمتنسيش دلوقتي تعملي له حساب دخول بنفس الإيميل ده من Firebase Authentication.",
-    confirm_activate_client: "هتفعّلي الخدمة تاني لـ\"{name}\"؟",
-    confirm_suspend_client: "هتوقفي الخدمة على \"{name}\" فورًا، وهو وكل متدربينه مش هيقدروا يستخدموا المنصة لحد ما تفعّليها تاني. متأكدة؟",
+    err_client_name_email_required: "من فضلك اكتب اسم العميل وإيميله",
+    client_added_msg: "تمام، اتضاف العميل. اللينك بتاعه:\\n{link}\\n\\nمتنسيش دلوقتي تعمل له حساب دخول بنفس الإيميل ده من Firebase Authentication.",
+    confirm_activate_client: "هتفعّل الخدمة تاني لـ\"{name}\"؟",
+    confirm_suspend_client: "هتوقف الخدمة على \"{name}\" فورًا، وهو وكل متدربينه مش هيقدروا يستخدموا المنصة لحد ما تفعّلها تاني. متأكدة؟",
     copied_link: "✅ اتنسخ",
-    err_copy_link_manual: "مقدرناش ننسخ اللينك، انسخيه يدوي.",
-    add_program_from_sidebar: "ضيفي برنامج جديد من القائمة على اليمين.",
+    err_copy_link_manual: "مقدرناش ننسخ اللينك، انسخه يدوي.",
+    add_program_from_sidebar: "ضيف برنامج جديد من القائمة على اليمين.",
     tab_content_syllabus: "المحتوى والسيلابس",
     tab_requests: "طلبات التسجيل",
     prog_name_label: "اسم البرنامج",
     prog_cost_label: "التكلفة (ج.م)",
     prog_duration_label: "مدة البرنامج بالأيام (اختياري)",
-    prog_duration_ph: "سيبيه فاضي = بدون حد أقصى",
-    prog_duration_hint: "لو حطيتي رقم هنا، العد بيبدأ من لحظة أول دخول فعلي لكل متدربة على البرنامج (مش من لحظة القبول)، وبعد ما المدة تخلص هتتقفل عليها البرنامج تلقائيًا. وتقدري كمان تقفلي البرنامج يدويًا على أي متدربة في أي وقت من تبويب \"طلبات التسجيل\".",
+    prog_duration_ph: "سيبه فاضي = بدون حد أقصى",
+    prog_duration_hint: "لو حطيت رقم هنا، العد بيبدأ من لحظة أول دخول فعلي لكل متدربة على البرنامج (مش من لحظة القبول)، وبعد ما المدة تخلص هتتقفل عليها البرنامج تلقائيًا. وتقدر كمان تقفل البرنامج يدويًا على أي متدربة في أي وقت من تبويب \"طلبات التسجيل\".",
     btn_save_program: "حفظ بيانات البرنامج",
     step1_syllabus_title: "الخطوة ١: السيلابس",
-    step1_syllabus_hint: "ارفعي ملف سيلابس جاهز، أو خليها الذكاء الاصطناعي يقترحه، أو اكتبيه يدوي تحت.",
+    step1_syllabus_hint: "ارفع ملف سيلابس جاهز، أو خليها الذكاء الاصطناعي يقترحه، أو اكتبه يدوي تحت.",
     btn_upload_syllabus: "📄 رفع ملف سيلابس (txt / docx / pdf / صورة)",
-    btn_suggest_syllabus: "🤖 معنديش سيلابس، اقترحيه لي",
+    btn_suggest_syllabus: "🤖 معنديش سيلابس، اقترحه لي",
     syllabus_supported_files_hint: "الملفات المدعومة: txt, md, docx, pdf (بالنص أو ممسوح ضوئيًا)، وصور jpg/jpeg/png فيها نص. لو الملف PDF ممسوح ضوئيًا أو صورة، هيتم قراءة النص منه بالـOCR تلقائيًا وده ممكن ياخد وقت أطول شوية.",
     syllabus_label: "السيلابس (كل موضوع في سطر)",
     syllabus_ph: "مثال:\\nمقدمة عن الموضوع\\nالأساسيات\\nتطبيق عملي",
     step2_content_title: "الخطوة ٢: المادة العلمية",
     step2_content_hint: "الذكاء الاصطناعي هيكتب شرح كامل لكل وحدة في السيلابس، مع صورة تدل على الموضوع ورابط بحث فيديوهات.",
     btn_build_content: "🤖 ابني المادة العلمية من السيلابس ده",
-    btn_reset_modules: "🗑️ امسحي كل الوحدات وابنيها من جديد",
+    btn_reset_modules: "🗑️ امسح كل الوحدات وابنيها من جديد",
     btn_fetch_missing_images: "🖼️ جلب الصور الناقصة بس",
-    modules_order_hint: "لو ترتيب الوحدات تحت مش مطابق لترتيب السيلابس (حصل قبل كده مع تعديلات متكررة على السيلابس)، دوسي \"امسحي كل الوحدات\" الأول، وبعدين \"ابني المادة العلمية\" تاني — كده هتتبني كل الوحدات من الصفر بالترتيب الصح، وأي تعديل تعمليه على السيلابس بعد كده هيفضل مربوط بموضوعه صح تلقائيًا.",
-    manual_modules_no_image_hint: "لو لصقتي محتوى وحدات يدوي (مش عن طريق زرار البناء التلقائي)، هتلاقيها من غير صورة. دوسي \"جلب الصور الناقصة بس\" وهيجيب صورة لكل وحدة ناقصها صورة من غير ما يلمس المحتوى، ومن غير ما يستخدم حد الطلبات بتاع الذكاء الاصطناعي خالص.",
+    modules_order_hint: "لو ترتيب الوحدات تحت مش مطابق لترتيب السيلابس (حصل قبل كده مع تعديلات متكررة على السيلابس)، دوس \"امسح كل الوحدات\" الأول، وبعدين \"ابني المادة العلمية\" تاني — كده هتتبني كل الوحدات من الصفر بالترتيب الصح، وأي تعديل تعمله على السيلابس بعد كده هيفضل مربوط بموضوعه صح تلقائيًا.",
+    manual_modules_no_image_hint: "لو لصقت محتوى وحدات يدوي (مش عن طريق زرار البناء التلقائي)، هتلاقيها من غير صورة. دوس \"جلب الصور الناقصة بس\" وهيجيب صورة لكل وحدة ناقصها صورة من غير ما يلمس المحتوى، ومن غير ما يستخدم حد الطلبات بتاع الذكاء الاصطناعي خالص.",
     program_units_label: "وحدات البرنامج",
     btn_add_unit_manual: "+ إضافة وحدة يدوي",
     new_unit_default_title: "وحدة جديدة",
-    new_unit_default_content: "اكتبي محتوى الوحدة هنا...",
+    new_unit_default_content: "اكتب محتوى الوحدة هنا...",
     err_no_units_to_clear: "مفيش وحدات لمسحها أصلاً.",
-    confirm_reset_modules: "هيتم مسح كل الوحدات الحالية في البرنامج ده نهائيًا (المحتوى والصور وأسئلة الاختبار اللي اتعملت لحد دلوقتي). استخدمي الخيار ده لو ترتيب الوحدات متلخبط ومش مطابق للسيلابس. بعد المسح دوسي \"ابني المادة العلمية من السيلابس ده\" عشان تتبني كل الوحدات من جديد ومرتبة صح. تنبيه: لو في متدربات دخلوا وأنهوا وحدات من البرنامج ده قبل كده، علامة \"تم الإنجاز\" بتاعتهم للوحدات دي هتتصفر لأن الوحدات هتتبنى بمعرّفات جديدة. متأكدة إنك عايزة تكملي؟",
+    confirm_reset_modules: "هيتم مسح كل الوحدات الحالية في البرنامج ده نهائيًا (المحتوى والصور وأسئلة الاختبار اللي اتعملت لحد دلوقتي). استخدم الخيار ده لو ترتيب الوحدات متلخبط ومش مطابق للسيلابس. بعد المسح دوس \"ابني المادة العلمية من السيلابس ده\" عشان تتبني كل الوحدات من جديد ومرتبة صح. تنبيه: لو في متدربات دخلوا وأنهوا وحدات من البرنامج ده قبل كده، علامة \"تم الإنجاز\" بتاعتهم للوحدات دي هتتصفر لأن الوحدات هتتبنى بمعرّفات جديدة. متأكدة إنك عايزة تكملي؟",
     no_units_yet_trainer: "لسه مفيش وحدات.",
     btn_edit: "تعديل",
     btn_delete: "حذف",
-    confirm_delete_unit: "متأكدة إنك عايزة تمسحي الوحدة دي؟",
+    confirm_delete_unit: "متأكدة إنك عايزة تمسح الوحدة دي؟",
     back_to_program_content: "→ رجوع لمحتوى البرنامج",
     unit_title_label: "عنوان الوحدة",
     unit_img_kw_label: "كلمة مفتاحية للصورة (بالإنجليزي)",
@@ -1131,32 +1131,32 @@ const translations = {
     unit_content_label: "محتوى الوحدة",
     quiz_questions_label: "أسئلة الاختبار",
     btn_add_question: "+ إضافة سؤال",
-    btn_ai_suggest_questions: "🤖 اقترحي أسئلة بالذكاء الاصطناعي",
+    btn_ai_suggest_questions: "🤖 اقترح أسئلة بالذكاء الاصطناعي",
     btn_save_unit: "حفظ الوحدة",
     saving: "بيتم الحفظ...",
     question_text_ph: "نص السؤال",
     option_n_ph: "اختيار {n}",
     btn_add_option: "+ اختيار",
     btn_delete_question: "حذف السؤال",
-    err_write_content_first: "لازم تكتبي محتوى الوحدة الأول عشان أقدر أقترح أسئلة عليه.",
+    err_write_content_first: "لازم تكتب محتوى الوحدة الأول عشان أقدر أقترح أسئلة عليه.",
     suggesting_questions: "بيتم اقتراح الأسئلة...",
     suggesting_questions_wait: "بيتم اقتراح الأسئلة، لحظات...",
-    err_questions_extract_fail: "معلش، مقدرتش أطلع أسئلة من المحتوى ده. جربي تاني.",
-    questions_added_success: "✅ اتضافت {n} أسئلة جديدة تحت. راجعيها وعدّلي فيها زي ما تحبي قبل ما تحفظي الوحدة.",
-    err_questions_suggest_fail: "حصلت مشكلة في اقتراح الأسئلة، جربي تاني.",
+    err_questions_extract_fail: "معلش، مقدرتش أطلع أسئلة من المحتوى ده. جرب تاني.",
+    questions_added_success: "✅ اتضافت {n} أسئلة جديدة تحت. راجعها وعدّل فيها زي ما تحب قبل ما تحفظ الوحدة.",
+    err_questions_suggest_fail: "حصلت مشكلة في اقتراح الأسئلة، جرب تاني.",
     err_no_images_in_request: "مفيش صور في الطلب ده",
     aicheck_id_missing: "المتدرب ما رفعش صورة بطاقة.",
     aicheck_id_not_card: "الصورة اللي اترفعت مش باينة إنها بطاقة رقم قومي.",
-    aicheck_id_unclear: "الرقم في البطاقة مش واضح، راجعيه بعينك.",
+    aicheck_id_unclear: "الرقم في البطاقة مش واضح، راجعه بعينك.",
     aicheck_id_not_typed: "المتدرب ما كتبش رقم قومي. الرقم اللي في البطاقة: {card}",
     aicheck_id_match: "الرقم القومي مطابق للبطاقة ({id})",
     aicheck_id_mismatch: "الرقم مش مطابق: المكتوب {typed} - اللي في البطاقة {card}",
-    aicheck_id_mismatch_diff1: " (فرق رقم واحد، ممكن يكون خطأ في القراءة - راجعيه)",
+    aicheck_id_mismatch_diff1: " (فرق رقم واحد، ممكن يكون خطأ في القراءة - راجعه)",
     aicheck_name_ok: "الاسم في البطاقة: {name}",
     aicheck_name_diff: "الاسم في البطاقة ({idname}) مختلف عن اسم التسجيل ({regname})",
     aicheck_amount_missing: "مفيش إيصال.",
     aicheck_amount_not_receipt: "الصورة اللي اترفعت مش باينة إنها إيصال دفع.",
-    aicheck_amount_unclear: "المبلغ في الإيصال مش واضح، راجعيه بعينك.",
+    aicheck_amount_unclear: "المبلغ في الإيصال مش واضح، راجعه بعينك.",
     aicheck_amount_match: "المبلغ مطابق لسعر البرنامج ({cost} ج.م)",
     aicheck_amount_more: "المبلغ في الإيصال {amount} أكبر من سعر البرنامج {cost} ج.م",
     aicheck_amount_less: "المبلغ ناقص: الإيصال {amount} - وسعر البرنامج {cost} ج.م",
@@ -1167,10 +1167,10 @@ const translations = {
     aicheck_checking: "بيتم فحص البطاقة والإيصال تلقائيًا...",
     aicheck_failed: "الفحص التلقائي ماشتغلش: {error}",
     aicheck_receipt_date: "تاريخ التحويل في الإيصال: {date}",
-    aicheck_cost_changed: "سعر البرنامج اتغيّر من وقت الفحص (كان {cost}) - اعملي إعادة فحص.",
+    aicheck_cost_changed: "سعر البرنامج اتغيّر من وقت الفحص (كان {cost}) - اعمل إعادة فحص.",
     aicheck_title: "الفحص التلقائي",
     aicheck_not_checked_yet: "لسه ما اتفحصش.",
-    aicheck_disclaimer: "الفحص مساعد بس - اتأكدي من وصول المبلغ في كشف الحساب قبل القبول.",
+    aicheck_disclaimer: "الفحص مساعد بس - لازم التأكد من وصول المبلغ في كشف الحساب قبل القبول.",
     btn_recheck: "إعادة الفحص",
     err_unknown: "خطأ غير معروف",
     no_requests_yet: "لسه مفيش طلبات اشتراك على البرنامج ده.",
@@ -1189,10 +1189,10 @@ const translations = {
     btn_unlock: "إلغاء القفل",
     btn_lock_manual: "قفل الوصول يدويًا",
     status_suggesting_syllabus: "بيتم اقتراح سيلابس...",
-    status_syllabus_suggested: "تم اقتراح السيلابس، تقدري تعدّليه قبل ما تبني المحتوى.",
-    err_syllabus_suggest_fail: "حصلت مشكلة في اقتراح السيلابس، جربي تاني.",
-    alert_build_in_progress: "في بناء مادة علمية شغال دلوقتي لبرنامج تاني (ممكن يكون شغال في الخلفية من غير ما تلاحظي). استني لحد ما يخلص الأول قبل ما تبدئي بناء تاني — لو الاتنين اشتغلوا مع بعض هيضربوا حد الطلبات المسموح بيه من جوجل في الدقيقة، وده اللي بيسبب فشل الوحدات.",
-    alert_write_syllabus_first: "اكتبي السيلابس الأول (أو استخدمي زرار الاقتراح)",
+    status_syllabus_suggested: "تم اقتراح السيلابس، تقدر تعدّله قبل ما تبني المحتوى.",
+    err_syllabus_suggest_fail: "حصلت مشكلة في اقتراح السيلابس، جرب تاني.",
+    alert_build_in_progress: "في بناء مادة علمية شغال دلوقتي لبرنامج تاني (ممكن يكون شغال في الخلفية من غير ما تلاحظ). استنى لحد ما يخلص الأول قبل ما تبدأ بناء تاني — لو الاتنين اشتغلوا مع بعض هيضربوا حد الطلبات المسموح بيه من جوجل في الدقيقة، وده اللي بيسبب فشل الوحدات.",
+    alert_write_syllabus_first: "اكتب السيلابس الأول (أو استخدم زرار الاقتراح)",
     confirm_rebuild_modules: "في وحدات موجودة بالفعل. أي وحدة نجحت قبل كده هتفضل زي ما هي، وهيتم بناء الوحدات الناقصة/الفاضية بس من جديد. تكملي؟",
     status_writing_module_wait: "بيتم كتابة المادة العلمية للوحدة {i} من {total}: {topic}... (بنستنى شوية الأول عشان منضربش حد الطلبات)",
     status_writing_module: "بيتم كتابة المادة العلمية للوحدة {i} من {total}: {topic}...",
@@ -1201,37 +1201,37 @@ const translations = {
     status_fetching_media: "بيتم جلب صورة{media} للوحدة {i} من {total}: {title}...",
     media_and_video: " وفيديو",
     note_reused_modules: "({count} منهم كانوا مبنيين بنجاح من قبل، فاتحفظوا زي ما هما من غير إعادة بناء).",
-    status_build_partial: "⚠️ تم بناء {built} وحدة من {total}{reusedNote} لكن {failedCount} وحدة لسه فاضية بعد محاولتين: {details}. جربي تدوسي \"ابني المادة العلمية\" تاني بعد شوية (هيبني الوحدات الناقصة بس، مش كل حاجة من الأول).",
-    status_build_complete: "✅ تم بناء كل الوحدات ({total}) وحفظها بالكامل!{reusedNote} تقدري تعدّلي أي وحدة أو تضيفي أسئلة اختبار من \"وحدات البرنامج\" تحت.",
-    alert_process_running: "في عملية شغالة دلوقتي على البرنامج ده (بناء مادة علمية أو جلب صور). استني لحد ما تخلص الأول.",
+    status_build_partial: "⚠️ تم بناء {built} وحدة من {total}{reusedNote} لكن {failedCount} وحدة لسه فاضية بعد محاولتين: {details}. جرب تدوس \"ابني المادة العلمية\" تاني بعد شوية (هيبني الوحدات الناقصة بس، مش كل حاجة من الأول).",
+    status_build_complete: "✅ تم بناء كل الوحدات ({total}) وحفظها بالكامل!{reusedNote} تقدر تعدّل أي وحدة أو تضيف أسئلة اختبار من \"وحدات البرنامج\" تحت.",
+    alert_process_running: "في عملية شغالة دلوقتي على البرنامج ده (بناء مادة علمية أو جلب صور). استنى لحد ما تخلص الأول.",
     alert_all_units_have_images: "كل الوحدات في البرنامج ده عندها صورة بالفعل، مفيش وحدات ناقصة صورة.",
     confirm_fetch_images: "هيتم جلب صورة توضيحية لـ {count} وحدة مفيهاش صورة حالياً. متأكدة إنك عايزة تكملي؟",
     status_fetching_image_for_unit: "بيتم جلب صورة للوحدة {i} من {total}: {title}...",
-    status_images_partial: "✅ اتجابت صور لـ {done} وحدة من {total}. {missing} وحدة مالقيناش لها صورة مناسبة (ممكن يكون اسم الوحدة غريب على مصادر الصور المجانية)، جربي تحطيلها صورة يدوي من حقل \"رابط الصورة\" في تعديل الوحدة.",
+    status_images_partial: "✅ اتجابت صور لـ {done} وحدة من {total}. {missing} وحدة مالقيناش لها صورة مناسبة (ممكن يكون اسم الوحدة غريب على مصادر الصور المجانية)، جرب تحطلها صورة يدوي من حقل \"رابط الصورة\" في تعديل الوحدة.",
     status_images_complete: "✅ اتجابت صور لكل الوحدات اللي كانت ناقصة ({done})!",
     alert_admin_pw_changed: "اتغيرت كلمة سر المحاضر.",
-    err_cert_create_fail: "حصلت مشكلة في إنشاء الشهادة، جربي تاني.",
-    err_pdf_create_fail: "حصلت مشكلة في إنشاء الـ PDF، جربي تاني.",
-    alert_program_pdf_partial: "تم تنزيل الملف، لكن {count} وحدة اتصفّت من التصدير بسبب مشكلة في عرضها: {titles}. جربي تنزّليها لوحدها من صفحة الوحدة.",
-    err_fetch_trainees_fail: "مقدرناش نجيب بيانات المتدربين. لو أول مرة، اتأكدي إن حساب المدرب متسجل صح في Firebase Authentication وإن قواعد الحماية (Firestore Rules) بتاعة \"trainees\" بتسمحله بالقراءة.",
-    service_paused_msg: "الخدمة موقوفة مؤقتًا على الجهة اللي انتي مسجلة معاها. برجاء التواصل مع الجهة المسؤولة عن تدريبك.",
-    err_tts_not_supported: "المتصفح ده مش بيدعم النطق الصوتي، جربي كروم على الموبايل أو الكمبيوتر.",
-    err_voice_still_loading: "صوت المتصفح على الجهاز ده لسه بيتحمّل أو مش جاهز. جربي تدوسي على زر الاستماع تاني بعد شوية.",
-    err_no_voice_available: "الجهاز ده مفيهوش أي صوت متاح للمتصفح خالص، فمش هيقدر ينطق. جربي متصفح تاني زي Chrome أو Edge.",
-    err_no_arabic_voice: "الجهاز ده مفيهوش صوت عربي مثبت، فهيتكلم مؤقتًا بصوت تاني متاح لحد ما يتثبت صوت عربي.\n\nعلى ويندوز: من إعدادات اللغة (Language settings) ضيفي \"العربية\" وفعّلي خاصية \"Speech\"، أو جربي متصفح Microsoft Edge لأنه بيجيب أصوات عربية أونلاين تلقائي.",
-    err_azure_tts_fail: "صوت Azure مش شغال دلوقتي، فبيتشغل صوت المتصفح الاحتياطي بدل منه.\n\nسبب الخطأ: {reason}\n\nراجعي المفتاح (API Key) والـ Region في \"⚙️ صوت AI\".",
-    err_elevenlabs_tts_fail: "صوت ElevenLabs مش شغال دلوقتي، فبيتشغل صوت المتصفح الاحتياطي بدل منه.\n\nسبب الخطأ: {reason}\n\nراجعي المفتاح (API Key) والصوت في \"⚙️ صوت AI\".",
+    err_cert_create_fail: "حصلت مشكلة في إنشاء الشهادة، جرب تاني.",
+    err_pdf_create_fail: "حصلت مشكلة في إنشاء الـ PDF، جرب تاني.",
+    alert_program_pdf_partial: "تم تنزيل الملف، لكن {count} وحدة اتصفّت من التصدير بسبب مشكلة في عرضها: {titles}. جرب تنزّلها لوحدها من صفحة الوحدة.",
+    err_fetch_trainees_fail: "مقدرناش نجيب بيانات المتدربين. لو أول مرة، اتأكد إن حساب المدرب متسجل صح في Firebase Authentication وإن قواعد الحماية (Firestore Rules) بتاعة \"trainees\" بتسمحله بالقراءة.",
+    service_paused_msg: "الخدمة موقوفة مؤقتًا على الجهة اللي انت مسجلة معاها. برجاء التواصل مع الجهة المسؤولة عن تدريبك.",
+    err_tts_not_supported: "المتصفح ده مش بيدعم النطق الصوتي، جرب كروم على الموبايل أو الكمبيوتر.",
+    err_voice_still_loading: "صوت المتصفح على الجهاز ده لسه بيتحمّل أو مش جاهز. جرب تدوس على زر الاستماع تاني بعد شوية.",
+    err_no_voice_available: "الجهاز ده مفيهوش أي صوت متاح للمتصفح خالص، فمش هيقدر ينطق. جرب متصفح تاني زي Chrome أو Edge.",
+    err_no_arabic_voice: "الجهاز ده مفيهوش صوت عربي مثبت، فهيتكلم مؤقتًا بصوت تاني متاح لحد ما يتثبت صوت عربي.\n\nعلى ويندوز: من إعدادات اللغة (Language settings) ضيف \"العربية\" وفعّل خاصية \"Speech\"، أو جرب متصفح Microsoft Edge لأنه بيجيب أصوات عربية أونلاين تلقائي.",
+    err_azure_tts_fail: "صوت Azure مش شغال دلوقتي، فبيتشغل صوت المتصفح الاحتياطي بدل منه.\n\nسبب الخطأ: {reason}\n\nراجع المفتاح (API Key) والـ Region في \"⚙️ صوت AI\".",
+    err_elevenlabs_tts_fail: "صوت ElevenLabs مش شغال دلوقتي، فبيتشغل صوت المتصفح الاحتياطي بدل منه.\n\nسبب الخطأ: {reason}\n\nراجع المفتاح (API Key) والصوت في \"⚙️ صوت AI\".",
     prompt_trainer_email: "إيميل حساب المدرب في Firebase:",
     prompt_trainer_password: "كلمة سر حساب المدرب:",
     err_trainer_login_fail: "الإيميل أو كلمة السر غلط، أو حساب المدرب لسه مش متظبط في Firebase Authentication.",
-    ios_install_instructions: "لتثبيت المنصة على آيفون/آيباد:\n1) افتحي المنصة من متصفح Safari.\n2) دوسي على زرار المشاركة (Share) تحت في نص الشاشة.\n3) اختاري \"إضافة إلى الشاشة الرئيسية\" (Add to Home Screen).\n4) دوسي \"إضافة\" في الأعلى.\nهتلاقي أيقونة المنصة على شاشة موبايلك زي أي تطبيق تاني.",
+    ios_install_instructions: "لتثبيت المنصة على آيفون/آيباد:\n1) افتح المنصة من متصفح Safari.\n2) دوس على زرار المشاركة (Share) تحت في نص الشاشة.\n3) اختار \"إضافة إلى الشاشة الرئيسية\" (Add to Home Screen).\n4) دوس \"إضافة\" في الأعلى.\nهتلاقي أيقونة المنصة على شاشة موبايلك زي أي تطبيق تاني.",
     ios_install_btn_label: "إزاي أثبّت التطبيق؟",
-    err_account_not_linked_org: "الحساب ده مش مربوط بأي عميل معروف على المنصة. تواصلي مع STCE.",
+    err_account_not_linked_org: "الحساب ده مش مربوط بأي عميل معروف على المنصة. تواصل مع STCE.",
     err_org_subscription_paused: "تم إيقاف الاشتراك في المنصة لهذه الجهة. تواصلوا مع STCE لتفعيله تاني.",
-    err_mic_not_allowed: "المتصفح مش مسموحله يستخدم المايك. من إعدادات الموقع (اضغطي على أيقونة القفل جنب رابط الموقع) فعّلي إذن \"Microphone\"، وتأكدي كمان إن الويندوز مسموح فيه للمتصفح يستخدم المايك من: Settings > Privacy & security > Microphone.",
-    err_mic_service_not_allowed: "المتصفح مش مسموحله يستخدم المايك. من إعدادات الموقع (اضغطي على أيقونة القفل جنب رابط الموقع) فعّلي إذن \"Microphone\".",
-    err_mic_no_capture: "مفيش مايك متوصل أو شغال على الجهاز ده. اتأكدي إن فيه مايك موصّل ومش متعطل من إعدادات الويندوز.",
-    err_mic_network: "خاصية التعرف على الصوت محتاجة اتصال إنترنت شغال عشان تبعت الصوت وتترجمه. اتأكدي من الإنترنت وجربي تاني.",
+    err_mic_not_allowed: "المتصفح مش مسموحله يستخدم المايك. من إعدادات الموقع (اضغط على أيقونة القفل جنب رابط الموقع) فعّل إذن \"Microphone\"، وتأكد كمان إن الويندوز مسموح فيه للمتصفح يستخدم المايك من: Settings > Privacy & security > Microphone.",
+    err_mic_service_not_allowed: "المتصفح مش مسموحله يستخدم المايك. من إعدادات الموقع (اضغط على أيقونة القفل جنب رابط الموقع) فعّل إذن \"Microphone\".",
+    err_mic_no_capture: "مفيش مايك متوصل أو شغال على الجهاز ده. اتأكد إن فيه مايك موصّل ومش متعطل من إعدادات الويندوز.",
+    err_mic_network: "خاصية التعرف على الصوت محتاجة اتصال إنترنت شغال عشان تبعت الصوت وتترجمه. اتأكد من الإنترنت وجرب تاني.",
     err_mic_generic: "حصلت مشكلة في المايك: {error}",
     nid_reason_not_14: "الرقم مش 14 رقم",
     nid_reason_bad_century: "أول رقم لازم يكون 2 أو 3",
@@ -1242,41 +1242,41 @@ const translations = {
     err_ai_no_reply: "الذكاء الاصطناعي لم يرجّع رد",
     page_title: "STCE — منصة التدريب",
     step3_translate_title: "الخطوة 3: ترجمة البرنامج بالذكاء الاصطناعي (اختياري)",
-    step3_translate_hint: "بتنشئ نسخة إنجليزية كاملة من البرنامج (العنوان، السيلابس، كل الوحدات، والاختبارات) كبرنامج جديد منفصل تمامًا، من غير ما تغيّر أي حاجة في البرنامج الأصلي. راجعي النسخة المترجمة وعدّليها قبل ما تنشريها للمتدربين.",
+    step3_translate_hint: "بتنشئ نسخة إنجليزية كاملة من البرنامج (العنوان، السيلابس، كل الوحدات، والاختبارات) كبرنامج جديد منفصل تمامًا، من غير ما تغيّر أي حاجة في البرنامج الأصلي. راجع النسخة المترجمة وعدّلها قبل ما تنشرها للمتدربين.",
     btn_translate_program: "🌐 ترجمة البرنامج بالذكاء الاصطناعي",
-    alert_translate_no_content: "لازم تبني محتوى الوحدات أولاً (الخطوة 2) قبل ما تقدري تترجمي البرنامج.",
-    confirm_translate_program: "هيتم إنشاء نسخة إنجليزية جديدة ومنفصلة من البرنامج (العنوان + السيلابس + كل الوحدات + الاختبارات)، والبرنامج الأصلي هيفضل زي ما هو من غير أي تغيير. العملية ممكن تاخد وقت حسب عدد الوحدات. تحبي تستمري؟",
+    alert_translate_no_content: "لازم تبني محتوى الوحدات أولاً (الخطوة 2) قبل ما تقدر تترجم البرنامج.",
+    confirm_translate_program: "هيتم إنشاء نسخة إنجليزية جديدة ومنفصلة من البرنامج (العنوان + السيلابس + كل الوحدات + الاختبارات)، والبرنامج الأصلي هيفضل زي ما هو من غير أي تغيير. العملية ممكن تاخد وقت حسب عدد الوحدات. تحب تستمري؟",
     status_translate_title: "⏳ بتترجم عنوان البرنامج...",
     status_translate_syllabus: "⏳ بتترجم السيلابس...",
     status_translate_module: "⏳ جاري ترجمة الوحدة {i} من {total}: \"{title}\"...",
-    status_translate_complete: "✅ اكتملت الترجمة: {done} من {total} وحدة. تم إنشاؤها كبرنامج جديد منفصل، راجعي المحتوى وعدّلي فيه لو احتاج الأمر قبل نشره.",
-    status_translate_partial: "⚠️ اكتملت الترجمة: {done} من {total} وحدة. فشلت ترجمة {count} وحدة وبقيت بالعربي مؤقتًا: {details}. دوستي على زرار الترجمة تاني لنفس البرنامج عشان تحاولي تترجمي بس الوحدات اللي فشلت.",
-    err_translate_fail: "حصلت مشكلة غير متوقعة أثناء ترجمة البرنامج. جربي تاني، ولو المشكلة استمرت تواصلي مع STCE.",
-    status_translate_module_failed: "❌ فشلت ترجمة الوحدة {i} من {total}: \"{title}\". (هتفضل بالعربي مؤقتًا، وهتتترجم تلقائيًا تاني لو دوستي على الزرار من جديد)",
+    status_translate_complete: "✅ اكتملت الترجمة: {done} من {total} وحدة. تم إنشاؤها كبرنامج جديد منفصل، راجع المحتوى وعدّل فيه لو احتاج الأمر قبل نشره.",
+    status_translate_partial: "⚠️ اكتملت الترجمة: {done} من {total} وحدة. فشلت ترجمة {count} وحدة وبقيت بالعربي مؤقتًا: {details}. دوست على زرار الترجمة تاني لنفس البرنامج عشان تحاول تترجم بس الوحدات اللي فشلت.",
+    err_translate_fail: "حصلت مشكلة غير متوقعة أثناء ترجمة البرنامج. جرب تاني، ولو المشكلة استمرت تواصل مع STCE.",
+    status_translate_module_failed: "❌ فشلت ترجمة الوحدة {i} من {total}: \"{title}\". (هتفضل بالعربي مؤقتًا، وهتتترجم تلقائيًا تاني لو دوست على الزرار من جديد)",
     status_translate_progress: "✅ تمت ترجمة {done} من {total} وحدة.",
     status_translate_resume_announce: "📍 فيه ترجمة سابقة لنفس البرنامج لسه مكملتش. تمت ترجمة {done} من {total} وحدة فعلاً، جاري استكمال الباقي من غير إعادة ترجمة اللي خلص صح...",
-    confirm_resume_translation: "فيه نسخة إنجليزية من البرنامج ده بدأت الترجمة قبل كده ولسه متكملتش ({done} من {total} وحدة خلصت). هيتم استكمال الترجمة من حيث توقفت من غير إعادة ترجمة الوحدات اللي خلصت صح. تحبي تستمري؟",
+    confirm_resume_translation: "فيه نسخة إنجليزية من البرنامج ده بدأت الترجمة قبل كده ولسه متكملتش ({done} من {total} وحدة خلصت). هيتم استكمال الترجمة من حيث توقفت من غير إعادة ترجمة الوحدات اللي خلصت صح. تحب تستمري؟",
     btn_remove_option: "حذف هذا الاختيار",
     nav_groupid_dryrun: "🔍 معاينة Group ID",
     nav_lab3d: "🧪 معمل العرض ثلاثي الأبعاد (تجريبي)",
     lab3d_title: "معمل العرض ثلاثي الأبعاد — مشهد تجريبي",
     lab3d_disclaimer: "ده مشهد تجريبي منفصل تمامًا، لسه مش مربوط بأي كورس أو محتوى حقيقي، ومش ظاهر للمتدربين خالص — السوبر أدمن بس اللي يشوفه هنا كتجربة.",
     lab3d_loading: "جاري تحميل المشهد التجريبي...",
-    lab3d_fail: "تعذّر تحميل المشهد ثلاثي الأبعاد. جرّبي تاني أو أبلغي الدعم الفني.",
+    lab3d_fail: "تعذّر تحميل المشهد ثلاثي الأبعاد. جرّب تاني أو أبلغ الدعم الفني.",
     nav_livevoice: "🎙️ الصوت الحي (تجريبي)",
     livevoice_title: "الصوت الحي — محادثة تجريبية",
-    livevoice_disclaimer: "ده اختبار تجريبي منفصل تمامًا لميزة المحادثة الصوتية الحية، مش مربوط بأي شاشة متدرب أو كورس حقيقي، وغير ظاهر إلا للسوبر أدمن. بيستخدم الميكروفون بتاعك فقط لما تدوسي ابدأ، ومحتاج اتصال إنترنت جيد.",
+    livevoice_disclaimer: "ده اختبار تجريبي منفصل تمامًا لميزة المحادثة الصوتية الحية، مش مربوط بأي شاشة متدرب أو كورس حقيقي، وغير ظاهر إلا للسوبر أدمن. بيستخدم الميكروفون بتاعك فقط لما تدوس ابدأ، ومحتاج اتصال إنترنت جيد.",
     livevoice_start_btn: "🎙️ ابدأ المحادثة الصوتية",
     livevoice_stop_btn: "⏹️ إنهاء المحادثة",
-    livevoice_status_idle: "جاهز. دوسي ابدأ المحادثة عشان تتكلمي مع المساعد الذكي صوتيًا.",
+    livevoice_status_idle: "جاهز. دوس ابدأ المحادثة عشان تتكلم مع المساعد الذكي صوتيًا.",
     livevoice_status_connecting: "⏳ جاري الاتصال بخدمة الصوت الحي...",
     livevoice_status_mic_permission: "⏳ محتاجين إذن استخدام الميكروفون من المتصفح...",
-    livevoice_status_listening: "🎙️ بيسمعك دلوقتي... اتكلمي بشكل طبيعي.",
+    livevoice_status_listening: "🎙️ بيسمعك دلوقتي... اتكلم بشكل طبيعي.",
     livevoice_status_speaking: "🔊 المساعد بيرد...",
     livevoice_status_stopped: "⏹️ المحادثة اتقفلت.",
-    livevoice_err_mic_denied: "❌ تم رفض إذن الميكروفون. لازم تسمحي باستخدام الميكروفون من إعدادات المتصفح عشان تستخدمي الميزة دي.",
-    livevoice_err_connection: "❌ فشل الاتصال بخدمة الصوت الحي. جربي تاني، ولو المشكلة استمرت أبلغي الدعم الفني.",
-    livevoice_err_not_supported: "❌ المتصفح ده مش بيدعم تسجيل الصوت. جربي متصفح تاني (Chrome أو Edge الحديث).",
+    livevoice_err_mic_denied: "❌ تم رفض إذن الميكروفون. لازم تسمح باستخدام الميكروفون من إعدادات المتصفح عشان تستخدم الميزة دي.",
+    livevoice_err_connection: "❌ فشل الاتصال بخدمة الصوت الحي. جرب تاني، ولو المشكلة استمرت أبلغ الدعم الفني.",
+    livevoice_err_not_supported: "❌ المتصفح ده مش بيدعم تسجيل الصوت. جرب متصفح تاني (Chrome أو Edge الحديث).",
     btn_view_3d_model: "🧊 عرض الموديل 3D",
     groupid_dryrun_title: "معاينة Group ID (قراءة فقط — بدون أي تعديل)",
     groupid_dryrun_disclaimer: "هذه محاكاة قراءة فقط. لم يتم ولن يتم كتابة أي شيء في Firestore، ولم يتغيّر أي id لأي برنامج أو وحدة أو سؤال أو طلب.",
@@ -1307,7 +1307,7 @@ const translations = {
     anomaly_large_group: "المجموعة المقترحة لهذا الـgroupId تضم {n} برامج، أكثر من المتوقع (أصل + ترجمة واحدة): {ids}",
     groupid_dryrun_footer_note: "تذكير: هذه الشاشة للمعاينة فقط في هذه المرحلة. لن يتم إضافة groupId فعليًا إلى Firestore ولن تتغير أي بيانات إلا بعد مراجعتك والموافقة على مرحلة Migration منفصلة.",
     groupid_delete_check_header: "فحص أمان حذف برنامج (DRY RUN — بدون حذف فعلي)",
-    groupid_delete_check_hint: "ادخلي ID البرنامج اللي عايزة تتأكدي إن حذفه آمن، ودوسي فحص. العملية دي قراءة فقط، مفيش أي حذف أو تعديل بيحصل.",
+    groupid_delete_check_hint: "ادخل ID البرنامج اللي عايزة تتأكد إن حذفه آمن، ودوس فحص. العملية دي قراءة فقط، مفيش أي حذف أو تعديل بيحصل.",
     groupid_delete_check_placeholder: "مثال: bmdewxj",
     btn_groupid_delete_check: "فحص أمان الحذف",
     groupid_delete_check_not_found: "مفيش برنامج بالـID ده في البرامج المحمّلة حاليًا (يبقى إما مش موجود أو اتحذف قبل كده).",
@@ -1321,19 +1321,19 @@ const translations = {
     groupid_delete_check_safe_yes: "✅ الحذف يبدو آمنًا تمامًا من ناحية البيانات: لا توجد طلبات تسجيل، ولا بيانات تقدم، ولا برامج أخرى تعتمد على هذا الـID.",
     groupid_delete_check_safe_no: "⚠️ الحذف غير آمن حاليًا: توجد بيانات مرتبطة بهذا الـID (طلبات تسجيل و/أو تقدم و/أو برامج أخرى تشير إليه) ستُفقد إذا تم الحذف.",
     merge_section_header: "🔀 دمج ترجمة برنامج داخل البرنامج الأصلي (قبل الحذف الآمن)",
-    merge_section_hint: "انقلي الترجمة الإنجليزية من برنامج منفصل (زي Electrical Installations) جوه وحدات البرنامج الأصلي نفسه، قبل ما تحذفي البرنامج المنفصل. دوستي \"معاينة\" الأول (قراءة فقط، بدون أي كتابة)، وبعدين لو النتيجة نضيفة هيظهرلك زرار التنفيذ الفعلي، وبعده زرار الحذف.",
+    merge_section_hint: "انقل الترجمة الإنجليزية من برنامج منفصل (زي Electrical Installations) جوه وحدات البرنامج الأصلي نفسه، قبل ما تحذف البرنامج المنفصل. دوست \"معاينة\" الأول (قراءة فقط، بدون أي كتابة)، وبعدين لو النتيجة نضيفة هيظهرلك زرار التنفيذ الفعلي، وبعده زرار الحذف.",
     merge_original_id_label: "ID البرنامج الأصلي (اللي هتتضاف له الترجمة)",
     merge_original_id_placeholder: "مثال: 2lsslm8",
     merge_translated_id_label: "ID البرنامج المترجم (اللي هتتنقل منه الترجمة)",
     btn_merge_preview: "معاينة الدمج (DRY RUN — بدون أي كتابة)",
-    merge_not_found: "واحد من الـIDين مش موجود في البرامج المحمّلة حاليًا. تأكدي من الـIDs وحاولي تاني.",
+    merge_not_found: "واحد من الـIDين مش موجود في البرامج المحمّلة حاليًا. تأكد من الـIDs وحاول تاني.",
     merge_report_title: "نتيجة المعاينة",
     merge_report_modules: "الوحدات: {migrated} من {total} ليها ترجمة واتنقلت بنجاح",
     merge_report_modules_missing: "وحدات من غير ترجمة (هتفضل عربي بس حاليًا): {list}",
     merge_report_questions: "عدد الأسئلة والاختيارات المنقولة: {n}",
     merge_report_questions_missing: "عدد الأسئلة من غير ترجمة (هتفضل عربي بس حاليًا): {n}",
     merge_report_all_clean: "✅ كل الوحدات والأسئلة ليها ترجمة كاملة — جاهزة للتنفيذ الفعلي.",
-    merge_report_not_clean: "⚠️ فيه عناصر من غير ترجمة. مش هيظهر زرار التنفيذ دلوقتي — كمّلي ترجمة العناصر الناقصة الأول (بزرار الترجمة على البرنامج الأصلي، هيكمل بس الناقص) وبعدين اعملي معاينة تاني.",
+    merge_report_not_clean: "⚠️ فيه عناصر من غير ترجمة. مش هيظهر زرار التنفيذ دلوقتي — كمّل ترجمة العناصر الناقصة الأول (بزرار الترجمة على البرنامج الأصلي، هيكمل بس الناقص) وبعدين اعمل معاينة تاني.",
     btn_merge_commit: "تنفيذ الدمج الفعلي الآن (كتابة في Firestore)",
     confirm_merge_commit: "هيتم تعديل البرنامج الأصلي (ID: {id}) بإضافة الترجمة الإنجليزية لوحداته. البرنامج الأصلي نفسه والمتدربين وطلباتهم لن يتأثروا إطلاقًا، ولن يتغيّر أي id. متأكدة إنك عايزة تكملي؟",
     merge_commit_done: "✅ تم تنفيذ الدمج وحفظه في Firestore بنجاح.",
@@ -1342,10 +1342,10 @@ const translations = {
     merge_verify_completion_ok: "✅ لم يتغيّر أي id (لا البرنامج ولا الوحدات ولا الأسئلة)، فنظام progress/completion والشهادة (المعتمدين على programId:moduleId) سيستمران في العمل بشكل صحيح تمامًا دون أي تأثير.",
     merge_ready_for_delete: "كل الفحوصات سليمة. يمكنك الآن حذف برنامج الترجمة المنفصل بأمان.",
     btn_delete_translated_now: "🗑️ حذف برنامج الترجمة نهائيًا (ID: {id})",
-    confirm_delete_translated: "هل أنت متأكدة تمامًا؟ سيتم حذف البرنامج (ID: {id}) نهائيًا من Firestore ولا يمكن التراجع عن هذا الحذف. تأكدي أولاً أن الدمج نجح وأن كل الترجمة انتقلت فعلاً.",
+    confirm_delete_translated: "هل أنت متأكدة تمامًا؟ سيتم حذف البرنامج (ID: {id}) نهائيًا من Firestore ولا يمكن التراجع عن هذا الحذف. تأكد أولاً أن الدمج نجح وأن كل الترجمة انتقلت فعلاً.",
     delete_translated_done: "✅ تم حذف برنامج الترجمة المنفصل نهائيًا.",
     danger_zone_header: "⚠️ منطقة الخطر",
-    danger_zone_delete_hint: "حذف البرنامج ده نهائي من قاعدة البيانات ومينفعش يتراجع عنه. شوفي البيانات المرتبطة بيه تحت قبل ما تقرري.",
+    danger_zone_delete_hint: "حذف البرنامج ده نهائي من قاعدة البيانات ومينفعش يتراجع عنه. شوف البيانات المرتبطة بيه تحت قبل ما تقرر.",
     btn_delete_program: "🗑️ حذف هذا البرنامج نهائيًا",
     confirm_delete_program: "هل أنت متأكدة تمامًا من حذف برنامج \"{title}\" نهائيًا؟ أي بيانات مرتبطة بيه (طلبات تسجيل أو سجلات تقدم) هتفضل موجودة من غير برنامج تتبعله، والبرنامج نفسه مش هينفع يترجع تاني.",
     delete_program_done: "✅ تم حذف البرنامج نهائيًا.",
@@ -1378,31 +1378,31 @@ const translations = {
     split_linked_safe_note: "✅ كل البيانات دي مرتبطة بـID البرنامج العربي نفسه، ومعرّفات الوحدات جواه — والعملية دي مش هتغيّر ولا واحد فيهم خالص، يعني مفيش أي فقدان أو نقل خاطئ محتمل.",
     split_linked_new_program_clean_note: "البرنامج الإنجليزي الجديد هيتولد فاضي تمامًا من طلبات التسجيل والتقدم والشهادات (برنامج جديد لسه محدش اشترك فيه) — ده طبيعي ومتوقع، مش نقل أو فقدان لبيانات موجودة.",
     split_verify_group_id: "تحقّق: Group ID المشترك بين النسختين = {id}.",
-    lecture_script_system: "أنتِ محاضرة خبيرة بتشرح لمتدربين وجهًا لوجه، مش بتقرأ عليهم نص مكتوب. مهمتك تاخدي المادة العلمية دي وتحوليها لكلام محاضرة حقيقي: تبسّطي الأفكار بأسلوبك، تربطي بينها بعبارات انتقالية طبيعية (\"طيب دلوقتي...\"، \"المهم هنا إن...\"، \"ليه ده مهم أصلاً؟\")، وتدّي أمثلة توضيحية لو مناسب.\nمهم جدًا: من غير أي عناوين أو نقاط أو رموز (زي • أو - أو أرقام)، لأن الكلام ده هيتقري بصوت مسموع مش هيتقرا بالعين — اكتبيه فقرات كلام متصل طبيعي بس.\nمتضيفيش أي معلومة مش موجودة في المادة الأصلية، وخليكي دقيقة علميًا 100%، بس اشرحيها بأسلوبك كمحاضرة مش بنفس صياغة النص الأصلي حرفيًا.\nاكتبي الشرح بالعربية الفصحى السليمة.",
-    lecture_script_user: "عنوان الوحدة: {title}\n\nالمادة العلمية المكتوبة (مرجعك للشرح، من غير ما تقريها زي ما هي):\n---\n{content}\n---\nاكتبي سكريبت المحاضرة الصوتية الكامل دلوقتي.",
+    lecture_script_system: "أنتِ محاضرة خبيرة بتشرح لمتدربين وجهًا لوجه، مش بتقرأ عليهم نص مكتوب. مهمتك تاخد المادة العلمية دي وتحولها لكلام محاضرة حقيقي: تبسّط الأفكار بأسلوبك، تربط بينها بعبارات انتقالية طبيعية (\"طيب دلوقتي...\"، \"المهم هنا إن...\"، \"ليه ده مهم أصلاً؟\")، وتدّي أمثلة توضيحية لو مناسب.\nمهم جدًا: من غير أي عناوين أو نقاط أو رموز (زي • أو - أو أرقام)، لأن الكلام ده هيتقري بصوت مسموع مش هيتقرا بالعين — اكتبه فقرات كلام متصل طبيعي بس.\nمتضيفيش أي معلومة مش موجودة في المادة الأصلية، وخليك دقيقة علميًا 100%، بس اشرحها بأسلوبك كمحاضرة مش بنفس صياغة النص الأصلي حرفيًا.\nاكتب الشرح بالعربية الفصحى السليمة.",
+    lecture_script_user: "عنوان الوحدة: {title}\n\nالمادة العلمية المكتوبة (مرجعك للشرح، من غير ما تقراها زي ما هي):\n---\n{content}\n---\nاكتب سكريبت المحاضرة الصوتية الكامل دلوقتي.",
     azure_voice_en_label: "الصوت الإنجليزي (بيتستخدم تلقائي لما الواجهة تكون إنجليزي)",
     azure_voice_en_andrew: "Andrew — رجالي، طبيعي وجذاب",
     azure_voice_en_ava: "Ava — حريمي، طبيعي وجذاب",
     azure_voice_en_guy: "Guy — رجالي محترف",
     azure_voice_en_jenny: "Jenny — حريمي محترف",
     azureVoiceNameEn_ph: "اسم الصوت، مثال: en-US-AndrewNeural",
-    err_no_english_voice: "مفيش صوت إنجليزي مثبت على الجهاز ده، هيتستخدم أقرب صوت متاح بدل منه. لصوت إنجليزي طبيعي ومحترف، فعّلي Azure أو ElevenLabs من إعدادات الصوت.",
+    err_no_english_voice: "مفيش صوت إنجليزي مثبت على الجهاز ده، هيتستخدم أقرب صوت متاح بدل منه. لصوت إنجليزي طبيعي ومحترف، فعّل Azure أو ElevenLabs من إعدادات الصوت.",
     btn_upload_module_content: "📄 رفع مادة علمية جاهزة",
     module_content_supported_files_hint: "الصيغ المدعومة: Word (docx)، PowerPoint (pptx)، PDF (نصي أو ممسوح ضوئيًا بالـOCR)، صورة (jpg/png بالـOCR)، نص عادي (txt, md).",
-    confirm_overwrite_content: "الوحدة فيها محتوى بالفعل. تستبدليه بالمحتوى الجديد من الملف؟",
+    confirm_overwrite_content: "الوحدة فيها محتوى بالفعل. تستبدله بالمحتوى الجديد من الملف؟",
     pptx_no_slides: "الملف ده مش عرض PowerPoint سليم، أو مفيهوش شرائح فيها نص.",
-    module_content_loaded_ok: "تم تحميل المادة العلمية من الملف. راجعيها كويس قبل ما تحفظي الوحدة.",
+    module_content_loaded_ok: "تم تحميل المادة العلمية من الملف. راجعها كويس قبل ما تحفظ الوحدة.",
     btn_upload_split_material: "📄 رفع مادة علمية وتقسيمها تلقائيًا لوحدات",
-    split_material_hint: "ارفعي ملف فيه مادة علمية لبرنامج كامل (Word / PowerPoint / PDF نصي أو ممسوح ضوئيًا / صورة / نص عادي أو md)، والذكاء الاصطناعي يحدد نقط التقسيم المناسبة لوحدات منطقية - من غير ما يغيّر كلمة واحدة من محتوى الملف الأصلي. بعد كده تقدري تراجعي وتعدّلي الوحدات المقترحة قبل إضافتها.",
+    split_material_hint: "ارفع ملف فيه مادة علمية لبرنامج كامل (Word / PowerPoint / PDF نصي أو ممسوح ضوئيًا / صورة / نص عادي أو md)، والذكاء الاصطناعي يحدد نقط التقسيم المناسبة لوحدات منطقية - من غير ما يغيّر كلمة واحدة من محتوى الملف الأصلي. بعد كده تقدر تراجع وتعدّل الوحدات المقترحة قبل إضافتها.",
     status_splitting_material: "⏳ جاري تحليل الملف وتحديد تقسيمه إلى وحدات بالذكاء الاصطناعي... قد يستغرق ده دقيقة أو أكتر حسب حجم الملف.",
-    err_split_failed: "تعذّر تقسيم الملف تلقائيًا. جرّبي تاني، أو استخدمي \"رفع مادة علمية جاهزة\" داخل وحدة واحدة بدل كده.",
-    split_preview_title: "راجعي الوحدات المقترحة قبل الإضافة",
-    split_preview_hint: "الذكاء الاصطناعي حدد نقط التقسيم بس - محتوى كل وحدة هنا هو نص الملف الأصلي حرفيًا من غير أي تلخيص أو تعديل. راجعي العناوين والمحتوى، عدّلي أو دمجي وحدة مع اللي قبلها أو استثنيها، وبعدين أكدي الإضافة.",
+    err_split_failed: "تعذّر تقسيم الملف تلقائيًا. جرّب تاني، أو استخدم \"رفع مادة علمية جاهزة\" داخل وحدة واحدة بدل كده.",
+    split_preview_title: "راجع الوحدات المقترحة قبل الإضافة",
+    split_preview_hint: "الذكاء الاصطناعي حدد نقط التقسيم بس - محتوى كل وحدة هنا هو نص الملف الأصلي حرفيًا من غير أي تلخيص أو تعديل. راجع العناوين والمحتوى، عدّل أو ادمج وحدة مع اللي قبلها أو استثنيها، وبعدين أكد الإضافة.",
     split_unit_number: "الوحدة المقترحة رقم {n}",
-    chk_include_unit: "ضمّي هذه الوحدة",
+    chk_include_unit: "ضم هذه الوحدة",
     btn_merge_up: "🔀 دمج مع الوحدة اللي قبلها",
     btn_confirm_split: "✔ تأكيد إضافة الوحدات",
-    alert_no_units_selected: "لازم تسيبي وحدة واحدة على الأقل متضمّنة قبل التأكيد.",
+    alert_no_units_selected: "لازم تسيب وحدة واحدة على الأقل متضمّنة قبل التأكيد.",
     status_split_added: "تمت إضافة {count} وحدة جديدة من الملف إلى البرنامج.",
   },
   en: {
@@ -3536,7 +3536,7 @@ function renderTraineeProgramMain(main){
         ${m.quiz.length ? `<button class="btn btn-ghost" id="startQuizBtn">${i18n('btn_start_quiz')}</button>` : ''}
         <button class="btn btn-ghost" id="speakBtn">${i18n('btn_listen_explain')}</button>
         <button class="btn btn-ghost" id="downloadPdfBtn">${i18n('btn_download_unit_pdf')}</button>
-        ${(typeof window.__stceModule3DGetTemplateKey === 'function' && window.__stceModule3DGetTemplateKey(localized(m.title, state.lang))) ? `<button class="btn btn-ghost" id="view3DBtn">${i18n('btn_view_3d_model')}</button>` : ''}
+        ${(typeof window.__stceModule3DGetTemplateKey === 'function' && window.__stceModule3DGetTemplateKey(localized(m.title, state.lang), m)) ? `<button class="btn btn-ghost" id="view3DBtn">${i18n('btn_view_3d_model')}</button>` : ''}
       </div>
     </div>`;
   stopAllSpeech();
@@ -3547,8 +3547,8 @@ function renderTraineeProgramMain(main){
     const view3DBtn = document.getElementById('view3DBtn');
     if(view3DBtn && typeof window.__stceModule3DOpen === 'function'){
       view3DBtn.addEventListener('click', () => {
-        const tplKey = window.__stceModule3DGetTemplateKey(localized(m.title, state.lang));
-        if(tplKey) window.__stceModule3DOpen(tplKey, localized(m.title, state.lang));
+        const tplKey = window.__stceModule3DGetTemplateKey(localized(m.title, state.lang), m);
+        if(tplKey) window.__stceModule3DOpen(tplKey, localized(m.title, state.lang), m);
       });
     }
   }catch(e){ console.error('module3d_button_wire_failed', e); }
@@ -5409,9 +5409,9 @@ async function confirmSplitPreview(){
 
 function renderMiniModuleList(el, p){
   if(!p.modules.length){ el.innerHTML = `<div class="hint">${i18n('no_units_yet_trainer')}</div>`; return; }
-  el.innerHTML = p.modules.map(m => `
+  el.innerHTML = `<div class="hint" style="margin:4px 0 8px;font-weight:600;">${state.lang === 'en' ? `Units: ${p.modules.length}` : `عدد الوحدات: ${p.modules.length}`}</div>` + p.modules.map((m, i) => `
     <div class="mini-module">
-      <span class="t">${escapeHtml(localized(m.title, state.lang))}</span>
+      <span class="t"><b style="display:inline-block;min-width:2.2em;color:#b8860b;">${i + 1}.</b> ${escapeHtml(localized(m.title, state.lang))}</span>
       <div class="row">
         <button class="btn btn-ghost edit-m-btn" data-mid="${m.id}">${i18n('btn_edit')}</button>
         <button class="btn btn-danger del-m-btn" data-mid="${m.id}" data-idx="${p.modules.indexOf(m)}">${i18n('btn_delete')}</button>
@@ -7038,7 +7038,7 @@ function textToLexicon(txt){
       if(status) status.textContent = `✓ اتحفظ القاموس (${list.length} كلمة).`;
     }catch(e){
       console.error('save lexicon failed', e);
-      if(status) status.textContent = 'ماقدرتش أحفظ القاموس. اتأكدي إنك داخلة بحساب STCE.';
+      if(status) status.textContent = 'ماقدرتش أحفظ القاموس. اتأكد إنك داخل بحساب STCE.';
     }finally{ saveBtn.disabled = false; }
   });
 })();
@@ -7483,12 +7483,12 @@ async function generateTtsCacheForProgram(){
   const useGemini = !!srcSel && srcSel.value === 'gemini';
   const g = geminiTtsConfig();
   const provider = useGemini ? 'gemini' : (tts.provider || (tts.azureKey && tts.azureRegion ? 'azure' : (tts.apiKey ? 'elevenlabs' : 'browser')));
-  if(useGemini && !g.voice){ say('اختاري صوت Gemini ودوسي «حفظ إعدادات Gemini» الأول.'); return; }
-  if(provider !== 'azure' && provider !== 'elevenlabs' && provider !== 'gemini'){ say('اختاري Azure أو ElevenLabs كمصدر صوت واحفظي الأول. صوت المتصفح مش بيتخزن.'); return; }
+  if(useGemini && !g.voice){ say('اختار صوت Gemini ودوس «حفظ إعدادات Gemini» الأول.'); return; }
+  if(provider !== 'azure' && provider !== 'elevenlabs' && provider !== 'gemini'){ say('اختار Azure أو ElevenLabs كمصدر صوت واحفظ الأول. صوت المتصفح مش بيتخزن.'); return; }
 
   const pid = document.getElementById('ttsCacheProgramSelect').value;
   const p = (state.programs || []).find(x => x.id === pid);
-  if(!p){ say('اختاري برنامج.'); return; }
+  if(!p){ say('اختار برنامج.'); return; }
 
   let token = await getTtsCacheToken();
   if(!token){
@@ -7543,7 +7543,7 @@ async function generateTtsCacheForProgram(){
         lastErr = `الخطأ عند «${stageName}»: ${String((e && e.message) || e).slice(0, 160)}`;
         if(e && e.status === 401){
           state.ttsCacheToken = null;
-          say('كلمة سر المخزن غلط. اتوقف التوليد. جربي تاني والصقي كلمة السر الصح.');
+          say('كلمة سر المخزن غلط. اتوقف التوليد. جرب تاني والصق كلمة السر الصح.');
           try{ await saveTtsCacheToken(''); }catch(e2){}
           return;
         }
@@ -7560,7 +7560,7 @@ async function generateTtsCacheForProgram(){
     }
     const mb = Math.round(bytes / 1048576 * 10) / 10;
     if(quotaHit){
-      say(`وقفت: خلص حد Gemini المجاني النهارده (10 طلبات في اليوم). اتخزن ${saved} وحدة (${mb} ميجا)، والأجزاء اللي اتولّدت من الوحدة الحالية محفوظة على جهازك` + (failed > 1 ? `، و${failed - 1} وحدة فشلت قبلها` : '') + `. دوسي توليد تاني بكرة على نفس البرنامج وهيكمّل من مكان ما وقف.` + (failed > 1 && lastPrevErr ? ' — ' + lastPrevErr : ''));
+      say(`وقفت: خلص حد Gemini المجاني النهارده (10 طلبات في اليوم). اتخزن ${saved} وحدة (${mb} ميجا)، والأجزاء اللي اتولّدت من الوحدة الحالية محفوظة على جهازك` + (failed > 1 ? `، و${failed - 1} وحدة فشلت قبلها` : '') + `. دوس توليد تاني بكرة على نفس البرنامج وهيكمّل من مكان ما وقف.` + (failed > 1 && lastPrevErr ? ' — ' + lastPrevErr : ''));
       return;
     }
     say(`خلصت: ${saved} وحدة اتخزنت (${mb} ميجا)، ${skipped} كانت محفوظة قبل كده أو فاضية، ${failed} فشلت.` + (lastErr ? ' — ' + lastErr : ''));
@@ -7599,7 +7599,7 @@ async function resolveGeminiVoice(typed){
   });
   if(saveBtn) saveBtn.addEventListener('click', async () => {
     const typed = vSel ? vSel.value.trim() : '';
-    if(!typed){ if(status) status.textContent = 'اكتبي اسم الصوت الأول.'; return; }
+    if(!typed){ if(status) status.textContent = 'اكتب اسم الصوت الأول.'; return; }
     saveBtn.disabled = true;
     if(status) status.textContent = 'بدوّر على الصوت…';
     let resolved = null;
@@ -7614,7 +7614,7 @@ async function resolveGeminiVoice(typed){
       if(status) status.textContent = `✓ اتحفظ: صوت ${val.voiceName}` + (val.voice !== val.voiceName ? ` (${val.voice})` : '') + '.';
     }catch(e){
       console.error('save geminiTts failed', e);
-      if(status) status.textContent = 'ماقدرتش أحفظ. اتأكدي إنك داخلة بحساب STCE.';
+      if(status) status.textContent = 'ماقدرتش أحفظ. اتأكد إنك داخل بحساب STCE.';
     }finally{ saveBtn.disabled = false; }
   });
 })();
@@ -9988,5 +9988,6 @@ window.addEventListener('appinstalled', () => {
 </script>
 <script type="module" src="stce-3d.js"></script>
 <script type="module" src="stce-3d-elec.js"></script>
+<script type="module" src="stce-3d-elx.js"></script>
 </body>
 </html>
