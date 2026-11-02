@@ -50,6 +50,7 @@ root3d.innerHTML = `
           <div class="e3d-dots" id="e3d-dots"></div>
           <button class="e3d-btn e3d-primary" id="e3d-nextBtn" type="button">التالي</button>
         </div>
+        <button class="e3d-btn e3d-play" id="e3d-playBtn" type="button">▶ شغّل العملية كلها</button>
       </section>
       <section class="e3d-card"><h4>القطع</h4><ol class="e3d-parts" id="e3d-parts"></ol></section>
     </div>
@@ -85,6 +86,7 @@ const styleEl = document.createElement('style'); styleEl.textContent = `
 #e3d-root .e3d-btn{font:inherit;font-size:14px;cursor:pointer;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:10px;padding:6px 12px;white-space:nowrap}
 #e3d-root .e3d-btn:disabled{opacity:.4;cursor:default}
 #e3d-root .e3d-btn:focus-visible,#e3d-root .e3d-mk:focus-visible,#e3d-root .e3d-part:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+#e3d-root .e3d-play{width:100%;margin-top:10px;font-weight:700}
 #e3d-root .e3d-primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:700}
 #e3d-root .e3d-close{font-size:16px;padding:4px 12px}
 #e3d-root .e3d-phase{background:var(--mk-bg);border:1px solid var(--line);border-radius:10px;padding:5px 11px;font-size:13px;display:grid;line-height:1.45;white-space:nowrap}
@@ -2080,6 +2082,7 @@ function resize(){
 }
 
 function loadModel(id){
+  if(typeof autoStop === 'function') autoStop();
   const def = MODELS.find(m => m.id === id) || MODELS[0];
   if(current){ scene.remove(current.root); disposeTree(current.root); }
   current = def.build(); scene.add(current.root);
@@ -2139,7 +2142,8 @@ function buildDots(){
   });
 }
 
-function setStep(i){
+function setStep(i, auto){
+  if(!auto) autoStop();
   const steps = current.steps; stepIdx = Math.max(0, Math.min(steps.length - 1, i));
   const s = steps[stepIdx];
   $('stepNo').textContent = stepIdx + 1; $('stepCount').textContent = steps.length;
@@ -2155,6 +2159,14 @@ $('prevBtn').addEventListener('click', () => setStep(stepIdx - 1));
 $('runBtn').addEventListener('click', () => { const ec = current && current.engineCtl; if(ec) ec.setRunning(!ec.running); });
 $('speed').addEventListener('input', () => { const ec = current && current.engineCtl; if(ec) $('rpm').textContent = `${ec.setSpeed(+$('speed').value)} لفة في الدقيقة`; });
 $('nextBtn').addEventListener('click', () => setStep(stepIdx + 1));
+// تشغيل العملية كلها: الخطوات بتمشي لوحدها، وكل خطوة بتاخد وقت يكفي لقراية الشرح
+var autoOn = false, autoTimer = null;
+function LL(a, b){ return typeof L === 'function' ? L(a, b) : a; }
+function stepDur(s){ return Math.max(6000, Math.min(15000, String((s && s.text) || '').length * 48)); }
+function syncPlay(){ const b = $('playBtn'); if(b) b.textContent = autoOn ? LL('⏸ إيقاف التشغيل', '⏸ Pause') : LL('▶ شغّل العملية كلها', '▶ Play all steps'); }
+function autoStop(){ autoOn = false; clearTimeout(autoTimer); autoTimer = null; syncPlay(); }
+function autoNext(){ if(!autoOn || !current) return; if(stepIdx >= current.steps.length - 1){ autoStop(); return; } setStep(stepIdx + 1, true); autoTimer = setTimeout(autoNext, stepDur(current.steps[stepIdx])); }
+$('playBtn').addEventListener('click', () => { if(!current) return; if(autoOn){ autoStop(); return; } autoOn = true; if(stepIdx >= current.steps.length - 1) setStep(0, true); syncPlay(); autoTimer = setTimeout(autoNext, stepDur(current.steps[stepIdx])); });
 $('resetBtn').addEventListener('click', () => { userMoved = false; current.root.rotation.y = 0; fit(); controls.autoRotate = !reduceMotion && !current.sway; });
 
 // الدوس على قطعة في الموديل: لو ليها حركة (مفتاح، لمبة) تتنفّذ، غير كده تتحدد
@@ -2261,6 +2273,7 @@ function open3D(moduleTitle){
   return true;
 }
 function close3D(){
+  try{ autoStop(); }catch(e){}
   if(root3d.hidden) return;
   root3d.hidden = true; document.documentElement.style.overflow = '';
   if(renderer) renderer.setAnimationLoop(null);
