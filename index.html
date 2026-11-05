@@ -7524,7 +7524,27 @@ async function generateTtsCacheForProgram(){
       try{
         // لو سكريبت الشرح فشل يتولّد، بنسيب الوحدة دي من غير تخزين (المتدرب
         // ساعتها هيتولّد له سكريبت جديد بنص مختلف، فالتخزين مش هيفيد).
-        const scriptText = await getLectureScript(m);
+        // لو الذكاء الاصطناعي رفض كتابة نص الشرح عشان الزحمة أو حد الدقيقة، بنستنى
+        // ونجرب تاني (لحد 4 مرات) بدل ما نعدّي الوحدة على الفاضي. ولو فضل يرفض
+        // بعد كده، يبقى غالبًا حد اليوم خلص، فبنوقف التوليد كله ونقول كده.
+        const hadScript = !!(m.lectureScript && m.lectureScriptLang === state.lang);
+        let scriptText = null;
+        for(let attempt = 0; ; attempt++){
+          try{ scriptText = await getLectureScript(m); break; }
+          catch(se){
+            const busy = se && (se.kind === 'busy_final' || se.busy);
+            if(!busy) throw se;
+            if(attempt >= 4){
+              const mbB = Math.round(bytes / 1048576 * 10) / 10;
+              say(`اتوقف عند الوحدة ${i + 1} (${mTitle}): الذكاء الاصطناعي لسه رافض يكتب نص الشرح بعد 5 محاولات، فغالبًا حد اليوم خلص. اتخزن ${saved} وحدة (${mbB} ميجا) و${skipped} كانت محفوظة. جرب تاني بكره، والمتخزن مش هيتولّد تاني.`);
+              return;
+            }
+            const waitS = 30 * (attempt + 1);
+            for(let s2 = waitS; s2 > 0; s2--){ say(`(${i + 1}/${modules.length}) ${mTitle}… الذكاء الاصطناعي مزدحم، هنجرب تاني بعد ${s2} ثانية (محاولة ${attempt + 2} من 5)`); await new Promise(r => setTimeout(r, 1000)); }
+          }
+        }
+        // بعد ما يتكتب نص شرح جديد، نستنى شوية قبل اللي بعده عشان مانوصلش لحد الدقيقة.
+        if(!hadScript) await new Promise(r => setTimeout(r, 8000));
         const text = prepareSpeechText(scriptText);
         if(!text || !text.trim()){ skipped++; continue; }
         stage = 'key';
