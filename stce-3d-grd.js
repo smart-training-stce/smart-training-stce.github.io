@@ -42,7 +42,7 @@ root3d.innerHTML = `
     </div>
     <div class="g3d-side">
       <section class="g3d-card" aria-live="polite">
-        <div class="g3d-stepmeta">الخطوة <span id="g3d-stepNo">1</span> من <span id="g3d-stepCount">1</span></div>
+        <div id="g3d-unitNote" hidden style="background:#fff6dd;color:#1b1f26;border:1px solid #e8b94a;border-radius:10px;padding:8px 10px;margin-bottom:8px;font-size:13px"><span id="g3d-unitNoteTxt"></span> <button type="button" id="g3d-fullBtn" style="margin-top:6px;padding:6px 12px;border-radius:9px;border:1px solid #c9b98f;background:#fff;font:inherit;cursor:pointer"></button></div><div class="g3d-stepmeta">الخطوة <span id="g3d-stepNo">1</span> من <span id="g3d-stepCount">1</span></div>
         <h3 id="g3d-stepTitle"></h3>
         <p id="g3d-stepText"></p>
         <div class="g3d-stepnav">
@@ -4996,16 +4996,302 @@ function buildToolGrind(){
     }
   };
 }
+/* ================= التجليخ: موديلات منفصلة (عيّنة المقترح التاني) ================= */
+/* ---------- تسوية الحجر بالماسة ---------- */
+function buildGDress(){
+  const ctx = makeCtx(), { root, part } = ctx; root.add(elxBench());
+  const sg = makeSurfGrinder(); sg.group.position.set(0, 0, -.3); root.add(sg.group);
+  const wm = sg.wheel.children[0].material; const fresh = new THREE.Color(0xd8d2c4), glazed = new THREE.Color(0x6e6a62);
+  const holder = new THREE.Group(); holder.position.set(0, sg.CH, -.08); sg.table.add(holder); holder.add(at(box(.08, .05, .06, M(0x3a3f46, { m: .5 })), 0, .025, 0)); const dStem = new THREE.Group(); dStem.position.set(0, .05, 0); holder.add(dStem); dStem.add(at(cyl(.008, .008, .06, STEEL(), 10), 0, .03, 0)); dStem.add(at(new THREE.Mesh(new THREE.OctahedronGeometry(.009), M(0xffffff, { m: .1, r: .05 })), 0, .064, 0));
+  const ang = new THREE.Group(); holder.add(ang); const arc = new THREE.Mesh(new THREE.RingGeometry(.05, .053, 20, 1, Math.PI / 2, .25), new THREE.MeshBasicMaterial({ color: 0xd0021b, side: THREE.DoubleSide })); arc.position.y = .05; ang.add(arc); const al = label('10–15°', '#ffffff', .04); al.position.set(-.04, .13, 0); ang.add(al);
+  const loupe = makeCanvas(.55, .4, 512); loupe.mesh.position.set(.75, 1.05, -.9); root.add(loupe.mesh);
+  const sparks = makeSparks(sg.group); const rd = readout(1.0, .13); rd.mesh.position.set(-.1, 1.45, -1.3); root.add(rd.mesh);
+  part('wheel', sg.spin, V(0, .17, 0), L('وش الحجر', 'Wheel face'), ''); part('dia', holder, V(0, .1, 0), L('الماسة على الظرف المغناطيسي', 'Diamond on the magnetic chuck'), ''); part('loupe', loupe.mesh, V(0, .22, 0), L('وش الحجر من قريب', 'Wheel face close-up'), '');
+  const st = { m: 'why' }; let t = 0, clean = 0;
+  const drawL = k => loupe.draw((x, W, H) => { x.fillStyle = '#1d2128'; x.fillRect(0, 0, W, H); for(let i = 0; i < 260; i++){ const px = (i * 97) % W, py = (i * 53) % (H - 60) + 40; const sharp = Math.random() < k; x.fillStyle = sharp ? '#e6e0d0' : '#77736b'; x.beginPath(); if(sharp){ x.moveTo(px, py - 7); x.lineTo(px + 6, py + 5); x.lineTo(px - 6, py + 5); } else x.ellipse(px, py, 7, 3, 0, 0, 7); x.fill(); }
+    x.fillStyle = k > .7 ? '#2fbf5a' : '#d0021b'; x.font = 'bold 28px Tahoma'; x.textAlign = 'center'; x.fillText(k > .7 ? L('حبيبات حادة: الحجر بيقطع', 'Sharp grains: the wheel cuts') : L('حبيبات ممسوحة ومليانة برادة', 'Dull grains loaded with swarf'), W / 2, 30); });
+  return {
+    ...ctx, view: V(.05, .5, 1.45), sway: true, hint: L('اسحب للتدوير · صباعين للتقريب', 'Drag to rotate · pinch to zoom'),
+    steps: [
+      { title: L('ليه بنسوّي الحجر؟', 'Why dress the wheel?'), text: L('مع الشغل حبيبات الحجر بتتمسح (تتزجّج)، والمسام بتتملي برادة، فالحجر بيبطّل يقطع ويبدأ يحك ويحرق المشغولة، والسطح يطلع فيه رعشة. كمان الحجر الجديد مش دايري تمامًا. التسوية بتشيل طبقة رفيعة جدًا فتطلّع حبيبات حادة جديدة.', 'In use the grains go dull (glaze) and the pores fill with swarf, so the wheel stops cutting, rubs, burns the work and leaves chatter. A new wheel is also not perfectly round. Dressing removes a very thin layer to expose fresh sharp grains.'), focus: 'loupe', s: { m: 'why' } },
+      { title: L('تركيب الماسة', 'Setting the diamond'), text: L('حامل الماسة بيتحط على الظرف المغناطيسي تحت الحجر، والماسة مايلة 10–15° في اتجاه دوران الحجر، ومركزها متأخر سنة عن مركز الحجر عشان ما تعلقش وتتكسر. ونلف الماسة ربع لفة كل فترة عشان تفضل حادة.', 'The diamond holder sits on the magnetic chuck under the wheel, tilted 10–15° in the direction of rotation and set slightly behind the wheel centre so it cannot dig in and break. Turn the diamond a quarter turn now and then to keep it sharp.'), focus: 'dia', s: { m: 'set' } },
+      { title: L('التسوية الخشنة', 'Coarse dressing'), text: L('ننزّل الحجر لحد ما يلمس الماسة، ونشغّل سائل التبريد، ونعدّي الماسة على عرض الحجر كله بعمق 0.02–0.03 مم وبسرعة عرضية عالية. نكرر لحد ما الشرار يبقى منتظم على العرض كله. السرعة العالية بتسيب وش خشن بيقطع بسرعة.', 'Lower the wheel to touch the diamond, turn on the coolant and pass the diamond across the full width at 0.02–0.03 mm depth with a fast traverse. Repeat until the sparks are even across the width. A fast traverse leaves an open face that cuts freely.'), focus: 'wheel', s: { m: 'coarse' } },
+      { title: L('التسوية الناعمة', 'Fine dressing'), text: L('للتشطيب: عمق 0.005–0.01 مم وحركة عرضية بطيئة جدًا، وآخر مشوار من غير عمق. الحركة البطيئة بتسيب وش ناعم بيدّي سطح مصقول على المشغولة. وشوف وش الحجر من قريب: الحبيبات رجعت حادة.', 'For finishing: 0.005–0.01 mm depth with a very slow traverse and a final pass at zero depth. The slow traverse leaves a fine face that gives a polished finish. Look at the close-up: the grains are sharp again.'), focus: 'loupe', s: { m: 'fine' } }
+    ],
+    apply(s){ st.m = s.m; t = 0; if(s.m === 'why' || s.m === 'set') clean = 0; drawL(clean); },
+    update(dt){ t += dt; const m = st.m; const run = m === 'coarse' || m === 'fine'; sg.spinUp(dt, m !== 'set');
+      ang.visible = m === 'set'; sg.setBottom(sg.CH + .05 + .07 - (run ? .001 : -.03));
+      if(run){ const sp = m === 'coarse' ? 1.6 : .5; sg.saddle.position.z = Math.sin(t * sp) * .04; clean = Math.min(1, clean + dt * (m === 'coarse' ? .12 : .06)); sparks.emit(V(0, sg.CH + .12, -.08 + sg.saddle.position.z), 50, dt, V(.8, .2, .2)); } else sg.saddle.position.z = 0;
+      wm.color.copy(glazed).lerp(fresh, clean); wm.roughness = .5 + clean * .45; sparks.update(dt); sg.coolant(run, t);
+      if(Math.abs((loupe.mesh.userData.k ?? -1) - clean) > .1){ loupe.mesh.userData.k = clean; drawL(clean); }
+      rd.setText(m === 'coarse' ? L('خشن: 0.02 مم · حركة سريعة', 'Coarse: 0.02 mm · fast traverse') : m === 'fine' ? L('ناعم: 0.005 مم · حركة بطيئة', 'Fine: 0.005 mm · slow traverse') : m === 'set' ? L('الماسة مايلة 10–15°', 'Diamond tilted 10–15°') : L('الحجر متزجّج: محتاج تسوية', 'Glazed wheel: needs dressing'));
+    }
+  };
+}
+
+/* ---------- ضبط السلبة بالضوء والنقطتين ---------- */
+function buildGTaper(){
+  const ctx = makeCtx(), { root, part } = ctx; root.add(elxBench());
+  const cg = makeCylGrinder(); cg.group.position.set(0, 0, -.35); root.add(cg.group);
+  const W = makeWork(.64, .045); W.group.position.set(-.34, cg.Y, .12); cg.table.add(W.group);
+  const edge = new THREE.Group(); cg.table.add(edge); edge.add(box(.6, .012, .02, M(0x3a3f46, { m: .6 })));
+  const gap = new THREE.Mesh(new THREE.BufferGeometry(), new THREE.MeshBasicMaterial({ color: 0xffe066, transparent: true, opacity: .9, side: THREE.DoubleSide })); gap.userData.noFit = true; cg.table.add(gap);
+  const lamp = new THREE.Group(); lamp.position.set(0, cg.Y + .25, -.05); cg.table.add(lamp); lamp.add(at(cyl(.04, .06, .06, M(0x1d2128), 14), 0, 0, 0)); const lg = sparkSprite(0xfff1b0); lg.scale.setScalar(.15); lg.material.opacity = .8; lamp.add(lg);
+  const micA = makeMicrometer(), micB = makeMicrometer(); [micA, micB].forEach(m => { m.scale.setScalar(1.2); m.rotation.y = Math.PI / 2; cg.table.add(m); });
+  const sw = makeCanvas(.5, .3, 512); sw.mesh.position.set(.75, 1.0, -.9); root.add(sw.mesh);
+  const sparks = makeSparks(cg.group); const rd = readout(1.0, .13); rd.mesh.position.set(-.1, 1.4, -1.3); root.add(rd.mesh);
+  part('work', W.group, V(0, .42, .06), L('المشغولة', 'Workpiece'), ''); part('edge', edge, V(0, .02, 0), L('المسطرة والنور', 'Straight edge and light'), ''); part('mic', micA, V(0, .05, 0), L('القياس في النقطتين', 'Measuring at two points'), ''); part('sw', cg.swivel, V(.64, .03, 0), L('مسمار ميل الترابيزة', 'Table swivel screw'), ''); part('chart', sw.mesh, V(0, .17, 0), L('القراءتين', 'The two readings'), '');
+  const R0 = .045; let k = .012; const st = { m: 'see' }; let t = 0, last = -1;
+  const applyTaper = () => { W.reset(); W.cutFn(y => R0 - .004 - k * (y / .64)); };
+  const dia = y => (50 + (y < .3 ? k / .012 * .06 : 0)).toFixed(2);
+  const drawSW = () => sw.draw((x, Wc, H) => { x.fillStyle = '#0b1220'; x.fillRect(0, 0, Wc, H); x.font = 'bold 34px monospace'; x.textAlign = 'center'; const a = dia(.08), b = dia(.56); x.fillStyle = '#9fd3ff'; x.fillText(L('شمال', 'Left') + '  ' + a, Wc / 2, 70); x.fillText(L('يمين', 'Right') + '  ' + b, Wc / 2, 130); const d = Math.abs(a - b).toFixed(2); x.fillStyle = d < .01 ? '#2fbf5a' : '#ff5a4a'; x.fillText((d < .01 ? '✓ ' : '✗ ') + L('الفرق ', 'Diff ') + d, Wc / 2, 200); });
+  const setGap = () => { const pts = []; const y0 = .02, y1 = .62; const r0 = W.rAt(y0), r1 = W.rAt(y1), top = Math.max(r0, r1); const p = (y, r) => V(-.34 + y, cg.Y + r, .12 + .001); const g = new THREE.BufferGeometry().setFromPoints([p(y0, r0), p(y1, r1), p(y1, top), p(y0, r0), p(y1, top), p(y0, top)]); gap.geometry.dispose(); gap.geometry = g; edge.position.set(-.34 + .32, cg.Y + top + .006, .12); gap.material.opacity = Math.min(.9, Math.abs(r0 - r1) * 120); };
+  applyTaper(); W.update(); setGap(); drawSW();
+  return {
+    ...ctx, view: V(.05, .45, 1.4), sway: true, hint: L('اسحب للتدوير · صباعين للتقريب', 'Drag to rotate · pinch to zoom'),
+    steps: [
+      { title: L('يعني إيه سلبة؟', 'What is taper?'), text: L('لو الترابيزة مش موازية تمامًا لحركة الحجر، المشغولة بتطلع مخروطية: قطرها في طرف أكبر من الطرف التاني. ده اسمه «سلبة»، والمطلوب قطر «عدل» زي بعضه على الطول كله. الفرق في الموديل مكبّر عشان يبان.', 'If the table is not exactly parallel to the wheel travel, the work comes out conical: one end larger than the other. This is taper, and the aim is a parallel diameter along the whole length. The model exaggerates it so it shows.'), focus: 'work', s: { m: 'see' } },
+      { title: L('كشف السلبة بالضوء', 'Detecting taper with light'), text: L('بنحط مسطرة حرفها مظبوط على المشغولة ونبص عليها قدّام نور: لو فيه نور بيعدّي من تحتها على شكل مثلث (الأصفر)، يبقى القطر مش عدل، والنور بيبقى أوسع عند الطرف الأرفع. لما القطر يتعدل النور يختفي.', 'Lay a true straight edge on the work and look against a light: light passing under it in a wedge (yellow) means the diameter is not parallel; the gap is widest at the thinner end. When the diameter is parallel the light disappears.'), focus: 'edge', s: { m: 'light' } },
+      { title: L('كشف السلبة بالنقطتين', 'Measuring at two points'), text: L('بنقيس القطر بالميكرومتر في نقطتين على أبعد مسافة بينهم (قرب الطرفين). الفرق بين القراءتين هو مقدار السلبة على الطول ده. لازم يكون أقل من التفاوت المسموح (مثلًا 0.01 مم).', 'Measure the diameter with a micrometer at two points as far apart as possible (near the ends). The difference is the taper over that length and must be within the tolerance (for example 0.01 mm).'), focus: 'chart', s: { m: 'two' } },
+      { title: L('تصحيح الميل والتجليخ من تاني', 'Correcting and regrinding'), text: L('بنفك صواميل الترابيزة العلوية ونلفها بمسمار الضبط بمقدار نص الفرق ناحية الطرف الكبير، ونقفل، ونعمل مشوار خفيف ونقيس تاني. بنكرر لحد ما القراءتين يبقوا زي بعض والنور يختفي.', 'Loosen the upper table, turn it with the adjusting screw by half the difference towards the larger end, lock it, take a light pass and measure again. Repeat until both readings agree and the light disappears.'), focus: 'sw', s: { m: 'fix' } }
+    ],
+    apply(s){ st.m = s.m; t = 0; last = -1; if(s.m !== 'fix'){ k = .012; applyTaper(); } W.update(); setGap(); drawSW(); },
+    update(dt){ t += dt; const m = st.m; cg.spinUp(dt, m === 'fix'); W.spin.rotation.y = -cg.dp.rotation.x;
+      edge.visible = gap.visible = lamp.visible = m === 'light' || m === 'fix'; micA.visible = micB.visible = m === 'two';
+      micA.position.set(-.34 + .08, cg.Y, .12); micB.position.set(-.34 + .56, cg.Y, .12);
+      if(m === 'fix'){ const T = 4, cyc = Math.floor(t / T), f = (t % T) / T; if(cyc !== last){ last = cyc; k = Math.max(0, k - .004); cg.swivel.rotation.y = -k * 2; applyTaper(); W.update(); setGap(); drawSW(); } const tx = Math.sin(f * Math.PI * 2) * .25; cg.table.position.x = tx; const yAt = Math.min(.6, Math.max(.04, .34 - tx)); cg.setGap(W.rAt(yAt)); sparks.emit(V(0, cg.Y, .12 - W.rAt(yAt)), 40, dt, V(0, -.2, 1)); }
+      else { cg.table.position.x = 0; cg.setGap(R0 + .03); cg.swivel.rotation.y = -.024; }
+      sparks.update(dt);
+      const a = dia(.08), b = dia(.56); rd.setText(m === 'light' ? L('نور تحت المسطرة = فيه سلبة', 'Light under the edge = taper') : m === 'two' ? L(`الفرق ${Math.abs(a - b).toFixed(2)} مم`, `Difference ${Math.abs(a - b).toFixed(2)} mm`) : m === 'fix' ? (Math.abs(a - b) < .01 ? L('القطر عدل ✓ والنور اختفى', 'Parallel ✓ and the light has gone') : L('بنلف الترابيزة ونجلّخ تاني', 'Swivelling the table and regrinding')) : L('قطر الطرفين مختلف', 'The two ends differ'));
+    }
+  };
+}
+
+/* ---------- تجليخ المجاري العدلة وتوزيع الأبعاد ---------- */
+function buildGSlot(){
+  const ctx = makeCtx(), { root, part } = ctx; root.add(elxBench());
+  const sg = makeSurfGrinder(); sg.group.position.set(0, 0, -.3); root.add(sg.group);
+  sg.wheel.scale.set(1, 1, .35);
+  const blk = makeBlock(.3, .06, .16); blk.group.position.set(0, sg.CH, -.08); sg.table.add(blk.group); blk.group.children[0].material.color.set(0x6f7f91);
+  const datum = box(.302, .004, .004, M(0xd0021b)); datum.position.set(0, sg.CH + .061, -.08 + .08); sg.table.add(datum);
+  const dims = makeCanvas(.6, .4, 640); dims.mesh.position.set(.75, 1.05, -.9); root.add(dims.mesh);
+  const gb = new THREE.Group(); gb.visible = false; sg.table.add(gb); gb.add(box(.06, .03, .019, M(0xd9a441, { m: .7 })));
+  const sparks = makeSparks(sg.group); const rd = readout(1.0, .13); rd.mesh.position.set(-.1, 1.45, -1.3); root.add(rd.mesh);
+  part('blk', blk.group, V(0, .1, 0), L('المشغولة', 'Workpiece'), ''); part('wheel', sg.spin, V(0, .17, 0), L('حجر رفيع', 'Narrow wheel'), ''); part('dims', dims.mesh, V(0, .22, 0), L('توزيع الأبعاد', 'Setting out dimensions'), ''); part('gb', gb, V(0, .04, 0), L('قوالب القياس', 'Gauge blocks'), '');
+  const st = { m: 'wheel' }; let t = 0, last = -1;
+  dims.draw((x, W, H) => { x.fillStyle = '#f4f6f8'; x.fillRect(0, 0, W, H); x.strokeStyle = '#1d2128'; x.lineWidth = 4; x.strokeRect(60, 120, W - 120, 160); x.fillStyle = '#5a6068'; x.fillRect(W / 2 - 30, 120, 60, 70); x.strokeStyle = '#d0021b'; x.beginPath(); x.moveTo(60, 300); x.lineTo(W - 60, 300); x.stroke();
+    x.fillStyle = '#1d2128'; x.font = 'bold 26px monospace'; x.textAlign = 'center'; x.fillText('12 +0.02', W / 2, 110); x.fillText('8', W / 2 + 70, 165); x.fillStyle = '#d0021b'; x.fillText(L('حرف المرجع', 'Datum edge'), W / 2, 340); x.fillStyle = '#1d2128'; x.fillText('44', W / 4, 260); });
+  return {
+    ...ctx, view: V(.05, .5, 1.45), sway: true, hint: L('اسحب للتدوير · صباعين للتقريب', 'Drag to rotate · pinch to zoom'),
+    steps: [
+      { title: L('اختيار الحجر المناسب', 'Choosing the wheel'), text: L('المجرى العدلة بتتجلّخ بحجر عرضه أقل من عرض المجرى شوية (أو بعرضها بالظبط بعد تسويته)، ودرجته لينة شوية عشان جوانبه ما تسخنش. جوانب الحجر بتتسوّى بالماسة عشان المجرى تطلع جوانبها عمودية.', 'A straight slot is ground with a wheel slightly narrower than the slot (or dressed to its exact width), a little softer in grade so its sides do not overheat. The sides are dressed with the diamond so the slot walls come out square.'), focus: 'wheel', s: { m: 'wheel' } },
+      { title: L('توزيع الأبعاد على المجرى', 'Setting out the slot'), text: L('كل أبعاد المجرى بتتقاس من حرف مرجع واحد (الأحمر): مكان المجرى 44 مم من الحرف، وعرضها 12 مم بتفاوت +0.02، وعمقها 8 مم. بنلمس الحرف بالحجر ونصفّر حلقة السرج، وبعدين نتحرك بالمقاس.', 'All slot dimensions are taken from a single datum edge (red): the slot is 44 mm from it, 12 mm wide (+0.02) and 8 mm deep. Touch the edge with the wheel, zero the saddle dial and move by the dimension.'), focus: 'dims', s: { m: 'layout' } },
+      { title: L('تجليخ المجرى', 'Grinding the slot'), text: L('الترابيزة بتروح وتيجي والحجر بينزل في آخر كل مشوار بعمق صغير لحد العمق المطلوب. لو الحجر أرفع من المجرى، بنكبّر العرض بنقل السرج بالراحة ناحية كل جنب. سائل التبريد شغال على طول.', 'The table reciprocates and the wheel lowers a little at the end of each stroke to full depth. If the wheel is narrower than the slot, widen it by moving the saddle gently towards each side. Coolant on throughout.'), focus: 'blk', s: { m: 'grind' } },
+      { title: L('مراجعة المجرى', 'Checking the slot'), text: L('العرض بنراجعه بقوالب القياس: القالب 12.00 لازم يدخل، و12.02 لازم ما يبقاش واسع عليه. العمق بالقدمة أو بساعة القياس، والمكان من حرف المرجع بالقدمة. وأي مجرى تانية بتتوزّع من نفس الحرف.', 'Check the width with gauge blocks: the 12.00 block must enter and the slot must not exceed 12.02. Check the depth with a caliper or dial and the position from the datum with a caliper. Any further slot is set out from the same datum.'), focus: 'gb', s: { m: 'check' } }
+    ],
+    apply(s){ st.m = s.m; t = 0; last = -1; if(s.m !== 'check') blk.slotSet(.04, .0, 0); else blk.slotSet(.04, .027, 1); },
+    update(dt){ t += dt; const m = st.m; blk.set(.0001, 0); const grind = m === 'grind'; sg.spinUp(dt, grind || m === 'wheel');
+      if(grind){ const T = 8, cyc = Math.floor(t / T), f = (t % T) / T; if(cyc !== last){ last = cyc; } const tx = Math.sin(t * 2.2) * .22; sg.table.position.x = tx; const dep = Math.min(.027, f * .034); blk.slotSet(.04, dep, 1); blk.group.children[3].rotation.set(0, 0, 0); sg.setBottom(sg.CH + .06 - dep); sparks.emit(V(0, sg.wheelBottom(), -.08), 40, dt, V(-.8, .2, .3)); }
+      else { sg.table.position.x = 0; sg.setBottom(sg.CH + .12); }
+      gb.visible = m === 'check'; gb.position.set(0, sg.CH + .06 - .012 + Math.max(0, Math.cos(t * 1.5)) * .04, -.08); sparks.update(dt); sg.coolant(grind, t);
+      rd.setText(m === 'layout' ? L('من حرف المرجع: 44 · عرض 12 · عمق 8', 'From datum: 44 · width 12 · depth 8') : m === 'check' ? L('قالب 12.00 دخل ✓', '12.00 block enters ✓') : grind ? L('بننزل لحد عمق 8 مم', 'Lowering to 8 mm depth') : L('حجر رفيع وجوانبه متسوّية', 'Narrow wheel with dressed sides'));
+    }
+  };
+}
+/* ================= التجليخ: موديلات منفصلة (التقسيم الكامل) ================= */
+/* شريط نور بين أداة مرجع والمشغولة */
+function lightStrip(parent){ const m = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ color: 0xffe066, transparent: true, opacity: .9, side: THREE.DoubleSide })); m.userData.noFit = true; parent.add(m); return m; }
+
+/* ---------- الخلوص الجانبي والأقطار المدرجة والأكتاف 90° ---------- */
+function buildGShoulder(){
+  const ctx = makeCtx(), { root, part } = ctx; root.add(elxBench());
+  const cg = makeCylGrinder(); cg.group.position.set(0, 0, -.35); root.add(cg.group);
+  const W = makeWork(.64, .05); W.group.position.set(-.34, cg.Y, .12); cg.table.add(W.group);
+  const R1 = .05, R2 = .036, SH = .3; // كتف عند y = 0.3
+  const wheelSide = new THREE.Mesh(new THREE.CylinderGeometry(.17, .17, .012, 40), M(0x9aa0a6, { r: .9 })); wheelSide.rotation.z = Math.PI / 2; wheelSide.position.x = .03; cg.spin.add(wheelSide);
+  const dogs = [-1, 1].map(s => { const d = box(.02, .05, .03, M(0xd0021b)); d.position.set(s * .3, .5, .29); cg.table.add(d); return d; }); const stopper = box(.02, .07, .02, M(0x1d2128)); stopper.position.set(0, .5, .31); cg.group.add(stopper);
+  const dial = makeCanvas(.4, .4, 512); dial.mesh.position.set(.7, 1.0, -.9); root.add(dial.mesh);
+  const sq = new THREE.Group(); cg.table.add(sq); sq.add(at(box(.012, .14, .03, M(0x3a3f46, { m: .6 })), 0, .07, 0)); sq.add(at(box(.1, .012, .03, M(0x3a3f46, { m: .6 })), .05, .006, 0)); const lg = lightStrip(cg.table);
+  const sparks = makeSparks(cg.group); const rd = readout(1.0, .13); rd.mesh.position.set(-.1, 1.4, -1.3); root.add(rd.mesh);
+  part('work', W.group, V(0, .42, .06), L('المشغولة المدرجة', 'Stepped work'), ''); part('side', wheelSide, V(0, .2, 0), L('الخلوص الجانبي في الحجر', 'Relieved wheel side'), '');
+  part('dogs', dogs[1], V(0, .05, 0), L('محدد المشوار', 'Trip dog'), L('بيقلب الترابيزة قبل الكتف.', 'Reverses the table before the shoulder.')); part('dial', dial.mesh, V(0, .22, 0), L('ميكرومتر جسم الماكينة', 'Infeed micrometer dial'), ''); part('sq', sq, V(0, .15, 0), L('الزاوية القائمة', 'Square'), '');
+  const st = { m: 'relief' }; let t = 0, last = -1;
+  const profile = (rs) => { W.reset(); W.cutFn(y => y > SH ? rs : R1); };
+  const drawInfeed = (div) => dial.draw((x, Wc, H) => { drawDial(x, Wc, H, -div / 50 * Math.PI * 2); x.fillStyle = '#0b1220'; x.fillRect(Wc * .2, H * .62, Wc * .6, 60); x.fillStyle = '#7dffb0'; x.font = 'bold 30px monospace'; x.textAlign = 'center'; x.fillText(`${div} × 0.005 = ${(div * .005).toFixed(3)}`, Wc / 2, H * .62 + 42); });
+  return {
+    ...ctx, view: V(.05, .45, 1.45), sway: true, hint: L('اسحب للتدوير · صباعين للتقريب', 'Drag to rotate · pinch to zoom'),
+    steps: [
+      { title: L('عمل خلوص جانبي في الحجر', 'Relieving the wheel side'), text: L('عشان نجلّخ قطر لحد الكتف من غير ما وش الحجر كله يحتك بالكتف، بنعمل بالماسة خلوص (تجويف خفيف) في جنب الحجر ونسيب حرف رفيع بس (الرمادي الغامق). كده الحرف الرفيع هو اللي بيلمس الكتف، والسخونة والاحتكاك بيقلّوا.', 'To grind a diameter up to a shoulder without the whole side of the wheel rubbing it, the side is relieved with the diamond, leaving only a narrow land (dark grey). Only that land touches the shoulder, so heat and friction drop.'), focus: 'side', s: { m: 'relief' } },
+      { title: L('ضبط محدد المشوار', 'Setting the trip dogs'), text: L('المحددات الحمرا على الترابيزة بتقلب اتجاهها أوتوماتيك. بنظبط المحدد بحيث الترابيزة تقلب والحجر على بعد 1–2 مم من الكتف، والجزء الأخير جنب الكتف نكمّله بالراحة بالطارة. كده الحجر ما يخبطش في الكتف.', 'The red dogs on the table reverse it automatically. Set the dog so the table reverses with the wheel 1–2 mm short of the shoulder, then finish the last bit by hand. The wheel cannot run into the shoulder.'), focus: 'dogs', s: { m: 'dogs' } },
+      { title: L('تجليخ الأقطار المدرجة', 'Grinding the stepped diameter'), text: L('بنجلّخ القطر الصغير الأول بمشاوير لحد قبل الكتف، وبنقيس بالميكرومتر، والقطر الكبير بعده. كل قطر ليه مقاسه، وبنراجع الأقطار المختلفة كل واحد لوحده وبنتأكد إنهم على نفس المحور.', 'Grind the smaller diameter first with strokes up to just short of the shoulder and measure it, then the larger one. Each diameter has its own size; check each separately and that they run true on the same axis.'), focus: 'work', s: { m: 'step' } },
+      { title: L('ميكرومتر جسم الماكينة', 'The infeed micrometer'), text: L('حلقة التقديم على رأس الحجر مقسّمة، وكل شرطة = 0.005 مم في نص القطر (0.01 مم في القطر). لو القطر أكبر من المقاس بـ 0.04 مم، بندّي 4 شرط. بنصفّر الحلقة بعد ما نلمس، ونتحرك بيها في التنعيم.', 'The infeed dial on the wheel head is graduated so that each division = 0.005 mm on the radius (0.01 mm on the diameter). If the diameter is 0.04 mm oversize, feed 4 divisions. Zero the dial after touching and use it for finishing.'), focus: 'dial', s: { m: 'dial' } },
+      { title: L('تجليخ الكتف 90° ومراجعته', 'Grinding and checking the 90° shoulder'), text: L('الحجر بيتحرك ناحية الكتف (طولي) بالراحة، وجنبه المتسوّي بيجلّخ وش الكتف لحد ما يبقى عمودي على المحور. بنراجع بزاوية قائمة: لو فيه نور بين الزاوية ووش الكتف (الأصفر)، يبقى مش عمودي ونكمّل.', 'The wheel is fed gently towards the shoulder lengthwise, and its dressed side grinds the shoulder face square to the axis. Check with a square: light between square and shoulder face (yellow) means it is not square yet.'), focus: 'sq', s: { m: 'face' } }
+    ],
+    apply(s){ st.m = s.m; t = 0; last = -1; profile(s.m === 'relief' || s.m === 'dogs' ? R1 : R2 + .004); W.update(); drawInfeed(0); },
+    update(dt){ t += dt; const m = st.m; const run = m !== 'relief'; cg.spinUp(dt, true); W.spin.rotation.y = -cg.dp.rotation.x;
+      wheelSide.visible = true; wheelSide.scale.set(1, 1, 1); wheelSide.material.color.set(m === 'relief' ? 0x6c747d : 0x9aa0a6); dogs.forEach(d => d.visible = m === 'dogs' || m === 'step'); sq.visible = lg.visible = m === 'face';
+      const sweep = Math.sin(t * 1.4); const yMin = SH + .035 + .01, yMax = .6;
+      if(m === 'dogs' || m === 'step'){ const y = yMin + (sweep + 1) / 2 * (yMax - yMin); cg.table.position.x = .34 - y; dogs[0].position.x = -.34 + yMax - .34 + .1; dogs[1].position.x = -.34 + yMin + .28; const r = m === 'step' ? Math.max(R2, R2 + .004 - (t / 10) * .004) : R1; if(m === 'step'){ W.cutFn(yy => (yy > SH + .006 && Math.abs(yy - y) < .036) ? r : 99); } cg.setGap(m === 'step' ? r : R1 - .0); sparks.emit(V(0, cg.Y, .12 - (m === 'step' ? r : R2)), m === 'step' ? 40 : 0, dt, V(0, -.2, 1)); }
+      else if(m === 'face'){ const k = Math.min(1, t / 6); const y = SH + .036 - k * .006; cg.table.position.x = .34 - y; cg.setGap(R2); if(k < 1){ W.cutFn(yy => yy > y - .002 && yy <= SH + .006 ? R2 : 99); sparks.emit(V(-.035, cg.Y + .03, .12 - R2 - .005), 40, dt, V(-.3, .4, .8)); } sq.position.set(-.34 + SH - .006, cg.Y + R2, .12 + .0); lg.position.set(-.34 + SH - .004, cg.Y + R2 + .04, .121); lg.scale.set(.004 * (1 - k) + .0005, .06, 1); lg.material.opacity = (1 - k) * .9; }
+      else if(m === 'dial'){ cg.table.position.x = 0; cg.setGap(R2 + .004 - Math.min(.004, t * .0006)); const div = Math.min(8, Math.floor(t * 1.2)); if(dial.mesh.userData.k !== div){ dial.mesh.userData.k = div; drawInfeed(div); } }
+      else { cg.table.position.x = .2; cg.setGap(R1 + .04); }
+      sparks.update(dt); cg.coolant(run && m !== 'dial', t); W.update();
+      rd.setText(m === 'relief' ? L('جنب الحجر متجوّف وفاضل حرف رفيع', 'Wheel side relieved to a narrow land') : m === 'dogs' ? L('الترابيزة بتقلب قبل الكتف بـ 1–2 مم', 'Table reverses 1–2 mm before the shoulder') : m === 'dial' ? L('كل شرطة = 0.005 مم', 'Each division = 0.005 mm') : m === 'face' ? (t > 6 ? L('مفيش نور: الكتف 90° ✓', 'No light: shoulder square ✓') : L('بنجلّخ وش الكتف بجنب الحجر', 'Grinding the shoulder face with the wheel side')) : L('القطر الصغير لحد قبل الكتف', 'Small diameter up to the shoulder'));
+    }
+  };
+}
+
+/* ---------- السطوح المتعامدة والمراجعة ---------- */
+function buildGSquare(){
+  const ctx = makeCtx(), { root, part } = ctx; root.add(elxBench());
+  const sg = makeSurfGrinder(); sg.group.position.set(0, 0, -.3); root.add(sg.group);
+  const ap = new THREE.Group(); ap.position.set(-.12, sg.CH, -.08); sg.table.add(ap); ap.add(at(box(.03, .18, .2, M(0x3a3f46, { m: .5 })), 0, .09, 0)); ap.add(at(box(.12, .03, .2, M(0x3a3f46, { m: .5 })), .045, .015, 0)); const clamp = box(.06, .015, .04, M(0xd9a441, { m: .6 })); clamp.position.set(.05, .16, 0); ap.add(clamp);
+  const pv = new THREE.Group(); pv.position.set(0, sg.CH, -.08); sg.table.add(pv); pv.add(at(box(.24, .04, .14, M(0x2a62c9, { m: .4 })), 0, .02, 0)); pv.add(at(box(.03, .08, .14, M(0x2a62c9, { m: .4 })), -.1, .08, 0)); const pvj = box(.03, .08, .14, M(0x2a62c9, { m: .4 })); pvj.position.set(.1, .08, 0); pv.add(pvj);
+  const blk = makeBlock(.08, .1, .12); sg.table.add(blk.group);
+  const plate = new THREE.Group(); plate.position.set(.7, 0, .25); root.add(plate); plate.add(at(box(.5, .06, .35, M(0x3a3f46, { r: .6 })), 0, .03, 0)); const pblk = box(.08, .1, .12, M(0xb9c0c8, { m: .75 })); pblk.position.set(0, .11, 0); plate.add(pblk); const sq = new THREE.Group(); sq.position.set(-.05, .06, 0); plate.add(sq); sq.add(at(box(.01, .16, .03, M(0x3a3f46, { m: .6 })), 0, .08, 0)); sq.add(at(box(.1, .015, .03, M(0x3a3f46, { m: .6 })), -.05, .0075, 0)); const lg = lightStrip(plate);
+  const sparks = makeSparks(sg.group); const rd = readout(1.0, .13); rd.mesh.position.set(-.1, 1.45, -1.3); root.add(rd.mesh);
+  part('ap', ap, V(0, .2, 0), L('زاوية التثبيت', 'Angle plate'), ''); part('pv', pv, V(0, .14, 0), L('المنجلة الخاصة الدقيقة', 'Precision vice'), ''); part('blk', blk.group, V(0, .11, 0), L('المشغولة', 'Workpiece'), ''); part('sq', sq, V(0, .18, 0), L('الزاوية القائمة وسطح المعايرة', 'Square and surface plate'), '');
+  const st = { m: 'why' }; let t = 0, last = -1;
+  return {
+    ...ctx, view: V(.05, .5, 1.45), sway: true, hint: L('اسحب للتدوير · صباعين للتقريب', 'Drag to rotate · pinch to zoom'),
+    steps: [
+      { title: L('يعني إيه سطوح متعامدة؟', 'What are square faces?'), text: L('بعد ما الوشين المتوازيين يتجلّخوا، باقي الأوجه لازم تبقى عمودية عليهم 90° بالظبط. على الظرف المغناطيسي لوحده المشغولة بتقعد على وشها، فعشان نجلّخ جنبها محتاجين أداة تمسكها واقفة ومظبوطة.', 'Once the two parallel faces are ground, the other faces must be exactly 90° to them. On the magnetic chuck alone the work lies on its face, so a holding device is needed to stand it up accurately to grind its side.'), focus: 'blk', s: { m: 'why' } },
+      { title: L('التثبيت بمنجلة خاصة', 'Using a precision vice'), text: L('المنجلة الخاصة مجلّخة بدقة، وفكها الثابت عمودي على قاعدتها. بنمسك المشغولة والوش المجلّخ لازق في الفك الثابت، ونحط المنجلة كلها على الظرف المغناطيسي، ونجلّخ الوش اللي فوق. كده بيطلع عمودي على الوش المجلّخ.', 'A precision vice is ground true with its fixed jaw square to its base. Clamp the work with the ground face against the fixed jaw, set the whole vice on the magnetic chuck and grind the top face: it comes out square to the ground face.'), focus: 'pv', s: { m: 'vise' } },
+      { title: L('التثبيت بزاوية تثبيت', 'Using an angle plate'), text: L('للمشغولات الأكبر: زاوية التثبيت (حديدة على شكل L مجلّخة 90°) بتتحط على الظرف، والمشغولة بتتربط على وشها الرأسي بكلّابة، والوش المجلّخ لازق فيها. ونجلّخ الوش اللي فوق.', 'For larger work: the angle plate (an L-shaped block ground to 90°) sits on the chuck and the work is clamped to its vertical face with the ground face against it, then the top face is ground.'), focus: 'ap', s: { m: 'plate' } },
+      { title: L('مراجعة التعامد', 'Checking squareness'), text: L('على سطح المعايرة: بنحط الزاوية القائمة على السطح ونلزقها في جنب المشغولة، ونبص قدّام نور. لو فيه نور بيعدّي (الأصفر) يبقى الزاوية مش 90°. بعد التصحيح النور بيختفي. وللدقة الأعلى بنستخدم ساعة قياس على حامل.', 'On the surface plate: stand the square on the plate against the side of the work and look against a light. Light passing (yellow) means it is not 90°. After correction the light disappears. For higher accuracy use a dial indicator on a stand.'), focus: 'sq', s: { m: 'check' } }
+    ],
+    apply(s){ st.m = s.m; t = 0; last = -1; },
+    update(dt){ t += dt; const m = st.m; ap.visible = m === 'plate'; pv.visible = m === 'vise'; const grind = m === 'vise' || m === 'plate'; sg.spinUp(dt, grind);
+      const T = 8, cyc = Math.floor(t / T), f = (t % T) / T; if(cyc !== last){ last = cyc; blk.set(.006, 0); }
+      if(m === 'plate'){ blk.group.position.set(-.12 + .015 + .04, sg.CH + .03, -.08); } else if(m === 'vise'){ blk.group.position.set(-.04 + .04, sg.CH + .04, -.08); } else blk.group.position.set(0, sg.CH, -.08);
+      if(grind){ const pass = Math.floor(f * 5), pf = f * 5 - pass; sg.table.position.x = Math.sin(pf * Math.PI * 2) * .12; const top = blk.group.position.y + .1 - .006; sg.setBottom(top); blk.set(.006, Math.min(1, f * 1.1)); sparks.emit(V(0, sg.wheelBottom(), -.08), 40, dt, V(.8, .2, .3)); } else { sg.table.position.x = 0; sg.setBottom(sg.CH + .25); }
+      const k = m === 'check' ? Math.min(1, t / 6) : 0; lg.visible = m === 'check'; lg.position.set(-.04 + .0, .11, .062); lg.scale.set(.006 * (1 - k) + .0005, .1, 1); lg.material.opacity = (1 - k) * .9; sq.position.x = -.05 - (1 - k) * .004;
+      sparks.update(dt); sg.coolant(grind, t);
+      rd.setText(m === 'check' ? (k < 1 ? L('نور تحت الزاوية: مش 90°', 'Light under the square: not 90°') : L('مفيش نور: 90° ✓', 'No light: 90° ✓')) : m === 'vise' ? L('الوش المجلّخ لازق في الفك الثابت', 'Ground face against the fixed jaw') : m === 'plate' ? L('مربوطة على زاوية التثبيت', 'Clamped to the angle plate') : L('الأوجه لازم 90° على بعض', 'Faces must be 90° to each other'));
+    }
+  };
+}
+
+/* ---------- الترابيزة الجيبية ---------- */
+function buildGSine(){
+  const ctx = makeCtx(), { root, part } = ctx; root.add(elxBench());
+  const sg = makeSurfGrinder(); sg.group.position.set(0, 0, -.3); root.add(sg.group);
+  const sine = new THREE.Group(); sine.position.set(-.12, sg.CH, -.08); sg.table.add(sine); sine.add(at(box(.34, .02, .18, M(0x5a6068, { m: .6 })), .15, .01, 0)); const hinge = cyl(.012, .012, .18, STEEL(), 12); hinge.rotation.x = Math.PI / 2; hinge.position.set(0, .03, 0); sine.add(hinge);
+  const top = new THREE.Group(); top.position.set(0, .03, 0); sine.add(top); top.add(at(box(.3, .02, .16, M(0x9aa0a6, { m: .7 })), .15, .02, 0)); const roll = cyl(.012, .012, .16, STEEL(), 12); roll.rotation.x = Math.PI / 2; roll.position.set(.3, 0, 0); top.add(roll);
+  const wk = new THREE.Group(); top.add(wk); wk.position.set(.15, .03, 0); const wb = box(.12, .05, .1, M(0xb9c0c8, { m: .75 })); wb.position.y = .025; wk.add(wb); const facet = box(.12, .002, .1, M(0xe6eaef, { m: .9, r: .15 })); facet.position.y = .051; wk.add(facet);
+  const gb = box(.04, 1, .06, M(0xd9a441, { m: .6 })); gb.position.set(.3, 0, 0); sine.add(gb);
+  const calc = makeCanvas(.6, .4, 640); calc.mesh.position.set(.75, 1.05, -.9); root.add(calc.mesh);
+  const sparks = makeSparks(sg.group); const rd = readout(1.0, .13); rd.mesh.position.set(-.1, 1.45, -1.3); root.add(rd.mesh);
+  part('sine', sine, V(.15, .12, 0), L('الترابيزة الجيبية', 'Sine table'), L('دوس عليها تغيّر الزاوية.', 'Tap to change the angle.')); part('gb', gb, V(0, .03, 0), L('قوالب القياس', 'Gauge blocks'), ''); part('calc', calc.mesh, V(0, .22, 0), L('حساب الارتفاع', 'Height calculation'), '');
+  const ANG = [15, 30, 45]; const st = { m: 'idea', k: 1 }; let t = 0, ang = 0;
+  ctx.parts.sine.tap = () => { st.k = (st.k + 1) % ANG.length; draw(); return L(`الزاوية ${ANG[st.k]}° → قوالب ${(100 * Math.sin(ANG[st.k] * Math.PI / 180)).toFixed(2)} مم`, `${ANG[st.k]}° → blocks ${(100 * Math.sin(ANG[st.k] * Math.PI / 180)).toFixed(2)} mm`); };
+  const draw = () => calc.draw((x, W, H) => { const a = ANG[st.k], h = 100 * Math.sin(a * Math.PI / 180); x.fillStyle = '#f4f6f8'; x.fillRect(0, 0, W, H); x.fillStyle = '#1d2128'; x.font = 'bold 32px monospace'; x.textAlign = 'center'; x.fillText('H = L × sin θ', W / 2, 60); x.fillText(`= 100 × sin ${a}°`, W / 2, 130); x.fillStyle = '#d0021b'; x.font = 'bold 40px monospace'; x.fillText(`= ${h.toFixed(2)} mm`, W / 2, 210);
+    x.strokeStyle = '#1d2128'; x.lineWidth = 4; const ox = 120, oy = H - 50, Lp = 300; x.beginPath(); x.moveTo(ox, oy); x.lineTo(ox + Lp, oy); x.moveTo(ox, oy); x.lineTo(ox + Lp * Math.cos(a * Math.PI / 180), oy - Lp * Math.sin(a * Math.PI / 180)); x.stroke(); x.fillStyle = '#d9a441'; x.fillRect(ox + Lp * Math.cos(a * Math.PI / 180) - 14, oy - Lp * Math.sin(a * Math.PI / 180), 28, Lp * Math.sin(a * Math.PI / 180)); });
+  draw();
+  return {
+    ...ctx, view: V(.05, .5, 1.45), sway: true, hint: L('دوس على الترابيزة الجيبية تغيّر الزاوية', 'Tap the sine table to change the angle'),
+    steps: [
+      { title: L('فكرة الترابيزة الجيبية', 'How a sine table works'), text: L('ترابيزة بتتمِل على مفصلة من ناحية، وتحت أسطوانتها التانية بنحط قوالب قياس. المسافة بين مركز الأسطوانتين ثابتة (مثلًا 100 مم)، فارتفاع القوالب بيحدد الزاوية بدقة عالية جدًا.', 'A table hinged at one end, with gauge blocks placed under the roller at the other. The distance between roller centres is fixed (for example 100 mm), so the block height sets the angle very accurately.'), focus: 'sine', s: { m: 'idea' } },
+      { title: L('حساب ارتفاع القوالب', 'Calculating the block height'), text: L('الارتفاع = طول الترابيزة × جا الزاوية. لزاوية 30° وترابيزة 100 مم: 100 × 0.5 = 50 مم. بنركّب القوالب بأقل عدد ممكن من القطع اللي مجموعها 50.00. دوس على الترابيزة تجرب 15° و45°.', 'Height = table length × sine of the angle. For 30° and a 100 mm table: 100 × 0.5 = 50 mm. Build up 50.00 mm with as few blocks as possible. Tap the table to try 15° and 45°.'), focus: 'calc', s: { m: 'calc' } },
+      { title: L('تجليخ الوش المايل', 'Grinding the inclined face'), text: L('المشغولة مربوطة على الترابيزة الجيبية والترابيزة كلها على الظرف المغناطيسي. الحجر بيجلّخ الوش اللي فوق أفقي، فلما الترابيزة تتعدل تاني الوش ده بيبقى مايل بالزاوية المطلوبة بالظبط.', 'The work is clamped on the sine table, which sits on the magnetic chuck. The wheel grinds the top face horizontally, so when the table is lowered again that face lies at exactly the required angle.'), focus: 'sine', s: { m: 'grind' } }
+    ],
+    apply(s){ st.m = s.m; t = 0; draw(); },
+    update(dt){ t += dt; const m = st.m; const a = m === 'idea' ? Math.min(30, t * 6) * Math.PI / 180 : ANG[st.k] * Math.PI / 180; ang = ease(ang, a, dt, 3); top.rotation.z = ang; const h = .3 * Math.sin(ang); gb.scale.y = Math.max(.001, h - .0); gb.position.y = .03 + h / 2 - .012;
+      const grind = m === 'grind'; sg.spinUp(dt, grind); if(grind){ sg.table.position.x = Math.sin(t * 1.5) * .12; const wtop = sg.CH + .03 + Math.sin(ang) * .21 + .05 * Math.cos(ang) + .02; sg.setBottom(wtop); sparks.emit(V(0, sg.wheelBottom(), -.08), 40, dt, V(.8, .2, .3)); } else { sg.table.position.x = 0; sg.setBottom(sg.CH + .35); }
+      sparks.update(dt); sg.coolant(grind, t);
+      rd.setText(L(`الزاوية ${Math.round(ang * 180 / Math.PI)}° · القوالب ${(100 * Math.sin(ang)).toFixed(2)} مم`, `Angle ${Math.round(ang * 180 / Math.PI)}° · blocks ${(100 * Math.sin(ang)).toFixed(2)} mm`));
+    }
+  };
+}
+
+/* ---------- سن سكينة الفرايز الوجهية ---------- */
+function buildGFaceMill(){
+  const ctx = makeCtx(), { root, part } = ctx; root.add(elxBench());
+  const tcg = new THREE.Group(); tcg.position.set(0, 0, -.3); root.add(tcg); tcg.add(at(box(.9, .45, .5, M(0x5b7fa6, { r: .5 })), 0, .225, 0));
+  const head = new THREE.Group(); head.position.set(-.05, .75, -.05); tcg.add(head); head.add(at(box(.16, .26, .16, M(0x5b7fa6)), 0, .1, -.12)); const dish = new THREE.Mesh(new THREE.CylinderGeometry(.11, .07, .03, 32, 1, true), new THREE.MeshStandardMaterial({ color: 0xd8d2c4, map: GRIT_TEX, side: THREE.DoubleSide })); dish.rotation.x = Math.PI / 2; dish.position.z = .0; head.add(dish);
+  const fix = new THREE.Group(); fix.position.set(.2, .55, .1); tcg.add(fix); fix.add(at(box(.12, .14, .12, M(0x3a3f46, { m: .5 })), 0, -.05, 0)); const fm = new THREE.Group(); fm.position.set(-.1, .02, 0); fix.add(fm); const fb = cyl(.1, .1, .05, M(0x6c747d, { m: .7 }), 32); fb.rotation.z = Math.PI / 2; fm.add(fb);
+  const teeth = []; for(let i = 0; i < 10; i++){ const pv = new THREE.Group(); pv.rotation.x = i / 10 * Math.PI * 2; fm.add(pv); const tt = box(.012, .03, .016, M(0x9aa0a6, { m: .9 })); tt.position.set(-.031, .085, 0); pv.add(tt); teeth.push(tt); }
+  const rest = box(.01, .04, .02, M(0xd9a441)); rest.position.set(-.13, .12, .04); fix.add(rest); fix.scale.setScalar(1.7); head.scale.setScalar(1.5);
+  const dialG = makeGauge('#2a62c9', -5, 5, [-4, -2, 0, 2, 4], '0.01'); dialG.group.scale.setScalar(.25); dialG.group.position.set(-.25, .75, .2); tcg.add(dialG.group);
+  const ang = makeCanvas(.5, .35, 512); ang.mesh.position.set(.7, 1.05, -.9); root.add(ang.mesh);
+  const sparks = makeSparks(root); const rd = readout(1.0, .13); rd.mesh.position.set(-.1, 1.45, -1.3); root.add(rd.mesh);
+  part('fm', fm, V(-.03, .12, 0), L('السكينة الوجهية على عمود قصير', 'Face mill on a stub arbor'), ''); part('dish', head, V(0, .25, -.1), L('الحجر الطبق', 'Dish wheel'), ''); part('rest', rest, V(0, .03, 0), L('مسند السنّة', 'Tooth rest'), ''); part('dial', dialG.group, V(0, .2, 0), L('ساعة القياس', 'Dial indicator'), ''); part('ang', ang.mesh, V(0, .19, 0), L('زاوية الخلوص', 'Clearance angle'), '');
+  ang.draw((x, W, H) => { x.fillStyle = '#f4f6f8'; x.fillRect(0, 0, W, H); x.strokeStyle = '#1d2128'; x.lineWidth = 5; x.beginPath(); x.moveTo(60, 230); x.lineTo(440, 230); x.stroke(); x.fillStyle = '#9aa0a6'; x.beginPath(); x.moveTo(140, 230); x.lineTo(300, 230); x.lineTo(300, 200); x.lineTo(150, 170); x.closePath(); x.fill(); x.stroke(); x.strokeStyle = '#d0021b'; x.beginPath(); x.arc(300, 230, 80, Math.PI, Math.PI + .2); x.stroke(); x.fillStyle = '#d0021b'; x.font = 'bold 30px Tahoma'; x.textAlign = 'center'; x.fillText(L('خلوص 6–8°', 'Clearance 6–8°'), W / 2, 80); });
+  const st = { m: 'mount' }; let t = 0;
+  return {
+    ...ctx, view: V(.05, .5, 1.45), sway: true, hint: L('اسحب للتدوير · صباعين للتقريب', 'Drag to rotate · pinch to zoom'),
+    steps: [
+      { title: L('تجهيز الماكينة وتركيب السكينة', 'Setting up the machine'), text: L('السكينة الوجهية بتتركب على عمود قصير في رأس التقسيم الصغير، ووشها ناحية الحجر الطبق. بنضبط مسند السنّة (الأصفر) تحت السنّة اللي هتتسن عشان يحدد مكانها ويمنعها تلف.', 'The face mill is mounted on a stub arbor in the small indexing head with its face towards the dish wheel. The tooth rest (yellow) is set under the tooth to be ground to locate it and stop it turning.'), focus: 'fm', s: { m: 'mount' } },
+      { title: L('ضبط زاوية الخلوص', 'Setting the clearance angle'), text: L('رأس الحجر بيتمِل بزاوية الخلوص المطلوبة (6–8° للصلب)، أو بنرفع مسند السنّة عن مركز السكينة بمقدار محسوب. الزاوية دي بتخلي ضهر السنّة ما يحتكش بالمشغولة.', 'The wheel head is tilted to the required clearance angle (6–8° for steel), or the tooth rest is set a calculated distance off the cutter centre. This angle stops the back of the tooth rubbing the work.'), focus: 'ang', s: { m: 'angle' } },
+      { title: L('سن السنون واحدة واحدة', 'Grinding tooth by tooth'), text: L('الحجر الطبق بيعدّي على وش السنّة بعمق صغير جدًا (0.02 مم) ومن غير ضغط عشان ما تسخنش. بعدين نرجّع، ونلف السكينة للسنّة اللي بعدها على مسند السنّة، ونسنها بنفس الضبط بالظبط، لحد ما نخلص الـ10 سنون.', 'The dish wheel passes across the face of the tooth at a very small depth (0.02 mm) without pressure so it does not overheat. Withdraw, turn the cutter to the next tooth against the rest and grind it at exactly the same setting until all ten teeth are done.'), focus: 'dish', s: { m: 'grind' } },
+      { title: L('مراجعة استواء السنون', 'Checking the teeth'), text: L('بنلمّس ساعة القياس على وش كل سنّة ونلف السكينة: الفرق بين أعلى وأوطى سنّة لازم أقل من 0.02 مم، وإلا السنّة العالية هي اللي هتشتغل لوحدها وتتكسر. ونراجع إن الحدود حادة ومن غير حروق.', 'Touch the dial on the face of each tooth and turn the cutter: the difference between highest and lowest tooth must be under 0.02 mm, or the high tooth will do all the work and break. Check that the edges are sharp and not burnt.'), focus: 'dial', s: { m: 'check' } }
+    ],
+    apply(s){ st.m = s.m; t = 0; },
+    update(dt){ t += dt; const m = st.m; dish.rotation.y += dt * 25; head.rotation.y = m === 'angle' ? Math.min(.12, t * .05) : .1; dialG.group.visible = m === 'check';
+      const T = 2.5, f = (t % T) / T, tooth = Math.floor(t / T) % 10; const grind = m === 'grind';
+      fm.rotation.x = grind || m === 'check' ? -(Math.floor(t / T) + (f > .8 ? (f - .8) / .2 : 0)) / 10 * Math.PI * 2 : 0; head.position.y = .75 + (grind ? Math.sin(Math.min(1, f / .8) * Math.PI) * .05 : 0); head.position.x = grind ? -.06 : -.05;
+      if(grind && f < .8){ const p = V(.2 - .2, .55 + .18, .1 - .3); sparks.emit(p, 40, dt, V(-.4, .5, .5)); } sparks.update(dt);
+      if(m === 'check'){ const v = Math.sin(fm.rotation.x * 10) * 1.5; dialG.set(v); dialG.update(dt); }
+      rd.setText(grind ? L(`السنّة ${tooth + 1} من 10 · عمق 0.02 مم`, `Tooth ${tooth + 1} of 10 · 0.02 mm`) : m === 'check' ? L('الفرق أقل من 0.02 مم ✓', 'Spread under 0.02 mm ✓') : m === 'angle' ? L('رأس الحجر مايل 6–8°', 'Wheel head tilted 6–8°') : L('مسند السنّة تحت السنّة', 'Tooth rest under the tooth'));
+    }
+  };
+}
+
+/* ---------- قراءة رسومات المشغولات ---------- */
+function buildGDrawing(){
+  const ctx = makeCtx(), { root, part } = ctx; root.add(elxBench());
+  const shaft = new THREE.Group(); shaft.position.set(-.45, .25, .0); root.add(shaft); const S = makeWork(.5, .06); S.group.position.set(0, 0, 0); shaft.add(S.group); S.cutFn(y => y < .15 ? .06 : y < .35 ? .045 : .035); S.update();
+  const hl = new THREE.Mesh(new THREE.CylinderGeometry(.047, .047, .2, 30, 1, true), new THREE.MeshBasicMaterial({ color: 0x2fbf5a, transparent: true, opacity: .45, side: THREE.DoubleSide })); hl.rotation.z = Math.PI / 2; hl.position.set(.25, 0, 0); hl.userData.noFit = true; shaft.add(hl);
+  const plateW = new THREE.Group(); plateW.position.set(.45, .05, .1); root.add(plateW); plateW.add(at(box(.3, .06, .2, M(0xb9c0c8, { m: .75 })), 0, .03, 0)); const ptop = new THREE.Mesh(new THREE.PlaneGeometry(.3, .2), new THREE.MeshBasicMaterial({ color: 0x2fbf5a, transparent: true, opacity: .45 })); ptop.rotation.x = -Math.PI / 2; ptop.position.y = .061; ptop.userData.noFit = true; plateW.add(ptop);
+  const dw = makeCanvas(1.2, .7, 1024); dw.mesh.position.set(0, 1.0, -1.0); root.add(dw.mesh);
+  part('dw', dw.mesh, V(0, .38, 0), L('الرسم', 'The drawing'), L('دوس عليه يتنقل بين الرسمتين.', 'Tap to switch drawings.')); part('shaft', shaft, V(.25, .08, 0), L('العمود المدرج', 'Stepped shaft'), ''); part('plate', plateW, V(0, .1, 0), L('اللوح', 'Plate'), '');
+  const st = { m: 'views', d: 0 }; let t = 0;
+  ctx.parts.dw.tap = () => { st.d ^= 1; draw(); return st.d ? L('رسمة اللوح (تجليخ سطحي)', 'Plate drawing (surface grinding)') : L('رسمة العمود (تجليخ أسطواني)', 'Shaft drawing (cylindrical grinding)'); };
+  const draw = () => dw.draw((x, W, H) => { const m = st.m; x.fillStyle = '#fbfbf7'; x.fillRect(0, 0, W, H); x.strokeStyle = '#1d2128'; x.lineWidth = 4; x.strokeRect(10, 10, W - 20, H - 20); x.fillStyle = '#1d2128'; x.font = 'bold 28px monospace'; x.textAlign = 'center';
+    const hlc = '#d0021b';
+    if(!st.d){ const cy = 300, sx = 160; const seg = [[0, 150, 120], [150, 350, 90], [350, 500, 70]];
+      seg.forEach(([a, b, d]) => { x.strokeStyle = '#1d2128'; x.strokeRect(sx + a, cy - d, b - a, d * 2); });
+      x.setLineDash([16, 6, 4, 6]); x.beginPath(); x.moveTo(sx - 30, cy); x.lineTo(sx + 530, cy); x.stroke(); x.setLineDash([]);
+      x.fillText('Ø60', sx + 75, cy - 140); x.fillStyle = (m === 'tol' || m === 'which') ? hlc : '#1d2128'; x.fillText('Ø45 h6', sx + 250, cy - 110); x.fillStyle = '#1d2128'; x.fillText('Ø35', sx + 425, cy - 90); x.fillText('150', sx + 75, cy + 170); x.fillText('200', sx + 250, cy + 170); x.fillText('150', sx + 425, cy + 170);
+      if(m === 'rough' || m === 'which'){ x.fillStyle = hlc; x.font = 'bold 26px monospace'; x.fillText('√ Ra 0.8', sx + 250, cy - 150); }
+      if(m === 'geo'){ x.strokeStyle = hlc; x.strokeRect(sx + 180, cy + 100, 160, 44); x.fillStyle = hlc; x.font = 'bold 26px monospace'; x.fillText('⌭ 0.01', sx + 260, cy + 132); }
+      if(m === 'tol'){ x.fillStyle = hlc; x.font = 'bold 26px Tahoma'; x.fillText('45.000 / 44.984', W - 180, 80); }
+    } else { x.strokeRect(220, 180, 560, 300); x.fillText('300', 500, 520); x.fillText('20 ±0.01', 880, 330); x.strokeRect(820, 180, 40, 300);
+      if(m === 'rough' || m === 'which' || m === 'tol'){ x.fillStyle = hlc; x.fillText('√ Ra 0.8', 500, 160); }
+      if(m === 'geo'){ x.strokeStyle = hlc; x.strokeRect(380, 560, 260, 44); x.fillStyle = hlc; x.fillText('∥ 0.01  A', 510, 592); } }
+    x.fillStyle = '#2a62c9'; x.font = 'bold 30px Tahoma'; x.textAlign = 'right'; x.fillText({ views: L('المساقط والأبعاد', 'Views and dimensions'), tol: L('التفاوت (h6)', 'Tolerance (h6)'), rough: L('علامة التشطيب', 'Surface finish'), geo: L('تفاوت الشكل', 'Geometric tolerance'), which: L('الأسطح اللي هتتجلّخ', 'Surfaces to grind') }[m], W - 30, 60); });
+  draw();
+  return {
+    ...ctx, view: V(.05, .45, 1.4), sway: true, hint: L('دوس على الرسم تبدّل بين العمود واللوح', 'Tap the drawing to switch between shaft and plate'),
+    steps: [
+      { title: L('المساقط والأبعاد', 'Views and dimensions'), text: L('رسمة العمود بتوري الأقطار (Ø) والأطوال من خط المحور (الشرطة والنقطة). بنقرا كل قطر وطوله، ونطابقها على المشغولة الحقيقية. دوس على الرسم تشوف رسمة اللوح بتاع التجليخ السطحي.', 'The shaft drawing gives the diameters (Ø) and lengths about the centre line (chain line). Read each diameter and length and match them to the real part. Tap the drawing to see the plate drawing for surface grinding.'), focus: 'dw', s: { m: 'views' } },
+      { title: L('التفاوت المسموح', 'Tolerances'), text: L('«Ø45 h6» معناها إن القطر الاسمي 45 مم، والتفاوت h6 بيسمح بالقطر من 45.000 لحد 44.984 مم بس. ده فرق 16 ميكرون، ومفيش ماكينة تجيبه غير التجليخ. وفي اللوح «20 ±0.01» يعني التخانة من 19.99 لـ 20.01.', 'Ø45 h6 means a nominal 45 mm diameter and an h6 tolerance allowing only 45.000 to 44.984 mm, a 16-micron band that only grinding can hold. On the plate, 20 ±0.01 means a thickness from 19.99 to 20.01.'), focus: 'dw', s: { m: 'tol' } },
+      { title: L('علامات التشطيب', 'Surface finish symbols'), text: L('علامة √ مع Ra 0.8 معناها خشونة سطح متوسطها 0.8 ميكرون، ودي خشونة بتيجي من التجليخ مش من الخراطة (الخراطة حوالي 3.2). فأي سطح عليه العلامة دي محتاج يتجلّخ.', 'The √ symbol with Ra 0.8 means an average roughness of 0.8 microns, a finish produced by grinding rather than turning (about 3.2). Any surface carrying this symbol needs grinding.'), focus: 'dw', s: { m: 'rough' } },
+      { title: L('تفاوت الشكل والوضع', 'Geometric tolerances'), text: L('المربع اللي فيه رمز بيحدد شكل السطح أو وضعه: ⌭ 0.01 للأسطوانية (القطر لازم يكون أسطوانة مظبوطة في حدود 0.01)، و∥ 0.01 A للتوازي مع السطح المرجعي A. وده اللي بنراجعه بالميكرومتر في نقطتين وبساعة القياس.', 'A frame with a symbol controls the form or position of a surface: ⌭ 0.01 for cylindricity (a true cylinder within 0.01) and ∥ 0.01 A for parallelism to datum A. These are what we check with a micrometer at two points and a dial indicator.'), focus: 'dw', s: { m: 'geo' } },
+      { title: L('تحديد الأسطح اللي هتتجلّخ', 'Deciding what to grind'), text: L('من الرسمة بنحدد: القطر Ø45 h6 عليه Ra 0.8 فهيتجلّخ أسطواني (الأخضر على العمود)، ووش اللوح عليه Ra 0.8 وتوازي فهيتجلّخ سطحي (الأخضر على اللوح). وباقي الأسطح بتفضل بالخراطة أو الفريزة.', 'From the drawing: Ø45 h6 with Ra 0.8 is cylindrically ground (green on the shaft), and the plate face with Ra 0.8 and parallelism is surface ground (green on the plate). The other surfaces stay as turned or milled.'), focus: 'shaft', s: { m: 'which' } }
+    ],
+    apply(s){ st.m = s.m; t = 0; draw(); },
+    update(dt){ t += dt; const m = st.m; hl.visible = ptop.visible = m === 'which'; hl.material.opacity = ptop.material.opacity = .3 + Math.sin(t * 4) * .15; S.spin.rotation.y += dt * .5; }
+  };
+}
 
 const MODELS_DEF = () => [
   { id: 'gprep', name: L('ماكينات التجليخ والتجهيز والتبريد', 'Grinding machines, setup & coolant'), from: L('تجليخ · وحدات 1–3، 25', 'Grinding · units 1–3, 25'), build: buildGrindPrep },
-  { id: 'gwheel', name: L('أحجار التجليخ', 'Grinding wheels'), from: L('تجليخ · وحدات 4، 6، 7، 19', 'Grinding · units 4, 6, 7, 19'), build: buildGWheel },
-  { id: 'cylgrind', name: L('التجليخ الأسطواني', 'Cylindrical grinding'), from: L('تجليخ · وحدات 5، 9، 10، 14، 16، 20، 23، 24، 26، 27', 'Grinding · units 5, 9, 10, 14, 16, 20, 23, 24, 26, 27'), build: buildCylGrind },
-  { id: 'surfgrind', name: L('التجليخ السطحي', 'Surface grinding'), from: L('تجليخ · وحدات 8، 12، 15، 18، 21، 22، 28، 29', 'Grinding · units 8, 12, 15, 18, 21, 22, 28, 29'), build: buildSurfGrind },
-  { id: 'intgrind', name: L('التجليخ الداخلي والمجاري', 'Internal & slot grinding'), from: L('تجليخ · وحدات 30–38', 'Grinding · units 30–38'), build: buildIntGrind },
-  { id: 'toolgrind', name: L('سن العدد', 'Tool sharpening'), from: L('تجليخ · وحدات 39–45', 'Grinding · units 39–45'), build: buildToolGrind },
-  { id: 'lathetools', name: L('أقلام الخراطة وزواياها', 'Turning tools & angles'), from: L('تجليخ · وحدات 41، 43', 'Grinding · units 41, 43'), build: buildLatheTools },
-  { id: 'measure', name: L('أدوات القياس الميكانيكية', 'Measuring tools'), from: L('تجليخ · وحدات 11، 13، 17', 'Grinding · units 11, 13, 17'), build: buildMeasuring }
+  { id: 'gwheel', name: L('أحجار التجليخ: الأنواع والتركيب والوزن', 'Wheels: types, mounting & balancing'), from: L('تجليخ · وحدات 4، 6، 7', 'Grinding · units 4, 6, 7'), build: buildGWheel },
+  { id: 'gdress', name: L('تسوية الحجر بالماسة', 'Dressing the wheel'), from: L('تجليخ · وحدة 19', 'Grinding · unit 19'), build: buildGDress },
+  { id: 'cylgrind', name: L('التجليخ الأسطواني', 'Cylindrical grinding'), from: L('تجليخ · وحدات 5، 9، 10، 17', 'Grinding · units 5, 9, 10, 17'), build: buildCylGrind },
+  { id: 'gtaper', name: L('ضبط السلبة بالضوء والنقطتين', 'Taper by light & two points'), from: L('تجليخ · وحدات 14، 16', 'Grinding · units 14, 16'), build: buildGTaper },
+  { id: 'gshoulder', name: L('الخلوص الجانبي والأقطار المدرجة والأكتاف', 'Side relief, steps & shoulders'), from: L('تجليخ · وحدات 20، 23، 24، 26، 27، 36', 'Grinding · units 20, 23, 24, 26, 27, 36'), build: buildGShoulder },
+  { id: 'surfgrind', name: L('التجليخ السطحي', 'Surface grinding'), from: L('تجليخ · وحدات 8، 12، 22', 'Grinding · units 8, 12, 22'), build: buildSurfGrind },
+  { id: 'gsquare', name: L('السطوح المتعامدة والمراجعة', 'Square faces & checking'), from: L('تجليخ · وحدات 15، 18، 21، 28', 'Grinding · units 15, 18, 21, 28'), build: buildGSquare },
+  { id: 'gsine', name: L('الترابيزة الجيبية', 'The sine table'), from: L('تجليخ · وحدة 29', 'Grinding · unit 29'), build: buildGSine },
+  { id: 'intgrind', name: L('التجليخ الداخلي', 'Internal grinding'), from: L('تجليخ · وحدات 30، 31، 34، 35، 37', 'Grinding · units 30, 31, 34, 35, 37'), build: buildIntGrind },
+  { id: 'gslot', name: L('تجليخ المجاري وتوزيع الأبعاد', 'Slot grinding'), from: L('تجليخ · وحدات 32، 33، 38', 'Grinding · units 32, 33, 38'), build: buildGSlot },
+  { id: 'toolgrind', name: L('سن أقلام الخراطة والسكاكين المحيطية', 'Sharpening tools & peripheral cutters'), from: L('تجليخ · وحدات 39، 40، 42، 43', 'Grinding · units 39, 40, 42, 43'), build: buildToolGrind },
+  { id: 'gfacemill', name: L('سن سكينة الفرايز الوجهية', 'Sharpening a face mill'), from: L('تجليخ · وحدات 44، 45', 'Grinding · units 44, 45'), build: buildGFaceMill },
+  { id: 'lathetools', name: L('أقلام الخراطة وزواياها', 'Turning tools & angles'), from: L('تجليخ · وحدة 41', 'Grinding · unit 41'), build: buildLatheTools },
+  { id: 'measure', name: L('أدوات القياس الميكانيكية', 'Measuring tools'), from: L('تجليخ · وحدات 11، 13', 'Grinding · units 11, 13'), build: buildMeasuring },
+  { id: 'gdrawing', name: L('قراءة رسومات المشغولات', 'Reading part drawings'), from: L('تجليخ · وحدة 46', 'Grinding · unit 46'), build: buildGDrawing }
 ];
 let MODELS = MODELS_DEF();
 
@@ -5217,8 +5503,8 @@ function tick(){
 }
 
 /* ---------- الربط مع المنصة (التجليخ) ---------- */
-const TITLE_TO_MODELS = {"التدريب على تجهيز ماكينات التجليخ الأسطواني والسطحي": ["gprep"], "شرح انواع الماكينات المرتبطة بأنواع ماكينات الخراطة والفرايز": ["gprep"], "شرح طرق الصيانة وأنواع سوائل التبريد": ["gprep"], "فك وتركيب أحجار التجليخ الأسطواني والسطحي": ["gwheel"], "شرح طرق التثبيت الأسطواني وتركيبها والتدريب عليها": ["cylgrind"], "شرح انواع الاحجار الأسطواني وطرق اختبارها": ["gwheel"], "شرح طرق وزن الاحجار الأسطواني والسطحي": ["gwheel"], "شرح طرق التثبيت السطحي وتركيبها والتدريب عليها": ["surfgrind"], "تجليخ الأقطار الاسطوانية وإزالة أول طبقة من الرايش": ["cylgrind"], "ضبط الماكينة الأسطواني مع ضبط الأبعاد والماكينة": ["cylgrind"], "التدريب على القياس بالميكرومتر – الباكوليس": ["measure"], "تجليخ السطوح المستوية والمتوازية وإزالة أول طبقة من الرايش": ["surfgrind"], "تجليخ الأقطار الاسطوانية العدلة وضبط السلبة بواسطة الضوء": ["cylgrind"], "تجليخ السطوح المستوية والمتعامدة مع التدريب على تسوية الحجر": ["surfgrind", "gwheel"], "تجليخ الاقطار الاسطوانية العدلة وضبط السلبة بواسطة النقطتين": ["cylgrind"], "قياس المشغولات الاسطوانية والتدريب على القياس على الماكينة": ["measure", "cylgrind"], "تجليخ السطوح المستوية والمتعامدة بواسطة منجلة خاصة": ["surfgrind"], "ضبط الماكينة وتسوية الاحجار بواسطة الماسة ( ناعم )": ["gwheel"], "تجليخ الاقطار الاسطوانية العدلة وضبط الابعاد بدقة 01, مم": ["cylgrind"], "تجليخ السطوح المستوية والمتوازية والمتعامدة بواسطة زاوية تثبيت": ["surfgrind"], "إزالة الروايش بالمبرد وضبط الظرف المغناطيسي قبل التثبيت": ["surfgrind"], "تجهيز الماكينة وعمل خلوص جانبي وتجليخ الأقطار الاسطوانية": ["cylgrind"], "تجهيز الماكينة وعمل خلوص جانبي وتجليخ الأقطار الاسطوانية المدرجة وضبط ميكرومتر جسم الماكينة وطرق المراجعة": ["cylgrind"], "التأكيد على مراجعة الصيانات الشهرية ولبس الفني ونظارة واقية": ["gprep"], "تجليخ الأقطار الأسطوانية المدرجة والمختلفة وطرق المراجعة": ["cylgrind"], "تجليخ الزوايا القائمة 90° خارجي وضبط الماكينة": ["cylgrind"], "مراجعة التعامد بواسطة المنجلة العامة وزاوية قائمة": ["surfgrind"], "ضبط الزاوية القائمة خارجي وداخلي 90° بواسطة جهاز السين تيبل sintapel": ["surfgrind"], "تجليخ الاقطار الاسطوانية الداخلية المفتوحة للنهاية": ["intgrind"], "تجهيز الفرتونة وتزييتها وتجهيز محددات القياس للمراجعة": ["intgrind"], "تجليخ المجاري العدلة واختبار الحجر المناسب": ["intgrind"], "توزيع الابعاد على المجرى الداخلية وطرق المراجعة": ["intgrind"], "تجليخ الأقطار الاسطوانية الداخلية واختبار الأحجار": ["intgrind"], "طرق مراجعة الثقوب الداخلية ( المفتوحة – المقفولة )": ["intgrind"], "شرح طريقة عمل الخلوص الجانبي بواسطة الكاربورترم": ["intgrind"], "مراجعة على اختبار أحجار الداخلي والأعمدة وطريقة تزييت الفرتونة وطرق المراجعة": ["intgrind"], "مراجعة على تجليخ المجاري العدلة وتوزيع الابعاد": ["intgrind"], "شرح أنواع ماكينات سن العدة وطرق العمل عليها": ["toolgrind"], "سن قلم خراطة جنب يمين وتحديد زواياه": ["toolgrind"], "شرح انواع اقلام الخراطة المختلفة": ["lathetools", "toolgrind"], "سن سكينة الفرايز المحيطية وطريقة تجهيز الماكينة": ["toolgrind"], "شرح طرق مراجعة زوايا أقلام الخراطة واستخدامها": ["toolgrind", "lathetools"], "سن سكينة الفرايز الوجهية وطرق تجهيز الماكينة": ["toolgrind"], "شرح زوايا السكاكين وطرق التثبيت على الماكينة": ["toolgrind"], "مراجعة عامة على ما سبق ذكره مع التركيز على قراءة الرسومات للمشغولات الأسطواني والسطحي": ["cylgrind", "surfgrind"]};
-const ID_TO_MODELS = {"3gmqmz0": ["gprep"], "wtyir06": ["gprep"], "1z803vw": ["gprep"], "1p88xm8": ["gwheel"], "m5o4pa6": ["cylgrind"], "x8hexxd": ["gwheel"], "s5b60mp": ["gwheel"], "brt6knn": ["surfgrind"], "u90ri7b": ["cylgrind"], "qlqv6mn": ["cylgrind"], "2e5cpku": ["measure"], "yywbta1": ["surfgrind"], "8ouxmz7": ["cylgrind"], "rdmlxqm": ["surfgrind", "gwheel"], "wlpmw6l": ["cylgrind"], "vkkd8jw": ["measure", "cylgrind"], "ki2l5s7": ["surfgrind"], "8ywnxi9": ["gwheel"], "gd9iv1a": ["cylgrind"], "q5uftw1": ["surfgrind"], "pj2wk8p": ["surfgrind"], "abeavwo": ["cylgrind"], "v4tgwha": ["cylgrind"], "v39hdox": ["gprep"], "vnwgybp": ["cylgrind"], "4dr3nt0": ["cylgrind"], "uwn0qxd": ["surfgrind"], "g9u261b": ["surfgrind"], "vvpjaap": ["intgrind"], "hlb9rkq": ["intgrind"], "dcbionb": ["intgrind"], "pjn4a3m": ["intgrind"], "4nvtwh1": ["intgrind"], "ianphud": ["intgrind"], "c3glbr4": ["intgrind"], "nmubosu": ["intgrind"], "bepijm8": ["intgrind"], "lp17phs": ["toolgrind"], "ab3a6d3": ["toolgrind"], "xkksl58": ["lathetools", "toolgrind"], "96cmbz5": ["toolgrind"], "zn7dqra": ["toolgrind", "lathetools"], "cdei59v": ["toolgrind"], "kimhd3s": ["toolgrind"], "5gb9n0v": ["cylgrind", "surfgrind"]};
+const TITLE_TO_MODELS = {"التدريب على تجهيز ماكينات التجليخ الأسطواني والسطحي": ["gprep"], "شرح انواع الماكينات المرتبطة بأنواع ماكينات الخراطة والفرايز": ["gprep"], "شرح طرق الصيانة وأنواع سوائل التبريد": ["gprep"], "فك وتركيب أحجار التجليخ الأسطواني والسطحي": ["gwheel"], "شرح طرق التثبيت الأسطواني وتركيبها والتدريب عليها": ["cylgrind"], "شرح انواع الاحجار الأسطواني وطرق اختبارها": ["gwheel"], "شرح طرق وزن الاحجار الأسطواني والسطحي": ["gwheel"], "شرح طرق التثبيت السطحي وتركيبها والتدريب عليها": ["surfgrind"], "تجليخ الأقطار الاسطوانية وإزالة أول طبقة من الرايش": ["cylgrind"], "ضبط الماكينة الأسطواني مع ضبط الأبعاد والماكينة": ["cylgrind"], "التدريب على القياس بالميكرومتر – الباكوليس": ["measure"], "تجليخ السطوح المستوية والمتوازية وإزالة أول طبقة من الرايش": ["surfgrind"], "تجليخ الأقطار الاسطوانية العدلة وضبط السلبة بواسطة الضوء": ["gtaper"], "تجليخ السطوح المستوية والمتعامدة مع التدريب على تسوية الحجر": ["gsquare"], "تجليخ الاقطار الاسطوانية العدلة وضبط السلبة بواسطة النقطتين": ["gtaper"], "قياس المشغولات الاسطوانية والتدريب على القياس على الماكينة": ["cylgrind"], "تجليخ السطوح المستوية والمتعامدة بواسطة منجلة خاصة": ["gsquare"], "ضبط الماكينة وتسوية الاحجار بواسطة الماسة ( ناعم )": ["gdress"], "تجليخ الاقطار الاسطوانية العدلة وضبط الابعاد بدقة 01, مم": ["gshoulder"], "تجليخ السطوح المستوية والمتوازية والمتعامدة بواسطة زاوية تثبيت": ["gsquare"], "إزالة الروايش بالمبرد وضبط الظرف المغناطيسي قبل التثبيت": ["surfgrind"], "تجهيز الماكينة وعمل خلوص جانبي وتجليخ الأقطار الاسطوانية": ["gshoulder"], "تجهيز الماكينة وعمل خلوص جانبي وتجليخ الأقطار الاسطوانية المدرجة وضبط ميكرومتر جسم الماكينة وطرق المراجعة": ["gshoulder"], "التأكيد على مراجعة الصيانات الشهرية ولبس الفني ونظارة واقية": ["gprep"], "تجليخ الأقطار الأسطوانية المدرجة والمختلفة وطرق المراجعة": ["gshoulder"], "تجليخ الزوايا القائمة 90° خارجي وضبط الماكينة": ["gshoulder"], "مراجعة التعامد بواسطة المنجلة العامة وزاوية قائمة": ["gsquare"], "ضبط الزاوية القائمة خارجي وداخلي 90° بواسطة جهاز السين تيبل sintapel": ["gsine"], "تجليخ الاقطار الاسطوانية الداخلية المفتوحة للنهاية": ["intgrind"], "تجهيز الفرتونة وتزييتها وتجهيز محددات القياس للمراجعة": ["intgrind"], "تجليخ المجاري العدلة واختبار الحجر المناسب": ["gslot"], "توزيع الابعاد على المجرى الداخلية وطرق المراجعة": ["gslot"], "تجليخ الأقطار الاسطوانية الداخلية واختبار الأحجار": ["intgrind"], "طرق مراجعة الثقوب الداخلية ( المفتوحة – المقفولة )": ["intgrind"], "شرح طريقة عمل الخلوص الجانبي بواسطة الكاربورترم": ["gshoulder"], "مراجعة على اختبار أحجار الداخلي والأعمدة وطريقة تزييت الفرتونة وطرق المراجعة": ["intgrind"], "مراجعة على تجليخ المجاري العدلة وتوزيع الابعاد": ["gslot"], "شرح أنواع ماكينات سن العدة وطرق العمل عليها": ["toolgrind"], "سن قلم خراطة جنب يمين وتحديد زواياه": ["toolgrind"], "شرح انواع اقلام الخراطة المختلفة": ["lathetools"], "سن سكينة الفرايز المحيطية وطريقة تجهيز الماكينة": ["toolgrind"], "شرح طرق مراجعة زوايا أقلام الخراطة واستخدامها": ["toolgrind"], "سن سكينة الفرايز الوجهية وطرق تجهيز الماكينة": ["gfacemill"], "شرح زوايا السكاكين وطرق التثبيت على الماكينة": ["gfacemill"], "مراجعة عامة على ما سبق ذكره مع التركيز على قراءة الرسومات للمشغولات الأسطواني والسطحي": ["gdrawing"]};
+const ID_TO_MODELS = {"3gmqmz0": ["gprep"], "wtyir06": ["gprep"], "1z803vw": ["gprep"], "1p88xm8": ["gwheel"], "m5o4pa6": ["cylgrind"], "x8hexxd": ["gwheel"], "s5b60mp": ["gwheel"], "brt6knn": ["surfgrind"], "u90ri7b": ["cylgrind"], "qlqv6mn": ["cylgrind"], "2e5cpku": ["measure"], "yywbta1": ["surfgrind"], "8ouxmz7": ["gtaper"], "rdmlxqm": ["gsquare"], "wlpmw6l": ["gtaper"], "vkkd8jw": ["cylgrind"], "ki2l5s7": ["gsquare"], "8ywnxi9": ["gdress"], "gd9iv1a": ["gshoulder"], "q5uftw1": ["gsquare"], "pj2wk8p": ["surfgrind"], "abeavwo": ["gshoulder"], "v4tgwha": ["gshoulder"], "v39hdox": ["gprep"], "vnwgybp": ["gshoulder"], "4dr3nt0": ["gshoulder"], "uwn0qxd": ["gsquare"], "g9u261b": ["gsine"], "vvpjaap": ["intgrind"], "hlb9rkq": ["intgrind"], "dcbionb": ["gslot"], "pjn4a3m": ["gslot"], "4nvtwh1": ["intgrind"], "ianphud": ["intgrind"], "c3glbr4": ["gshoulder"], "nmubosu": ["intgrind"], "bepijm8": ["gslot"], "lp17phs": ["toolgrind"], "ab3a6d3": ["toolgrind"], "xkksl58": ["lathetools"], "96cmbz5": ["toolgrind"], "zn7dqra": ["toolgrind"], "cdei59v": ["gfacemill"], "kimhd3s": ["gfacemill"], "5gb9n0v": ["gdrawing"]};
 const UI3 = { reset: ['إعادة الضبط', 'Reset view'], step: ['الخطوة', 'Step'], of: ['من', 'of'], prev: ['السابق', 'Back'], next: ['التالي', 'Next'], parts: ['القطع', 'Parts'], eyebrow: ['موديل 3D تفاعلي', 'Interactive 3D model'], close: ['إغلاق', 'Close'] };
 let lastFocus = null;
 function applyLang(){
@@ -5240,6 +5526,7 @@ function buildTabs(ids){
 function idsFor(title, m){ const k = String(title || '').trim(); if(TITLE_TO_MODELS[k]) return TITLE_TO_MODELS[k]; if(m && typeof m === 'object'){ if(m.id && ID_TO_MODELS[m.id]) return ID_TO_MODELS[m.id]; if(m.sourceUnitId && ID_TO_MODELS[m.sourceUnitId]) return ID_TO_MODELS[m.sourceUnitId]; } return null; }
 function open3D(moduleTitle, m){
   const ids = idsFor(moduleTitle, m); if(!ids) return false;
+  __unitSteps = unitStepsFor(moduleTitle, m);
   LANG = /[\u0600-\u06FF]/.test(moduleTitle) ? 'ar' : 'en';
   MODELS = MODELS_DEF();
   lastFocus = document.activeElement;
@@ -5254,6 +5541,19 @@ function open3D(moduleTitle, m){
   $('close').focus({ preventScroll: true });
   return true;
 }
+
+/* ---------- كل وحدة بتفتح على خطواتها بس ---------- */
+const UNIT_STEPS_T = {"التدريب على تجهيز ماكينات التجليخ الأسطواني والسطحي": {"gprep": [1]}, "شرح انواع الماكينات المرتبطة بأنواع ماكينات الخراطة والفرايز": {"gprep": [0]}, "شرح طرق الصيانة وأنواع سوائل التبريد": {"gprep": [2, 3]}, "فك وتركيب أحجار التجليخ الأسطواني والسطحي": {"gwheel": [2]}, "شرح طرق التثبيت الأسطواني وتركيبها والتدريب عليها": {"cylgrind": [0]}, "شرح انواع الاحجار الأسطواني وطرق اختبارها": {"gwheel": [0, 1]}, "شرح طرق وزن الاحجار الأسطواني والسطحي": {"gwheel": [3]}, "شرح طرق التثبيت السطحي وتركيبها والتدريب عليها": {"surfgrind": [0]}, "تجليخ الأقطار الاسطوانية وإزالة أول طبقة من الرايش": {"cylgrind": [1]}, "ضبط الماكينة الأسطواني مع ضبط الأبعاد والماكينة": {"cylgrind": [1, 3]}, "التدريب على القياس بالميكرومتر – الباكوليس": {"measure": [0, 1, 2]}, "تجليخ السطوح المستوية والمتوازية وإزالة أول طبقة من الرايش": {"surfgrind": [1, 2]}, "تجليخ الأقطار الاسطوانية العدلة وضبط السلبة بواسطة الضوء": {"gtaper": [0, 1, 3]}, "تجليخ السطوح المستوية والمتعامدة مع التدريب على تسوية الحجر": {"gsquare": [0, 1, 2, 3]}, "تجليخ الاقطار الاسطوانية العدلة وضبط السلبة بواسطة النقطتين": {"gtaper": [0, 2, 3]}, "قياس المشغولات الاسطوانية والتدريب على القياس على الماكينة": {"cylgrind": [3]}, "تجليخ السطوح المستوية والمتعامدة بواسطة منجلة خاصة": {"gsquare": [1, 3]}, "ضبط الماكينة وتسوية الاحجار بواسطة الماسة ( ناعم )": {"gdress": [0, 1, 2, 3]}, "تجليخ الاقطار الاسطوانية العدلة وضبط الابعاد بدقة 01, مم": {"gshoulder": [3]}, "تجليخ السطوح المستوية والمتوازية والمتعامدة بواسطة زاوية تثبيت": {"gsquare": [2, 3]}, "إزالة الروايش بالمبرد وضبط الظرف المغناطيسي قبل التثبيت": {"surfgrind": [0]}, "تجهيز الماكينة وعمل خلوص جانبي وتجليخ الأقطار الاسطوانية": {"gshoulder": [0, 1, 2]}, "تجهيز الماكينة وعمل خلوص جانبي وتجليخ الأقطار الاسطوانية المدرجة وضبط ميكرومتر جسم الماكينة وطرق المراجعة": {"gshoulder": [2, 3]}, "التأكيد على مراجعة الصيانات الشهرية ولبس الفني ونظارة واقية": {"gprep": [3]}, "تجليخ الأقطار الأسطوانية المدرجة والمختلفة وطرق المراجعة": {"gshoulder": [2]}, "تجليخ الزوايا القائمة 90° خارجي وضبط الماكينة": {"gshoulder": [4]}, "مراجعة التعامد بواسطة المنجلة العامة وزاوية قائمة": {"gsquare": [3]}, "ضبط الزاوية القائمة خارجي وداخلي 90° بواسطة جهاز السين تيبل sintapel": {"gsine": [0, 1, 2]}, "تجليخ الاقطار الاسطوانية الداخلية المفتوحة للنهاية": {"intgrind": [0]}, "تجهيز الفرتونة وتزييتها وتجهيز محددات القياس للمراجعة": {"intgrind": [2, 3]}, "تجليخ المجاري العدلة واختبار الحجر المناسب": {"gslot": [0, 2]}, "توزيع الابعاد على المجرى الداخلية وطرق المراجعة": {"gslot": [1, 3]}, "تجليخ الأقطار الاسطوانية الداخلية واختبار الأحجار": {"intgrind": [0, 1]}, "طرق مراجعة الثقوب الداخلية ( المفتوحة – المقفولة )": {"intgrind": [1, 2]}, "شرح طريقة عمل الخلوص الجانبي بواسطة الكاربورترم": {"gshoulder": [0]}, "مراجعة على اختبار أحجار الداخلي والأعمدة وطريقة تزييت الفرتونة وطرق المراجعة": {"intgrind": [2, 3]}, "مراجعة على تجليخ المجاري العدلة وتوزيع الابعاد": {"gslot": [1, 2, 3]}, "شرح أنواع ماكينات سن العدة وطرق العمل عليها": {"toolgrind": [0]}, "سن قلم خراطة جنب يمين وتحديد زواياه": {"toolgrind": [1]}, "شرح انواع اقلام الخراطة المختلفة": {"lathetools": [0, 1]}, "سن سكينة الفرايز المحيطية وطريقة تجهيز الماكينة": {"toolgrind": [3]}, "شرح طرق مراجعة زوايا أقلام الخراطة واستخدامها": {"toolgrind": [2]}, "سن سكينة الفرايز الوجهية وطرق تجهيز الماكينة": {"gfacemill": [0, 1, 2, 3]}, "شرح زوايا السكاكين وطرق التثبيت على الماكينة": {"gfacemill": [1, 2]}, "مراجعة عامة على ما سبق ذكره مع التركيز على قراءة الرسومات للمشغولات الأسطواني والسطحي": {"gdrawing": [0, 1, 2, 3, 4]}};
+const UNIT_STEPS_I = {"3gmqmz0": {"gprep": [1]}, "wtyir06": {"gprep": [0]}, "1z803vw": {"gprep": [2, 3]}, "1p88xm8": {"gwheel": [2]}, "m5o4pa6": {"cylgrind": [0]}, "x8hexxd": {"gwheel": [0, 1]}, "s5b60mp": {"gwheel": [3]}, "brt6knn": {"surfgrind": [0]}, "u90ri7b": {"cylgrind": [1]}, "qlqv6mn": {"cylgrind": [1, 3]}, "2e5cpku": {"measure": [0, 1, 2]}, "yywbta1": {"surfgrind": [1, 2]}, "8ouxmz7": {"gtaper": [0, 1, 3]}, "rdmlxqm": {"gsquare": [0, 1, 2, 3]}, "wlpmw6l": {"gtaper": [0, 2, 3]}, "vkkd8jw": {"cylgrind": [3]}, "ki2l5s7": {"gsquare": [1, 3]}, "8ywnxi9": {"gdress": [0, 1, 2, 3]}, "gd9iv1a": {"gshoulder": [3]}, "q5uftw1": {"gsquare": [2, 3]}, "pj2wk8p": {"surfgrind": [0]}, "abeavwo": {"gshoulder": [0, 1, 2]}, "v4tgwha": {"gshoulder": [2, 3]}, "v39hdox": {"gprep": [3]}, "vnwgybp": {"gshoulder": [2]}, "4dr3nt0": {"gshoulder": [4]}, "uwn0qxd": {"gsquare": [3]}, "g9u261b": {"gsine": [0, 1, 2]}, "vvpjaap": {"intgrind": [0]}, "hlb9rkq": {"intgrind": [2, 3]}, "dcbionb": {"gslot": [0, 2]}, "pjn4a3m": {"gslot": [1, 3]}, "4nvtwh1": {"intgrind": [0, 1]}, "ianphud": {"intgrind": [1, 2]}, "c3glbr4": {"gshoulder": [0]}, "nmubosu": {"intgrind": [2, 3]}, "bepijm8": {"gslot": [1, 2, 3]}, "lp17phs": {"toolgrind": [0]}, "ab3a6d3": {"toolgrind": [1]}, "xkksl58": {"lathetools": [0, 1]}, "96cmbz5": {"toolgrind": [3]}, "zn7dqra": {"toolgrind": [2]}, "cdei59v": {"gfacemill": [0, 1, 2, 3]}, "kimhd3s": {"gfacemill": [1, 2]}, "5gb9n0v": {"gdrawing": [0, 1, 2, 3, 4]}};
+let __unitSteps = null, __unitFull = null, __unitSub = null;
+function unitStepsFor(title, m){ const k = String(title || '').trim(); if(UNIT_STEPS_T[k]) return UNIT_STEPS_T[k]; if(m && typeof m === 'object'){ if(m.id && UNIT_STEPS_I[m.id]) return UNIT_STEPS_I[m.id]; if(m.sourceUnitId && UNIT_STEPS_I[m.sourceUnitId]) return UNIT_STEPS_I[m.sourceUnitId]; } return null; }
+const __loadModel0 = loadModel;
+loadModel = function(id){ __loadModel0(id); __unitFull = null; const note = $('unitNote'); if(note) note.hidden = true;
+  const sub = __unitSteps && __unitSteps[id]; if(!sub || !current || !current.steps) return;
+  const full = current.steps; const pick = sub.filter(i => i >= 0 && i < full.length); if(!pick.length || pick.length >= full.length) return;
+  __unitFull = full; __unitSub = pick; current.steps = pick.map(i => full[i]); buildDots(); setStep(0);
+  if(note){ note.hidden = false; $('unitNoteTxt').textContent = L(`بتشوف الخطوات اللي بتخص الوحدة دي بس (${pick.length} من ${full.length}).`, `Showing this unit's steps only (${pick.length} of ${full.length}).`); $('fullBtn').textContent = L('شوف الموديل كامل', 'See the full model'); } };
+$('fullBtn').addEventListener('click', () => { if(!__unitFull || !current) return; const at = __unitSub[stepIdx] || 0; current.steps = __unitFull; __unitFull = null; buildDots(); setStep(at); $('unitNote').hidden = true; });
 function close3D(){
   try{ autoStop(); }catch(e){}
   if(root3d.hidden) return;
