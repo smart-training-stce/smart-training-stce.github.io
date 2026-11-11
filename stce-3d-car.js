@@ -42,7 +42,7 @@ root3d.innerHTML = `
     </div>
     <div class="k3d-side">
       <section class="k3d-card" aria-live="polite">
-        <div class="k3d-stepmeta">الخطوة <span id="k3d-stepNo">1</span> من <span id="k3d-stepCount">1</span></div>
+        <div id="k3d-unitNote" hidden style="background:#fff6dd;color:#1b1f26;border:1px solid #e8b94a;border-radius:10px;padding:8px 10px;margin-bottom:8px;font-size:13px"><span id="k3d-unitNoteTxt"></span> <button type="button" id="k3d-fullBtn" style="margin-top:6px;padding:6px 12px;border-radius:9px;border:1px solid #c9b98f;background:#fff;font:inherit;cursor:pointer"></button></div><div class="k3d-stepmeta">الخطوة <span id="k3d-stepNo">1</span> من <span id="k3d-stepCount">1</span></div>
         <h3 id="k3d-stepTitle"></h3>
         <p id="k3d-stepText"></p>
         <div class="k3d-stepnav">
@@ -4425,6 +4425,7 @@ function buildTabs(ids){
 function idsFor(title, m){ const k = String(title || '').trim(); if(TITLE_TO_MODELS[k]) return TITLE_TO_MODELS[k]; if(m && typeof m === 'object'){ if(m.id && ID_TO_MODELS[m.id]) return ID_TO_MODELS[m.id]; if(m.sourceUnitId && ID_TO_MODELS[m.sourceUnitId]) return ID_TO_MODELS[m.sourceUnitId]; } return null; }
 function open3D(moduleTitle, m){
   const ids = idsFor(moduleTitle, m); if(!ids) return false;
+  __unitSteps = unitStepsFor(moduleTitle, m);
   LANG = /[\u0600-\u06FF]/.test(moduleTitle) ? 'ar' : 'en';
   MODELS = MODELS_DEF();
   lastFocus = document.activeElement;
@@ -4439,6 +4440,19 @@ function open3D(moduleTitle, m){
   $('close').focus({ preventScroll: true });
   return true;
 }
+
+/* ---------- كل وحدة بتفتح على خطواتها بس ---------- */
+const UNIT_STEPS_T = {"اجراء عمليات التدريب علي فحص مكونات المحرك.": {"engparts": [0]}, "اجراء عمليات التدريب علي فك وتركيب المحرك.": {"engparts": [1]}, "اجراء عمليات التدريب علي كشف اعطال المحرك.": {"compress": [5, 0]}, "اجراء عمليات التدريب علي تغيير الاجزاء التالفة من المحرك.": {"engparts": [6]}, "اجراء عمليات التدريب علي الصيانة الكهربية للمحرك.": {"carelec": [0, 1, 4]}, "اجراء عمليات التدريب علي الدائرة الكهربائية للسيارات وعمل الصيانة.": {"carelec": [0, 4, 5]}, "اجراء عمليات التدريب علي مولد التيار(الدينامو) وبادئ الحركة(المارش).": {"carelec": [2, 3]}, "اجراء عمليات التدريب علي فحص القابض الاحتكاكي(الديسك + الأسطوانة).": {"clutch": [0, 1, 2, 3]}, "اجراء عمليات التدريب علي فحص وتغيير الجزيء التالف من القابض الاحتكاكي.": {"clutch": [3, 4, 5]}, "اجراء عمليات التدريب علي فك وصلات الوقود واختبارها وتغيير فلتر الهواء.": {"fuel": [0, 2]}, "اجراء عمليات التدريب علي فك وضخه الوقود الكهربائية وفحصها.": {"fuel": [1]}, "اجراء عمليات التدريب علي انظمة الفرامل بالسيارة.": {"brakes": [0, 2, 3, 5]}, "اجراء عمليات التدريب علي فك الاسطوانة الرئيسية (الماستر) وفحصها.": {"brakes": [1, 4]}, "اجراء عمليات التدريب علي فحص مجموعة الفرامل الانفراجية والانقباضية واصلاحها .": {"brakes": [2, 3, 4]}, "اجراء عمليات التدريب علي عمل نصف عمرة للمحرك.": {"engparts": [1, 2, 3, 4, 5]}, "اجراء عمليات التدريب علي فحص رأس الاسطوانات ( وش السلندر )  .": {"timing": [0, 1], "engparts": [5]}, "اجراء عمليات التدريب علي تغيير جوان وش السلندر وضبط توقيتات المحرك.": {"timing": [2, 3, 4, 5]}, "اجراء عمليات التدريب علي مبادئ الحقن ونظام السحب بمحركات البنزين.": {"fuel": [3]}, "اجراء عمليات التدريب علي الحقن الالكتروني في محرك البنزين.": {"fuel": [4], "sensors": [0, 1]}, "اجراء عمليات التدريب علي قياس نسبة الانضغاط والتخلخل داخل الاسطوانات.": {"compress": [0, 1, 2, 3, 4]}, "اجراء عمليات التدريب علي تجميع اجزاء المحرك وضبط التوقيتات(التقسيمة).": {"timing": [4, 5]}, "اجراء عمليات التدريب علي المحاور الامامية والخلفية بالسيارة وعمل الصيانة اللازمة.": {"steering": [0, 1, 4]}, "اجراء عمليات التدريب علي ضبط زوايا العجلات بالسيارة": {"alignment": [0, 1, 2, 3, 4]}, "اجراء عمليات التدريب علي فحص اجزاء المحاور الامامية ومجموعة التوجيه.": {"steering": [2, 3]}, "اجراء عمليات التدريب علي فحص وضبط استقامة العجلات.": {"alignment": [4, 5]}};
+const UNIT_STEPS_I = {"l8e2hmh": {"engparts": [0]}, "v1e6yio": {"engparts": [1]}, "edt5809": {"compress": [5, 0]}, "0fhjcgo": {"engparts": [6]}, "tgpm8lk": {"carelec": [0, 1, 4]}, "o7x5p5k": {"carelec": [0, 4, 5]}, "fn0kqf3": {"carelec": [2, 3]}, "fipbu5i": {"clutch": [0, 1, 2, 3]}, "l36j82h": {"clutch": [3, 4, 5]}, "ejeimg3": {"fuel": [0, 2]}, "g96pwnv": {"fuel": [1]}, "3f3hjr6": {"brakes": [0, 2, 3, 5]}, "gseya3r": {"brakes": [1, 4]}, "nki4etc": {"brakes": [2, 3, 4]}, "xihcp62": {"engparts": [1, 2, 3, 4, 5]}, "esxxl9s": {"timing": [0, 1], "engparts": [5]}, "i5suic7": {"timing": [2, 3, 4, 5]}, "eb9j6e9": {"fuel": [3]}, "bu5jccb": {"fuel": [4], "sensors": [0, 1]}, "mxi5vkd": {"compress": [0, 1, 2, 3, 4]}, "igs3qa3": {"timing": [4, 5]}, "sp2qw4m": {"steering": [0, 1, 4]}, "iccohhd": {"alignment": [0, 1, 2, 3, 4]}, "2hlqhsz": {"steering": [2, 3]}, "a99c7hy": {"alignment": [4, 5]}};
+let __unitSteps = null, __unitFull = null, __unitSub = null;
+function unitStepsFor(title, m){ const k = String(title || '').trim(); if(UNIT_STEPS_T[k]) return UNIT_STEPS_T[k]; if(m && typeof m === 'object'){ if(m.id && UNIT_STEPS_I[m.id]) return UNIT_STEPS_I[m.id]; if(m.sourceUnitId && UNIT_STEPS_I[m.sourceUnitId]) return UNIT_STEPS_I[m.sourceUnitId]; } return null; }
+const __loadModel0 = loadModel;
+loadModel = function(id){ __loadModel0(id); __unitFull = null; const note = $('unitNote'); if(note) note.hidden = true;
+  const sub = __unitSteps && __unitSteps[id]; if(!sub || !current || !current.steps) return;
+  const full = current.steps; const pick = sub.filter(i => i >= 0 && i < full.length); if(!pick.length || pick.length >= full.length) return;
+  __unitFull = full; __unitSub = pick; current.steps = pick.map(i => full[i]); buildDots(); setStep(0);
+  if(note){ note.hidden = false; $('unitNoteTxt').textContent = L(`بتشوف الخطوات اللي بتخص الوحدة دي بس (${pick.length} من ${full.length}).`, `Showing this unit's steps only (${pick.length} of ${full.length}).`); $('fullBtn').textContent = L('شوف الموديل كامل', 'See the full model'); } };
+$('fullBtn').addEventListener('click', () => { if(!__unitFull || !current) return; const at = __unitSub[stepIdx] || 0; current.steps = __unitFull; __unitFull = null; buildDots(); setStep(at); $('unitNote').hidden = true; });
 function close3D(){
   try{ autoStop(); }catch(e){}
   if(root3d.hidden) return;
