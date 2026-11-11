@@ -42,7 +42,7 @@ root3d.innerHTML = `
     </div>
     <div class="e3d-side">
       <section class="e3d-card" aria-live="polite">
-        <div class="e3d-stepmeta">الخطوة <span id="e3d-stepNo">1</span> من <span id="e3d-stepCount">1</span></div>
+        <div id="e3d-unitNote" hidden style="background:#fff6dd;color:#1b1f26;border:1px solid #e8b94a;border-radius:10px;padding:8px 10px;margin-bottom:8px;font-size:13px"><span id="e3d-unitNoteTxt"></span> <button type="button" id="e3d-fullBtn" style="margin-top:6px;padding:6px 12px;border-radius:9px;border:1px solid #c9b98f;background:#fff;font:inherit;cursor:pointer"></button></div><div class="e3d-stepmeta">الخطوة <span id="e3d-stepNo">1</span> من <span id="e3d-stepCount">1</span></div>
         <h3 id="e3d-stepTitle"></h3>
         <p id="e3d-stepText"></p>
         <div class="e3d-stepnav">
@@ -2258,6 +2258,7 @@ function buildTabs(ids){
 function idsFor(title){ return TITLE_TO_MODELS[String(title || '').trim()] || null; }
 function open3D(moduleTitle){
   const ids = idsFor(moduleTitle); if(!ids) return false;
+  __unitSteps = unitStepsFor(moduleTitle, null);
   LANG = /[\u0600-\u06FF]/.test(moduleTitle) ? 'ar' : 'en';
   MODELS = MODELS_DEF();
   lastFocus = document.activeElement;
@@ -2272,6 +2273,19 @@ function open3D(moduleTitle){
   $('close').focus({ preventScroll: true });
   return true;
 }
+
+/* ---------- كل وحدة بتفتح على خطواتها بس ---------- */
+const UNIT_STEPS_T = {"التعرف على العدد والخامات والمكونات والرموز الكهربية المستخدمة في التركيبات الكهربية": {"tools": [0, 1, 2, 3]}, "التعرف على أجهزة القياس الكهربية لقياس القدرة والميجر ومقاومة الأرضي": {"board": [6]}, "عمليات اللحام وفك المكونات الالكترونية.": {"solder": [0, 1, 2, 3]}, "العناصر الالكترونية المقاومة والمكثف والدايود": {"solder": [4, 5]}, "تنفيذ دائرة تشغيل جرس بالمحول وبدون": {"bell": [1, 2]}, "تنفيذ دائرة جرس بمبين أرقام": {"bell": [0, 3, 4]}, "تنفيذ دائرة إنارة لمبة فلورسنت ونجفة فلورسنت": {"fluor": [0, 1, 2, 3]}, "تنفيذ دائرة إنارة توصيل توالي و توازي و لمبات التفريغ الكهربي": {"fluor": [4]}, "تفيذ دوائر الاتصالات إنتركم مكاتب و منازل": {"intercom": [0, 1]}, "تنفيذ دوائر الاتصالات المرئي و الكالون الكهربي": {"intercom": [2, 3]}, "التدريب على تنفيذ لوحات التوزيع المنزلية و الصناعية و أرضي الحماية": {"board": [0, 1, 2, 3, 4, 5]}, "التدريب على التعرف على الرموز المستخدمة والمكونات بدوائر التحكم": {"tools": [4]}};
+const UNIT_STEPS_I = {"yhgow0e": {"tools": [0, 1, 2, 3]}, "9d6gm7a": {"board": [6]}, "f3sz5cy": {"solder": [0, 1, 2, 3]}, "2889dyl": {"solder": [4, 5]}, "m5569oz": {"bell": [1, 2]}, "z6b3uli": {"bell": [0, 3, 4]}, "s24fwmv": {"fluor": [0, 1, 2, 3]}, "ydd3qt4": {"fluor": [4]}, "7krbj1x": {"intercom": [0, 1]}, "hwf1rhn": {"intercom": [2, 3]}, "n8fq12l": {"board": [0, 1, 2, 3, 4, 5]}, "udfnvui": {"tools": [4]}};
+let __unitSteps = null, __unitFull = null, __unitSub = null;
+function unitStepsFor(title, m){ const k = String(title || '').trim(); if(UNIT_STEPS_T[k]) return UNIT_STEPS_T[k]; if(m && typeof m === 'object'){ if(m.id && UNIT_STEPS_I[m.id]) return UNIT_STEPS_I[m.id]; if(m.sourceUnitId && UNIT_STEPS_I[m.sourceUnitId]) return UNIT_STEPS_I[m.sourceUnitId]; } return null; }
+const __loadModel0 = loadModel;
+loadModel = function(id){ __loadModel0(id); __unitFull = null; const note = $('unitNote'); if(note) note.hidden = true;
+  const sub = __unitSteps && __unitSteps[id]; if(!sub || !current || !current.steps) return;
+  const full = current.steps; const pick = sub.filter(i => i >= 0 && i < full.length); if(!pick.length || pick.length >= full.length) return;
+  __unitFull = full; __unitSub = pick; current.steps = pick.map(i => full[i]); buildDots(); setStep(0);
+  if(note){ note.hidden = false; $('unitNoteTxt').textContent = L(`بتشوف الخطوات اللي بتخص الوحدة دي بس (${pick.length} من ${full.length}).`, `Showing this unit's steps only (${pick.length} of ${full.length}).`); $('fullBtn').textContent = L('شوف الموديل كامل', 'See the full model'); } };
+$('fullBtn').addEventListener('click', () => { if(!__unitFull || !current) return; const at = __unitSub[stepIdx] || 0; current.steps = __unitFull; __unitFull = null; buildDots(); setStep(at); $('unitNote').hidden = true; });
 function close3D(){
   try{ autoStop(); }catch(e){}
   if(root3d.hidden) return;
