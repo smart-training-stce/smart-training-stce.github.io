@@ -7337,30 +7337,49 @@ async function ttsListAll(token){
   }
   return all;
 }
+// بصمات صوت الوحدة بنص الشرح المحفوظ حاليًا (نفس اللي «اسمع الشرح» بيدوّر عليه بالظبط).
+async function ttsKeysForScript(m){
+  if(!(m.lectureScript && m.lectureScriptLang === state.lang)) return [];
+  const tts = state.ttsSettings || {};
+  const provider = tts.provider || (tts.azureKey && tts.azureRegion ? 'azure' : (tts.apiKey ? 'elevenlabs' : 'browser'));
+  const g = geminiTtsConfig();
+  const text = prepareSpeechText(m.lectureScript), legacy = stripFormattingForSpeech(m.lectureScript);
+  const keys = [];
+  if(g.voice) keys.push(await geminiCacheKey(text, g));
+  if(provider === 'azure' || provider === 'elevenlabs'){
+    const voice = ttsCacheVoiceFor(tts, provider, state.lang);
+    keys.push(await ttsCacheKey(text, provider, voice, state.lang));
+    if(legacy && legacy !== text) keys.push(await ttsCacheKey(legacy, provider, voice, state.lang));
+  }
+  return keys;
+}
+// اسم الملف في المخزن: Cloudflare بيقص الاسم بعد 120 حرف من صيغته المشفّرة، والحرف العربي
+// بياخد 6، فالأسامي العربي كانت بتتقص. دلوقتي الاسم بيبدأ برقم البرنامج والوحدة (حروف إنجليزي
+// قصيرة) عشان نقدر نلاقي الصوت بيهم بعدين مهما اتقص الباقي.
+function ttsCacheLabel(p, m){ return `${p.id}|${m && m.id ? m.id : ''}|${localized(m && m.title, state.lang)}`; }
+function ttsLabelIds(label){ const r = /^([A-Za-z0-9_-]+)(?:\||%7C)([A-Za-z0-9_-]+)(?:\||%7C)/i.exec(String(label || '')); return r ? { pid: r[1], mid: r[2] } : null; }
 window.__stceTtsRelink = async function(pid, onMsg){
   if(!window.__stceAdminOK) return null;
   const p = (state.programs || []).find(x => x.id === pid);
   if(!p) return null;
-  const token = await getTtsCacheToken();
-  if(!token) return { error: 'no_token' };
-  if(onMsg) onMsg('بيقرا قائمة الأصوات المتخزنة…');
-  const items = await ttsListAll(token);
   const myTitle = localized(p.title, state.lang);
-  const otherTitles = new Set((state.programs || []).filter(x => x.id !== pid).map(x => localized(x.title, state.lang)));
-  const parsed = items.filter(it => it && it.label && it.label.indexOf(' / ') > 0).map(it => { const i = it.label.indexOf(' / '); return { key: it.key, prog: it.label.slice(0, i), unit: it.label.slice(i + 3), at: it.savedAt || '' }; });
   const mods = p.modules || []; let linked = 0, already = 0, none = 0; const done = [];
+  let listed = null; // قائمة المخزن بتتقري مرة واحدة بس لو احتجناها
   for(let i = 0; i < mods.length; i++){
     const m = mods[i], title = localized(m.title, state.lang);
     if(onMsg) onMsg(`(${i + 1}/${mods.length}) ${title}…`);
     const cur = ttsPinFor(pid, m);
     if(cur && await fetchCachedAudioWait(cur.k, 8000)){ already++; done.push({ n: i + 1, title, r: 'already' }); continue; }
-    // الأصوات اللي اتخزنت للوحدة دي: اسم الوحدة مطابق (أو أوله لو الاسم اتقص وقت الحفظ)، واسم البرنامج
-    // هو البرنامج ده أو اسم قديم ليه، مش برنامج تاني موجود.
-    const cands = parsed.filter(c => c.unit && (c.unit === title || (c.unit.length >= 12 && title.startsWith(c.unit))) && (c.prog === myTitle || !otherTitles.has(c.prog)))
-      .sort((a, b) => (b.prog === myTitle) - (a.prog === myTitle) || String(b.at).localeCompare(String(a.at)));
-    let ok = null;
-    for(const c of cands){ if(await fetchCachedAudioWait(c.key, 8000)){ ok = c; break; } }
-    if(ok){ await ttsPinSave(pid, m, ok.key, 'relink'); linked++; done.push({ n: i + 1, title, r: 'linked', at: ok.at }); }
+    // 1) الصوت المتخزن لنص الشرح الحالي (نفس اللي شاشة الحالة بتلاقيه)
+    let key = null;
+    for(const k of await ttsKeysForScript(m)){ if(await fetchCachedAudioWait(k, 8000)){ key = k; break; } }
+    // 2) صوت متخزن باسم فيه رقم البرنامج والوحدة دي (الملفات اللي هتتخزن من النهارده)
+    if(!key && m.id){
+      if(listed === null){ const token = await getTtsCacheToken(); listed = token ? await ttsListAll(token) : []; }
+      const cands = listed.filter(it => { const ids = ttsLabelIds(it.label); return ids && ids.pid === pid && ids.mid === String(m.id); }).sort((a, b) => String(b.savedAt || '').localeCompare(String(a.savedAt || '')));
+      for(const c of cands){ if(await fetchCachedAudioWait(c.key, 8000)){ key = c.key; break; } }
+    }
+    if(key){ await ttsPinSave(pid, m, key, 'relink'); linked++; done.push({ n: i + 1, title, r: 'linked' }); }
     else { none++; done.push({ n: i + 1, title, r: 'none' }); }
   }
   return { program: myTitle, linked, already, none, items: done };
@@ -7698,7 +7717,7 @@ async function generateTtsCacheForProgram(){
           const gen = await generateGeminiAudio(text, g, (k, n) => say(`(${i + 1}/${modules.length}) ${mTitle}… Gemini جزء ${k} من ${n}`));
           geminiRequests += gen.requests;
           stage = 'save';
-          await ttsCachePut(key, gen.blob, `${p.title} / ${mTitle}`, token);
+          await ttsCachePut(key, gen.blob, ttsCacheLabel(p, m), token);
           await partDel(gen.partKeys);
           ttsPinSave(p.id, m, key, 'cache').catch(e => console.error('pin save failed', e));
           saved++;
@@ -7709,7 +7728,7 @@ async function generateTtsCacheForProgram(){
           ? await fetchTtsLongViaProxy('azure', text, voice, (k, n) => say(`(${i + 1}/${modules.length}) ${mTitle}… جزء ${k} من ${n}`))
           : await fetchElevenLabsAudio(text, tts.apiKey, voice);
         stage = 'save';
-        await ttsCachePut(key, blob, `${p.title} / ${mTitle}`, token);
+        await ttsCachePut(key, blob, ttsCacheLabel(p, m), token);
         ttsPinSave(p.id, m, key, 'cache').catch(e => console.error('pin save failed', e));
         saved++;
         bytes += blob.size || 0;
