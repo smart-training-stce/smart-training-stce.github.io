@@ -2789,6 +2789,7 @@ async function loadState(){
       state.ttsSettings = cfg.ttsSettings || DEFAULT_TTS_SETTINGS;
       state.ttsLexicon = Array.isArray(cfg.ttsLexicon) ? cfg.ttsLexicon : null;
       state.geminiTts = (cfg.geminiTts && typeof cfg.geminiTts === 'object') ? cfg.geminiTts : null;
+      state.ttsPins = (cfg.ttsPins && typeof cfg.ttsPins === 'object') ? cfg.ttsPins : {}; // صوت كل وحدة مربوط بيها (إضافة)
       state.aiSettings = cfg.aiSettings || DEFAULT_AI_SETTINGS;
       state.bankAccount = cfg.bankAccount || DEFAULT_BANK_ACCOUNT;
     } else {
@@ -3590,6 +3591,10 @@ function renderTraineeProgramMain(main){
       speakBtn.textContent = defaultSpeakLabel;
       return;
     }
+    // إضافة: لو صوت الوحدة مربوط بيها، يتشغّل على طول من غير نص شرح جديد ولا ذكاء اصطناعي.
+    let pinnedPlayer = null;
+    try{ pinnedPlayer = await playPinnedUnitAudio(p.id, m); }catch(e){ console.warn('pinned unit audio skipped', e); pinnedPlayer = null; }
+    if(pinnedPlayer){ speakBtn.textContent = i18n('btn_stop_voice'); pinnedPlayer.onended = () => { speakBtn.textContent = defaultSpeakLabel; }; return; }
     speakBtn.textContent = i18n('ai_preparing_explanation');
     let scriptText;
     try{
@@ -5505,7 +5510,7 @@ function renderModuleEditor(main, p){
     // لوحدها، فالمقارنة القديمة كانت بتعتبر المحتوى "اتغيّر" حتى لو حد حفظ الوحدة عشان سؤال أو صورة بس،
     // فكان نص الشرح بيتمسح ويتكتب من جديد، والصوت المتخزن مايتلاقاش.
     const normContent = v => String(v == null ? '' : v).replace(/\r\n?/g, '\n').trim();
-    if(normContent(newContent) !== normContent(localized(m.content, state.lang))){ m.lectureScript = null; } // المحتوى اتغيّر فعلًا، فأي شرح صوتي كان محفوظ بقى قديم
+    if(normContent(newContent) !== normContent(localized(m.content, state.lang))){ m.lectureScript = null; ttsPinClear(p.id, m).catch(e => console.error('pin clear failed', e)); } // المحتوى اتغيّر فعلًا، فأي شرح صوتي كان محفوظ بقى قديم
     m.content = newContent;
     collectQuizFromForm(m);
     const btn = document.getElementById('saveModuleBtn');
@@ -7267,6 +7272,100 @@ async function tryPlayFromTtsCache(text, provider, tts, myGen, legacyText){
   }
 }
 
+/* ===== إضافة: ربط صوت الوحدة بالوحدة نفسها =====
+   قبل كده الصوت المتخزن كان بيتلاقى ببصمة نص الشرح بس، فلو النص اتكتب من جديد لأي سبب
+   (زرار حفظ، أو تاب قديم حفظ نسخة قديمة) الرابط بيتقطع والصوت يفضل في المخزن من غير ما
+   حد يلاقيه. دلوقتي بصمة صوت كل وحدة بتتسجل في platform/config → ttsPins، وده مستند
+   منفصل عن البرامج، فحفظ البرامج من أي تاب مش بيلمسه. الربط بيتشال بس لما محتوى الوحدة
+   يتغيّر فعلًا. */
+function ttsPinId(m){ return (m && m.id) ? String(m.id) : 't:' + localized(m && m.title, state.lang); }
+function ttsPinFor(pid, m){
+  const pins = (state.ttsPins && pid && state.ttsPins[pid]) || null;
+  const e = pins && pins[ttsPinId(m)];
+  if(!e || !e.k || e.lang !== state.lang) return null;
+  const g = geminiTtsConfig();
+  if(e.voice && g.voice && e.voice !== g.voice) return null;
+  return e;
+}
+async function ttsPinSave(pid, m, key, src){
+  if(!pid || !m || !key) return;
+  const id = ttsPinId(m);
+  const e = { k: key, lang: state.lang, voice: (src === 'relink') ? '' : (geminiTtsConfig().voice || ''), at: new Date().toISOString(), src: src || '' };
+  state.ttsPins = state.ttsPins || {}; state.ttsPins[pid] = state.ttsPins[pid] || {}; state.ttsPins[pid][id] = e;
+  await setDoc(doc(trainerDb, 'platform', 'config'), { ttsPins: { [pid]: { [id]: e } } }, { merge: true });
+}
+async function ttsPinClear(pid, m){
+  if(!pid || !m) return;
+  const id = ttsPinId(m);
+  if(!(state.ttsPins && state.ttsPins[pid] && state.ttsPins[pid][id])) return;
+  state.ttsPins[pid][id] = null;
+  await setDoc(doc(trainerDb, 'platform', 'config'), { ttsPins: { [pid]: { [id]: null } } }, { merge: true });
+}
+async function fetchCachedAudioWait(key, ms){
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), ms);
+  try{
+    const resp = await fetch(`${TTS_CACHE_URL}/a/${key}`, { method: 'HEAD', signal: ctrl.signal });
+    return (resp && resp.status === 200) ? `${TTS_CACHE_URL}/a/${key}` : null;
+  }catch(e){ return null; }
+  finally{ clearTimeout(timer); }
+}
+// بيشغّل صوت الوحدة المربوط بيها مباشرة (من غير ما يكتب نص شرح ولا يسأل الذكاء الاصطناعي).
+// لو مفيش ربط أو الملف مش موجود بيرجّع null، والزرار يكمّل بالطريقة القديمة بالظبط.
+async function playPinnedUnitAudio(pid, m){
+  const e = ttsPinFor(pid, m);
+  if(!e) return null;
+  const url = await fetchCachedAudioWait(e.k, 8000);
+  if(!url) return null;
+  stopAllSpeech();
+  currentAudio = new Audio(url);
+  currentAudio.preload = 'auto';
+  currentAudio.volume = 1;
+  await currentAudio.play();
+  return currentAudio;
+}
+// ربط الأصوات القديمة: بيدوّر في قائمة المخزن على صوت محفوظ باسم الوحدة (اللي بيتكتب مع كل
+// ملف وقت التخزين)، ويربطه بيها من غير أي توليد جديد. للأدمن بس.
+async function ttsListAll(token){
+  const all = []; let cursor = null;
+  for(let guard = 0; guard < 50; guard++){
+    const r = await fetch(`${TTS_CACHE_URL}/admin/list` + (cursor ? `?cursor=${encodeURIComponent(cursor)}` : ''), { headers: { 'Authorization': 'Bearer ' + token } });
+    if(!r.ok){ const e2 = new Error('list_failed_' + r.status); e2.status = r.status; throw e2; }
+    const j = await r.json();
+    (j.items || []).forEach(it => all.push(it));
+    if(!j.cursor) break; cursor = j.cursor;
+  }
+  return all;
+}
+window.__stceTtsRelink = async function(pid, onMsg){
+  if(!window.__stceAdminOK) return null;
+  const p = (state.programs || []).find(x => x.id === pid);
+  if(!p) return null;
+  const token = await getTtsCacheToken();
+  if(!token) return { error: 'no_token' };
+  if(onMsg) onMsg('بيقرا قائمة الأصوات المتخزنة…');
+  const items = await ttsListAll(token);
+  const myTitle = localized(p.title, state.lang);
+  const otherTitles = new Set((state.programs || []).filter(x => x.id !== pid).map(x => localized(x.title, state.lang)));
+  const parsed = items.filter(it => it && it.label && it.label.indexOf(' / ') > 0).map(it => { const i = it.label.indexOf(' / '); return { key: it.key, prog: it.label.slice(0, i), unit: it.label.slice(i + 3), at: it.savedAt || '' }; });
+  const mods = p.modules || []; let linked = 0, already = 0, none = 0; const done = [];
+  for(let i = 0; i < mods.length; i++){
+    const m = mods[i], title = localized(m.title, state.lang);
+    if(onMsg) onMsg(`(${i + 1}/${mods.length}) ${title}…`);
+    const cur = ttsPinFor(pid, m);
+    if(cur && await fetchCachedAudioWait(cur.k, 8000)){ already++; done.push({ n: i + 1, title, r: 'already' }); continue; }
+    // الأصوات اللي اتخزنت للوحدة دي: اسم الوحدة مطابق (أو أوله لو الاسم اتقص وقت الحفظ)، واسم البرنامج
+    // هو البرنامج ده أو اسم قديم ليه، مش برنامج تاني موجود.
+    const cands = parsed.filter(c => c.unit && (c.unit === title || (c.unit.length >= 12 && title.startsWith(c.unit))) && (c.prog === myTitle || !otherTitles.has(c.prog)))
+      .sort((a, b) => (b.prog === myTitle) - (a.prog === myTitle) || String(b.at).localeCompare(String(a.at)));
+    let ok = null;
+    for(const c of cands){ if(await fetchCachedAudioWait(c.key, 8000)){ ok = c; break; } }
+    if(ok){ await ttsPinSave(pid, m, ok.key, 'relink'); linked++; done.push({ n: i + 1, title, r: 'linked', at: ok.at }); }
+    else { none++; done.push({ n: i + 1, title, r: 'none' }); }
+  }
+  return { program: myTitle, linked, already, none, items: done };
+};
+
 /* ===== إضافة: حالة صوت الوحدات (قراءة بس، مش بتغيّر أي حاجة) =====
    بتحسب لكل وحدة نفس البصمة اللي زرار «اسمع الشرح» بيدوّر عليها بالظبط، وتسأل المخزن
    هل الصوت موجود. الشاشة نفسها في ملف tts-status.js. */
@@ -7285,6 +7384,8 @@ window.__stceTtsStatus = async function(pid, onProgress){
   for(let i = 0; i < mods.length; i++){
     const m = mods[i], title = localized(m.title, state.lang);
     if(onProgress) onProgress(i + 1, mods.length);
+    const pinE = ttsPinFor(pid, m);
+    if(pinE && await fetchCachedAudioWait(pinE.k, 8000)){ out.push({ n: i + 1, title, status: 'cached', pinned: true }); continue; }
     if(!(m.lectureScript && m.lectureScriptLang === state.lang)){ out.push({ n: i + 1, title, status: 'noscript' }); continue; }
     try{
       const text = prepareSpeechText(m.lectureScript), legacy = stripFormattingForSpeech(m.lectureScript);
@@ -7561,6 +7662,9 @@ async function generateTtsCacheForProgram(){
       say(`(${i + 1}/${modules.length}) ${mTitle}…`);
       let stage = 'script';
       try{
+        // إضافة: الوحدة اللي صوتها مربوط بيها وموجود في المخزن مش محتاجة أي حاجة.
+        const pinE = ttsPinFor(p.id, m);
+        if(pinE && await ttsCacheExists(pinE.k)){ skipped++; continue; }
         // لو سكريبت الشرح فشل يتولّد، بنسيب الوحدة دي من غير تخزين (المتدرب
         // ساعتها هيتولّد له سكريبت جديد بنص مختلف، فالتخزين مش هيفيد).
         // لو الذكاء الاصطناعي رفض كتابة نص الشرح عشان الزحمة أو حد الدقيقة، بنستنى
@@ -7588,7 +7692,7 @@ async function generateTtsCacheForProgram(){
         if(!text || !text.trim()){ skipped++; continue; }
         stage = 'key';
         const key = useGemini ? await geminiCacheKey(text, g) : await ttsCacheKey(text, provider, voice, state.lang);
-        if(await ttsCacheExists(key)){ skipped++; continue; }
+        if(await ttsCacheExists(key)){ skipped++; ttsPinSave(p.id, m, key, 'exists').catch(e => console.error('pin save failed', e)); continue; }
         stage = 'voice';
         if(useGemini){
           const gen = await generateGeminiAudio(text, g, (k, n) => say(`(${i + 1}/${modules.length}) ${mTitle}… Gemini جزء ${k} من ${n}`));
@@ -7596,6 +7700,7 @@ async function generateTtsCacheForProgram(){
           stage = 'save';
           await ttsCachePut(key, gen.blob, `${p.title} / ${mTitle}`, token);
           await partDel(gen.partKeys);
+          ttsPinSave(p.id, m, key, 'cache').catch(e => console.error('pin save failed', e));
           saved++;
           bytes += gen.blob.size || 0;
           continue;
@@ -7605,6 +7710,7 @@ async function generateTtsCacheForProgram(){
           : await fetchElevenLabsAudio(text, tts.apiKey, voice);
         stage = 'save';
         await ttsCachePut(key, blob, `${p.title} / ${mTitle}`, token);
+        ttsPinSave(p.id, m, key, 'cache').catch(e => console.error('pin save failed', e));
         saved++;
         bytes += blob.size || 0;
       }catch(e){
