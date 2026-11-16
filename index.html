@@ -5501,7 +5501,11 @@ function renderModuleEditor(main, p){
     const videoRaw = document.getElementById('editVideoId').value.trim();
     m.videoId = extractYoutubeId(videoRaw);
     const newContent = document.getElementById('editContent').value;
-    if(newContent !== m.content){ m.lectureScript = null; } // المحتوى اتغيّر، فأي شرح صوتي كان محفوظ بقى قديم
+    // بنقارن النص بعد توحيد نهايات السطور والمسافات اللي في الأول والآخر: خانة الكتابة في المتصفح بتغيّرهم
+    // لوحدها، فالمقارنة القديمة كانت بتعتبر المحتوى "اتغيّر" حتى لو حد حفظ الوحدة عشان سؤال أو صورة بس،
+    // فكان نص الشرح بيتمسح ويتكتب من جديد، والصوت المتخزن مايتلاقاش.
+    const normContent = v => String(v == null ? '' : v).replace(/\r\n?/g, '\n').trim();
+    if(normContent(newContent) !== normContent(localized(m.content, state.lang))){ m.lectureScript = null; } // المحتوى اتغيّر فعلًا، فأي شرح صوتي كان محفوظ بقى قديم
     m.content = newContent;
     collectQuizFromForm(m);
     const btn = document.getElementById('saveModuleBtn');
@@ -7262,6 +7266,41 @@ async function tryPlayFromTtsCache(text, provider, tts, myGen, legacyText){
     return { handled: false };
   }
 }
+
+/* ===== إضافة: حالة صوت الوحدات (قراءة بس، مش بتغيّر أي حاجة) =====
+   بتحسب لكل وحدة نفس البصمة اللي زرار «اسمع الشرح» بيدوّر عليها بالظبط، وتسأل المخزن
+   هل الصوت موجود. الشاشة نفسها في ملف tts-status.js. */
+window.__stceTtsStatusPrograms = function(){
+  if(!window.__stceAdminOK) return [];
+  return (state.programs || []).map(p => ({ id: p.id, title: localized(p.title, state.lang), count: (p.modules || []).length }));
+};
+window.__stceTtsStatus = async function(pid, onProgress){
+  if(!window.__stceAdminOK) return null;
+  const p = (state.programs || []).find(x => x.id === pid);
+  if(!p) return null;
+  const tts = state.ttsSettings || {};
+  const provider = tts.provider || (tts.azureKey && tts.azureRegion ? 'azure' : (tts.apiKey ? 'elevenlabs' : 'browser'));
+  const g = geminiTtsConfig();
+  const mods = p.modules || [], out = [];
+  for(let i = 0; i < mods.length; i++){
+    const m = mods[i], title = localized(m.title, state.lang);
+    if(onProgress) onProgress(i + 1, mods.length);
+    if(!(m.lectureScript && m.lectureScriptLang === state.lang)){ out.push({ n: i + 1, title, status: 'noscript' }); continue; }
+    try{
+      const text = prepareSpeechText(m.lectureScript), legacy = stripFormattingForSpeech(m.lectureScript);
+      const keys = [];
+      if(g.voice) keys.push(await geminiCacheKey(text, g));
+      if(provider === 'azure' || provider === 'elevenlabs'){
+        const voice = ttsCacheVoiceFor(tts, provider, state.lang);
+        keys.push(await ttsCacheKey(text, provider, voice, state.lang));
+        if(legacy && legacy !== text) keys.push(await ttsCacheKey(legacy, provider, voice, state.lang));
+      }
+      const hits = await Promise.all(keys.map(k => fetchCachedAudio(k)));
+      out.push({ n: i + 1, title, status: hits.some(Boolean) ? 'cached' : 'missing' });
+    }catch(e){ out.push({ n: i + 1, title, status: 'error' }); }
+  }
+  return { program: localized(p.title, state.lang), gemini: !!g.voice, provider, items: out };
+};
 
 // === Gemini TTS (للتخزين) ===
 // Gemini حدوده المجانية صغيرة (حوالي 3 طلبات في الدقيقة و10 في اليوم)، فبيُستخدم
@@ -10033,5 +10072,6 @@ window.addEventListener('appinstalled', () => {
 <script type="module" src="stce-3d-carp.js"></script>
 <script type="module" src="stce-3d-net.js"></script>
 <script type="module" src="stce-3d-it.js"></script>
+<script src="tts-status.js"></script>
 </body>
 </html>
