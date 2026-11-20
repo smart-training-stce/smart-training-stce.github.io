@@ -1063,7 +1063,7 @@ const translations = {
     no_activity_yet: "لسه معملش أي نشاط على أي برنامج.",
     account_device_lock_hint: "🔒 الحساب ده مربوط بالجهاز اللي سجّل بيه بس، ومقفول من قاعدة البيانات نفسها - مش بس من واجهة المنصة",
     btn_reset_password: "🔑 إعادة تعيين كلمة السر",
-    btn_reset_device: "📱 مسح الحساب عشان يسجّل من جهاز جديد",
+    btn_reset_device: "🗑️ حذف المتدرب",
     no_search_matches: "مفيش نتايج مطابقة للبحث.",
     prompt_new_password_for: "اكتب كلمة سر جديدة لـ \"{name}\" (لو نسي كلمة سره القديمة):",
     password_changed_for: "اتغيرت كلمة سر \"{name}\". قولها الكلمة الجديدة عشان تدخل بيها.",
@@ -1644,7 +1644,7 @@ const translations = {
     no_activity_yet: "No activity on any program yet.",
     account_device_lock_hint: "🔒 This account is tied to the device it was registered on only, and is locked at the database level itself — not just the platform interface",
     btn_reset_password: "🔑 Reset Password",
-    btn_reset_device: "📱 Clear Account to Register on a New Device",
+    btn_reset_device: "🗑️ Delete trainee",
     no_search_matches: "No matching results.",
     prompt_new_password_for: "Enter a new password for \"{name}\" (if they forgot their old one):",
     password_changed_for: "Password for \"{name}\" has been changed. Tell them the new password so they can log in.",
@@ -3985,6 +3985,8 @@ function renderTraineesAdmin(main){
   main.querySelectorAll('.reset-device-btn').forEach(b => b.addEventListener('click', async () => {
     const t = state.traineeProfiles.find(x => x.id === b.dataset.tid);
     if(!t) return;
+    // إضافة: نافذة الحذف بالاختيارات (trainee-admin.js). لو الملف مش موجود، يشتغل الحذف القديم زي ما هو.
+    if(typeof window.__stceOpenTraineeDelete === 'function'){ window.__stceOpenTraineeDelete(t.id); return; }
     if(!confirm(i18n('confirm_reset_device', {name: t.name}))) return;
     try{
       await deleteDoc(doc(trainerDb, 'trainees', t.id));
@@ -3994,6 +3996,58 @@ function renderTraineesAdmin(main){
     }catch(e){ console.error(e); alert(i18n('err_generic_retry')); }
   }));
 }
+
+/* ===== إضافة: حذف المتدرب بالاختيارات + الطلبات اليتيمة (الشاشة في trainee-admin.js) =====
+   - حذف الحساب بس: طلبات الاشتراك بتفضل (لو سجّل تاني من نفس الجهاز ترجعله لوحدها).
+   - حذف الحساب والبيانات: الأدمن بيختار لكل برنامج لوحده يتمسح اشتراكه ولا لأ.
+   الطلبات بتتمسح الأول، ولو أي مسح فشل بنوقف من غير ما نمسح الحساب. وبنشيلها من state
+   كمان، عشان saveRequests بتكتب كل الطلبات اللي في الذاكرة ولو فضلت فيها هترجع تاني. */
+window.__stceLang = () => state.lang;
+function stceReqInfo(r){ const p = findProgram(r.programId); return { rid: r.id, tid: r.traineeId || '', program: p ? localized(p.title, state.lang) : (r.programId || ''), status: r.status || '', submittedAt: r.submittedAt || 0, name: r.traineeName || '', phone: r.traineePhone || '' }; }
+async function stceDeleteRequestDocs(rids){
+  let n = 0;
+  for(const rid of (rids || [])){
+    await deleteDoc(doc(trainerDb, 'requests', rid));
+    state.requests = (state.requests || []).filter(r => r.id !== rid);
+    n++;
+  }
+  return n;
+}
+window.__stceTraineeDeleteInfo = function(tid){
+  if(!window.__stceTrainerOK) return null;
+  const t = (state.traineeProfiles || []).find(x => x.id === tid);
+  if(!t) return null;
+  const subs = (state.requests || []).filter(r => r.traineeId === tid).sort((a, b) => (b.submittedAt || 0) - (a.submittedAt || 0)).map(stceReqInfo);
+  return { id: t.id, name: t.name || '', subs };
+};
+window.__stceTraineeDelete = async function(tid, rids, deleteAccount){
+  if(!window.__stceTrainerOK) throw new Error('not_allowed');
+  let n = 0;
+  try{ n = await stceDeleteRequestDocs(rids); }
+  catch(e){ renderAll(); const e2 = new Error('request_delete_failed'); e2.done = n; e2.cause = e; throw e2; }
+  if(deleteAccount){
+    await deleteDoc(doc(trainerDb, 'trainees', tid));
+    state.traineeProfiles = (state.traineeProfiles || []).filter(x => x.id !== tid);
+    if(state.progressRegistry) delete state.progressRegistry[tid];
+  }
+  renderAll();
+  return { requests: n, account: !!deleteAccount };
+};
+window.__stceOrphanRequests = function(){
+  if(!window.__stceTrainerOK) return null;
+  // لو قايمة المتدربين ما اتحملتش صح، كل الطلبات هتبان يتيمة غلط، فمش بنعرض حاجة.
+  if(state.traineeProfilesLoadFailed || !Array.isArray(state.traineeProfiles) || !state.traineeProfiles.length) return null;
+  const ids = new Set(state.traineeProfiles.map(t => t.id));
+  return (state.requests || []).filter(r => r.traineeId && !ids.has(r.traineeId)).sort((a, b) => (b.submittedAt || 0) - (a.submittedAt || 0)).map(stceReqInfo);
+};
+window.__stceDeleteRequests = async function(rids){
+  if(!window.__stceTrainerOK) throw new Error('not_allowed');
+  let n = 0;
+  try{ n = await stceDeleteRequestDocs(rids); }
+  catch(e){ renderAll(); const e2 = new Error('request_delete_failed'); e2.done = n; e2.cause = e; throw e2; }
+  renderAll();
+  return n;
+};
 
 function csvCell(v){
   const s = (v === null || v === undefined) ? '' : String(v);
@@ -10244,5 +10298,6 @@ window.addEventListener('appinstalled', () => {
 <script type="module" src="stce-3d-net.js"></script>
 <script type="module" src="stce-3d-it.js"></script>
 <script src="tts-status.js"></script>
+<script src="trainee-admin.js"></script>
 </body>
 </html>
