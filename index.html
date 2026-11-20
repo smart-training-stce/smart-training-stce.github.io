@@ -7392,7 +7392,44 @@ window.__stceTtsStatusPrograms = function(){
   if(!window.__stceAdminOK) return [];
   return (state.programs || []).map(p => ({ id: p.id, title: localized(p.title, state.lang), count: (p.modules || []).length }));
 };
-window.__stceTtsStatus = async function(pid, onProgress){
+// مدة ملف الصوت المتخزن بالثواني: بنقرا أول جزء صغير من الملف بس (مش الملف كله)، ونعرف منه
+// جودة الصوت (kbps)، ونقسم حجم الملف عليها. ملفات Gemini بـ 48 وAzure بـ 64.
+function mp3Seconds(buf, size){
+  const BR = { 1: [0,32,40,48,56,64,80,96,112,128,160,192,224,256,320], 2: [0,8,16,24,32,40,48,56,64,80,96,112,128,144,160] };
+  const SR = { 3: [44100, 48000, 32000], 2: [22050, 24000, 16000], 0: [11025, 12000, 8000] };
+  const hdr = i => { if(i + 4 > buf.length || buf[i] !== 0xff || (buf[i + 1] & 0xe0) !== 0xe0) return null; const ver = (buf[i + 1] >> 3) & 3, layer = (buf[i + 1] >> 1) & 3, bi = (buf[i + 2] >> 4) & 15, si = (buf[i + 2] >> 2) & 3, pad = (buf[i + 2] >> 1) & 1, mono = ((buf[i + 3] >> 6) & 3) === 3;
+    if(layer !== 1 || bi === 0 || bi === 15 || ver === 1 || si === 3) return null; const kbps = BR[ver === 3 ? 1 : 2][bi], sr = SR[ver][si]; const len = Math.floor((ver === 3 ? 144 : 72) * kbps * 1000 / sr) + pad; return { ver, kbps, sr, len, mono, spf: ver === 3 ? 1152 : 576 }; };
+  let i = 0, skipped = 0;
+  if(buf[0] === 0x49 && buf[1] === 0x44 && buf[2] === 0x33){ skipped = 10 + ((buf[6] & 0x7f) << 21 | (buf[7] & 0x7f) << 14 | (buf[8] & 0x7f) << 7 | (buf[9] & 0x7f)); i = skipped; }
+  for(; i < buf.length - 4; i++){
+    const h = hdr(i); if(!h) continue;
+    const nx = hdr(i + h.len); if(!nx && i + h.len < buf.length - 4) continue; // لازم الإطار اللي بعده يبقى سليم
+    const off = i + 4 + (h.ver === 3 ? (h.mono ? 17 : 32) : (h.mono ? 9 : 17));
+    const tag = String.fromCharCode(buf[off], buf[off + 1], buf[off + 2], buf[off + 3]);
+    if(tag === 'Xing' || tag === 'Info'){
+      if(tag === 'Xing' && (buf[off + 7] & 1)){ const frames = (buf[off + 8] << 24 | buf[off + 9] << 16 | buf[off + 10] << 8 | buf[off + 11]) >>> 0; return frames * h.spf / h.sr; }
+      if(nx) return (size - i - h.len) * 8 / (nx.kbps * 1000);
+      continue;
+    }
+    return (size - i) * 8 / (h.kbps * 1000);
+  }
+  return null;
+}
+async function ttsAudioSeconds(key){
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 12000);
+  try{
+    const r = await fetch(`${TTS_CACHE_URL}/a/${key}`, { signal: ctrl.signal });
+    if(!r.ok || !r.body) return null;
+    const size = Number(r.headers.get('Content-Length') || 0);
+    const reader = r.body.getReader(); let buf = new Uint8Array(0);
+    while(buf.length < 8192){ const { value, done } = await reader.read(); if(done) break; const nb = new Uint8Array(buf.length + value.length); nb.set(buf); nb.set(value, buf.length); buf = nb; }
+    try{ reader.cancel(); }catch(e){} try{ ctrl.abort(); }catch(e){}
+    return size ? mp3Seconds(buf, size) : null;
+  }catch(e){ return null; }
+  finally{ clearTimeout(timer); }
+}
+window.__stceTtsStatus = async function(pid, onProgress, withDuration){
   if(!window.__stceAdminOK) return null;
   const p = (state.programs || []).find(x => x.id === pid);
   if(!p) return null;
@@ -7400,27 +7437,36 @@ window.__stceTtsStatus = async function(pid, onProgress){
   const provider = tts.provider || (tts.azureKey && tts.azureRegion ? 'azure' : (tts.apiKey ? 'elevenlabs' : 'browser'));
   const g = geminiTtsConfig();
   const mods = p.modules || [], out = [];
+  const words = t => String(t || '').split(/\s+/).filter(Boolean).length;
   for(let i = 0; i < mods.length; i++){
     const m = mods[i], title = localized(m.title, state.lang);
     if(onProgress) onProgress(i + 1, mods.length);
-    const pinE = ttsPinFor(pid, m);
-    if(pinE && await fetchCachedAudioWait(pinE.k, 8000)){ out.push({ n: i + 1, title, status: 'cached', pinned: true }); continue; }
-    if(!(m.lectureScript && m.lectureScriptLang === state.lang)){ out.push({ n: i + 1, title, status: 'noscript' }); continue; }
+    const hasScript = !!(m.lectureScript && m.lectureScriptLang === state.lang);
+    const w = hasScript ? words(stripFormattingForSpeech(m.lectureScript)) : 0;
+    let found = null, pinned = false;
     try{
-      const text = prepareSpeechText(m.lectureScript), legacy = stripFormattingForSpeech(m.lectureScript);
-      const keys = [];
-      if(g.voice) keys.push(await geminiCacheKey(text, g));
-      if(provider === 'azure' || provider === 'elevenlabs'){
-        const voice = ttsCacheVoiceFor(tts, provider, state.lang);
-        keys.push(await ttsCacheKey(text, provider, voice, state.lang));
-        if(legacy && legacy !== text) keys.push(await ttsCacheKey(legacy, provider, voice, state.lang));
+      const pinE = ttsPinFor(pid, m);
+      if(pinE && await fetchCachedAudioWait(pinE.k, 8000)){ found = pinE.k; pinned = true; }
+      else if(hasScript){
+        const keys = await ttsKeysForScript(m);
+        const hits = await Promise.all(keys.map(k => fetchCachedAudio(k)));
+        const h = hits.findIndex(Boolean); if(h >= 0) found = keys[h];
       }
-      const hits = await Promise.all(keys.map(k => fetchCachedAudio(k)));
-      out.push({ n: i + 1, title, status: hits.some(Boolean) ? 'cached' : 'missing' });
-    }catch(e){ out.push({ n: i + 1, title, status: 'error' }); }
+    }catch(e){ out.push({ n: i + 1, title, status: 'error', words: w }); continue; }
+    const it = { n: i + 1, title, status: found ? 'cached' : (hasScript ? 'missing' : 'noscript'), pinned, words: w };
+    if(found && withDuration) it.sec = await ttsAudioSeconds(found);
+    out.push(it);
+  }
+  // الوحدات اللي ملهاش صوت: مدة تقديرية من عدد كلمات نص الشرح، بسرعة الكلام الفعلية في وحدات
+  // البرنامج نفسه اللي صوتها متخزن (ولو مفيش، 110 كلمة في الدقيقة).
+  if(withDuration){
+    const ref = out.filter(x => x.sec && x.words > 50);
+    const wps = ref.length ? ref.reduce((s2, x) => s2 + x.words, 0) / ref.reduce((s2, x) => s2 + x.sec, 0) : 110 / 60;
+    out.forEach(x => { if(!x.sec && x.words) x.est = x.words / wps; });
   }
   return { program: localized(p.title, state.lang), gemini: !!g.voice, provider, items: out };
 };
+window.__stceTtsAllPrograms = function(){ return window.__stceTtsStatusPrograms ? window.__stceTtsStatusPrograms() : []; };
 
 // === Gemini TTS (للتخزين) ===
 // Gemini حدوده المجانية صغيرة (حوالي 3 طلبات في الدقيقة و10 في اليوم)، فبيُستخدم
