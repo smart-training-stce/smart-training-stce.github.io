@@ -133,7 +133,76 @@
     const b = document.createElement('button'); b.id = 'stceOrphanBtn'; b.type = 'button'; b.className = 'btn btn-ghost'; b.style.marginInlineStart = '6px';
     exp.insertAdjacentElement('afterend', b); b.addEventListener('click', openOrphans); refreshBtn();
   }
+
+  /* ---------- سبب الرفض (تسجيل أو اشتراك) ---------- */
+  const REASONS = {
+    reg: [T('صورة البطاقة مش واضحة', 'The ID image is not clear'), T('الرقم القومي مش مطابق للبطاقة', 'The national ID does not match the card'), T('الاسم مش مطابق للبطاقة', 'The name does not match the card'), T('البيانات ناقصة', 'Some details are missing')],
+    sub: [T('المبلغ المدفوع أقل من سعر البرنامج', 'The amount paid is less than the program price'), T('التحويل مش على حساب المركز', 'The transfer was not made to the center’s account'), T('صورة الإيصال مش واضحة', 'The receipt image is not clear'), T('الإيصال مكرر أو قديم', 'The receipt is a duplicate or old')]
+  };
+  function askReason(kind, prefill){
+    return new Promise(resolve => {
+      const m = modal();
+      const list = REASONS[kind] || REASONS.sub;
+      m.box.innerHTML = `<h3 style="margin:0 0 8px;">${kind === 'reg' ? T('سبب رفض بيانات التسجيل', 'Reason for rejecting the registration') : T('سبب رفض طلب الاشتراك', 'Reason for rejecting the subscription')}</h3>
+        <div style="color:#4a5059;margin-bottom:6px;">${T('اختار سبب أو أكتر، أو اكتب بنفسك. المتدرب هيشوف السبب ده.', 'Pick one or more reasons, or write your own. The trainee will see it.')}</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;">${list.map((r, i) => `<button type="button" class="btn btn-ghost" data-i="${i}" style="margin:0;font-size:13px;">${esc(r)}</button>`).join('')}</div>
+        <textarea id="stceReasonTxt" rows="3" style="width:100%;margin-top:10px;font-family:inherit;" placeholder="${T('اكتب السبب هنا…', 'Write the reason here…')}">${esc(prefill || '')}</textarea>
+        <div id="stceReasonMsg" style="color:#b3261e;min-height:1.2em;"></div>
+        <div style="display:flex;justify-content:flex-end;flex-wrap:wrap;margin-top:8px;">${btn(T('إلغاء', 'Cancel'), '')}${btn(T('تأكيد الرفض', 'Confirm rejection'), 'danger')}</div>`;
+      const ta = m.box.querySelector('#stceReasonTxt');
+      m.box.querySelectorAll('button[data-i]').forEach(b => b.addEventListener('click', () => { const r = list[+b.dataset.i]; if(!ta.value.includes(r)) ta.value = ta.value.trim() ? ta.value.trim() + ' — ' + r : r; }));
+      const [cancel, ok] = m.box.querySelectorAll(':scope > div:last-child > button');
+      const done = v => { m.close(); resolve(v); };
+      cancel.addEventListener('click', () => done(null));
+      ok.addEventListener('click', () => { const v = ta.value.trim(); if(!v){ m.box.querySelector('#stceReasonMsg').textContent = T('اكتب أو اختار سبب الأول.', 'Choose or write a reason first.'); return; } done(v); });
+      m.ov.addEventListener('click', e => { if(e.target === m.ov) resolve(null); });
+    });
+  }
+  window.__stceAskReason = askReason;
+
+  /* ---------- طلبات التسجيل الجديدة (شاشة المتدربين) ---------- */
+  function renderRegPanel(){
+    const exp = document.getElementById('exportTraineesCsvBtn');
+    if(!exp || typeof window.__stceRegList !== 'function') return;
+    const list = window.__stceRegList();
+    let panel = document.getElementById('stceRegPanel');
+    const sig = JSON.stringify((list || []).map(r => [r.id, r.status, r.reason, r.at]));
+    if(panel && panel.dataset.sig === sig) return;
+    if(!panel){ panel = document.createElement('div'); panel.id = 'stceRegPanel'; const anchor = exp.closest('.row') || exp.parentElement; anchor.parentElement.insertBefore(panel, anchor); }
+    panel.dataset.sig = sig;
+    if(!list || !list.length){ panel.innerHTML = ''; panel.style.display = 'none'; return; }
+    panel.style.display = '';
+    const pend = list.filter(r => r.status === 'pending').length;
+    panel.innerHTML = `<div class="card" style="margin-bottom:12px;border:2px solid #e8b94a;">
+      <h3 style="margin:0 0 8px;">🆕 ${T('طلبات تسجيل جديدة', 'New registrations')} (${pend} ${T('قيد المراجعة', 'pending')}${list.length - pend ? ` · ${list.length - pend} ${T('مرفوض', 'rejected')}` : ''})</h3>
+      ${list.map(r => `<div style="display:flex;gap:10px;align-items:flex-start;padding:8px;border:1px solid #e3e8ef;border-radius:10px;margin:6px 0;background:${r.status === 'rejected' ? '#fdf3f2' : '#fff'};">
+        ${r.image ? `<img src="${r.image}" data-full="1" style="width:84px;height:56px;object-fit:cover;border-radius:6px;cursor:zoom-in;border:1px solid #ddd;">` : `<div style="width:84px;height:56px;border-radius:6px;background:#eee;display:flex;align-items:center;justify-content:center;font-size:11px;color:#888;">${T('مفيش صورة', 'No image')}</div>`}
+        <div style="flex:1;min-width:0;">
+          <div style="font-weight:700;">${esc(r.name)} ${r.status === 'rejected' ? `<span class="badge rejected">${T('مرفوض', 'Rejected')}</span>` : `<span class="badge pending">${r.resubmitted ? T('اتعدّل واتبعت تاني', 'Resubmitted') : T('قيد المراجعة', 'Pending')}</span>`}</div>
+          <div class="hint" style="margin:2px 0;">${esc(r.phone)}${r.nationalId ? ' · ' + esc(r.nationalId) : ''}${r.org ? ' · ' + esc(r.org) : ''}${r.at ? ' · ' + DT(r.at) : ''}</div>
+          ${r.status === 'rejected' ? `<div class="hint" style="color:#b3261e;">${T('سبب الرفض:', 'Reason:')} ${esc(r.reason || '—')}</div>` : ''}
+          <div style="margin-top:4px;">
+            <button type="button" class="btn btn-primary" data-act="ok" data-id="${esc(r.id)}" style="margin:2px;">✅ ${T('قبول', 'Approve')}</button>
+            ${r.status === 'pending' ? `<button type="button" class="btn btn-danger" data-act="no" data-id="${esc(r.id)}" style="margin:2px;">❌ ${T('رفض', 'Reject')}</button>` : `<button type="button" class="btn btn-ghost" data-act="del" data-id="${esc(r.id)}" style="margin:2px;">🗑️ ${T('حذف', 'Delete')}</button>`}
+          </div></div></div>`).join('')}</div>`;
+    panel.querySelectorAll('img[data-full]').forEach(im => im.addEventListener('click', () => { const w = window.open(); if(w) w.document.write(`<img src="${im.src}" style="max-width:100%">`); }));
+    panel.querySelectorAll('button[data-act]').forEach(b => b.addEventListener('click', async () => {
+      const id = b.dataset.id, r = list.find(x => x.id === id); b.disabled = true;
+      try{
+        if(b.dataset.act === 'ok'){ await window.__stceRegDecide(id, 'approved', ''); }
+        else if(b.dataset.act === 'no'){ const why = await askReason('reg', ''); if(why === null){ b.disabled = false; return; } await window.__stceRegDecide(id, 'rejected', why); }
+        else if(b.dataset.act === 'del'){
+          const info = window.__stceTraineeDeleteInfo && window.__stceTraineeDeleteInfo(id);
+          const rids = info ? info.subs.map(s2 => s2.rid) : [];
+          if(!confirm(T(`هيتمسح تسجيل «${r.name}» المرفوض نهائيًا (بياناته وصورة البطاقة${rids.length ? ` و${rids.length} طلب اشتراك` : ''}). تكمل؟`, `Permanently delete ${r.name}'s rejected registration (details, ID image${rids.length ? ` and ${rids.length} request(s)` : ''})?`))){ b.disabled = false; return; }
+          await window.__stceTraineeDelete(id, rids, true);
+        }
+      }catch(e){ console.error(e); alert(T('حصلت مشكلة. جرّب تاني.', 'Something went wrong. Try again.')); b.disabled = false; }
+    }));
+  }
+
   window.__stceOpenTraineeDelete = openDelete;
-  new MutationObserver(mountOrphanBtn).observe(document.documentElement, { childList: true, subtree: true });
-  mountOrphanBtn();
+  const tick = () => { mountOrphanBtn(); renderRegPanel(); };
+  new MutationObserver(tick).observe(document.documentElement, { childList: true, subtree: true });
+  tick();
 })();
