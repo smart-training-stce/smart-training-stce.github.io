@@ -2794,6 +2794,66 @@ function stceRenderTraineeLock(main){
   document.getElementById('stceUnlockPw').addEventListener('keydown', e => { if(e.key === 'Enter') go(); });
 }
 
+/* ===== إضافة: مراجعة بيانات المتدرب الجديد قبل ما يشوف البرامج =====
+   accountStatus: 'pending' (قيد المراجعة) أو 'rejected' (مرفوض بسبب) أو 'approved'.
+   المتدربين القدام اللي ملهمش الحقل ده بيتعاملوا كأنهم مقبولين. */
+function stceRenderAccountReview(main){
+  const t = state.traineeProfile, rej = t.accountStatus === 'rejected';
+  main.className = 'panel wide';
+  if(!rej){
+    main.innerHTML = `<div class="reg-wrap card" style="text-align:center;max-width:520px;margin:0 auto;">
+      <div style="font-size:42px;">⏳</div>
+      <h2 style="margin:6px 0;">${TT('بياناتك قيد المراجعة', 'Your details are under review')}</h2>
+      <div class="sub-text">${TT('المحاضر هيراجع بياناتك وصورة البطاقة. بعد القبول هتقدر تشوف البرامج وتشترك فيها.', 'The trainer will review your details and ID image. Once approved, you can see the programs and subscribe.')}</div>
+      <button class="btn btn-primary" id="stceReviewRefresh" style="margin-top:14px;">🔄 ${TT('تحديث', 'Refresh')}</button></div>`;
+    document.getElementById('stceReviewRefresh').addEventListener('click', async () => { await loadMyTraineeProfile(); renderAll(); });
+    return;
+  }
+  main.innerHTML = `<div class="reg-wrap card" style="max-width:560px;margin:0 auto;">
+    <h2 style="margin-top:0;">❌ ${TT('بياناتك محتاجة تعديل', 'Your details need changes')}</h2>
+    <div style="background:#fbebeb;color:#8a1c14;border-radius:10px;padding:10px 12px;margin:8px 0;"><b>${TT('سبب الرفض:', 'Reason:')}</b> ${escapeHtml(t.rejectReason || TT('مفيش سبب مكتوب، كلّم المحاضر.', 'No reason given, contact the trainer.'))}</div>
+    <div class="sub-text">${TT('عدّل بياناتك وابعتها تاني للمراجعة:', 'Edit your details and send them again for review:')}</div>
+    <label class="small" style="margin-top:8px;">${TT('الاسم', 'Name')}</label><input type="text" id="stceRvName" value="${escapeAttr(t.name || '')}">
+    <label class="small">${TT('التليفون', 'Phone')}</label><input type="text" id="stceRvPhone" value="${escapeAttr(t.phone || '')}">
+    <label class="small">${TT('الرقم القومي', 'National ID')}</label><input type="text" id="stceRvNid" value="${escapeAttr(t.nationalId || '')}" inputmode="numeric">
+    <label class="small">${TT('جهة العمل', 'Organization')}</label><input type="text" id="stceRvOrg" value="${escapeAttr(t.org || '')}">
+    <label class="small">${TT('صورة البطاقة (لو عايز تغيّرها)', 'ID image (to replace it)')}</label><input type="file" id="stceRvImg" accept="image/*">
+    <div class="hint" id="stceRvMsg" style="min-height:1.2em;"></div>
+    <button class="btn btn-primary" id="stceRvSend" style="margin-top:6px;">${TT('ابعت للمراجعة تاني', 'Send for review again')}</button></div>`;
+  let newImg = null;
+  document.getElementById('stceRvImg').addEventListener('change', async e => { const f = e.target.files && e.target.files[0]; if(f){ try{ newImg = await compressImageFile(f); }catch(err){ console.error(err); } } });
+  document.getElementById('stceRvSend').addEventListener('click', async () => {
+    const g = id => (document.getElementById(id).value || '').trim();
+    const patch = { name: g('stceRvName'), phone: g('stceRvPhone'), nationalId: g('stceRvNid'), org: g('stceRvOrg'), accountStatus: 'pending', rejectReason: '', resubmittedAt: Date.now() };
+    if(!patch.name || !patch.phone || !patch.nationalId){ document.getElementById('stceRvMsg').textContent = TT('الاسم والتليفون والرقم القومي مطلوبين.', 'Name, phone and national ID are required.'); return; }
+    if(newImg) patch.nationalIdImage = newImg;
+    try{ await setDoc(doc(fdb, 'trainees', t.id), patch, { merge: true }); Object.assign(state.traineeProfile, patch); renderAll(); }
+    catch(e){ console.error(e); document.getElementById('stceRvMsg').textContent = TT('ماقدرناش نبعت. جرّب تاني.', 'Could not send. Try again.'); }
+  });
+}
+window.__stceRegList = function(){
+  if(!window.__stceTrainerOK || state.traineeProfilesLoadFailed) return null;
+  return (state.traineeProfiles || []).filter(t => t.accountStatus === 'pending' || t.accountStatus === 'rejected')
+    .sort((a, b) => (b.resubmittedAt || b.registeredAt || 0) - (a.resubmittedAt || a.registeredAt || 0))
+    .map(t => ({ id: t.id, name: t.name || '', phone: t.phone || '', nationalId: t.nationalId || '', org: t.org || '', email: t.email || '', image: t.nationalIdImage || '', status: t.accountStatus, reason: t.rejectReason || '', at: t.resubmittedAt || t.registeredAt || 0, resubmitted: !!t.resubmittedAt }));
+};
+window.__stceRegDecide = async function(tid, status, reason){
+  if(!window.__stceTrainerOK) throw new Error('not_allowed');
+  const patch = { accountStatus: status, rejectReason: status === 'rejected' ? String(reason || '') : '', reviewedAt: Date.now() };
+  await setDoc(doc(trainerDb, 'trainees', tid), patch, { merge: true });
+  const t = (state.traineeProfiles || []).find(x => x.id === tid); if(t) Object.assign(t, patch);
+  renderAll();
+};
+// سبب رفض مقترح من الفحص التلقائي لإيصال الدفع (لو كان فيه مشكلة)
+function stceSuggestSubReason(r){
+  const a = r && r.aiCheck; if(!a || a.error) return '';
+  const out = [];
+  if(a.amount && a.amount.status === 'bad') out.push(a.amount.text || TT('المبلغ المدفوع أقل من سعر البرنامج', 'The amount paid is less than the program price'));
+  if(a.account && a.account.status === 'bad') out.push(TT('التحويل مش على حساب المركز', 'The transfer was not made to the center’s account'));
+  if(a.id && a.id.status === 'bad') out.push(TT('الرقم القومي مش مطابق للبطاقة', 'The national ID does not match the card'));
+  return out.join(' — ');
+}
+
 async function loadState(){
   await authReady;
   await trainerAuthReady;
@@ -3204,6 +3264,12 @@ function renderTrainee(){
     stceRenderTraineeLock(main);
     return;
   }
+  if(state.traineeProfile.accountStatus === 'pending' || state.traineeProfile.accountStatus === 'rejected'){
+    sidebar.innerHTML = '';
+    stopAllSpeech();
+    stceRenderAccountReview(main);
+    return;
+  }
 
   if(!state.myOrgActive){
     sidebar.innerHTML = '';
@@ -3347,7 +3413,8 @@ function renderRegisterForm(main){
     state.traineeProfile = {
       id: fauth.currentUser.uid, name, certLang, org, phone, nationalId, nationalIdImage, email, password: await sha256Hex(password),
       orgId: getOrgIdFromUrl(),
-      registeredAt: Date.now()
+      registeredAt: Date.now(),
+      accountStatus: 'pending' // إضافة: المتدرب الجديد ما يشوفش البرامج غير بعد ما المحاضر يقبل بياناته
     };
     await saveProfile();
     state.traineeView = 'programs';
@@ -3388,6 +3455,7 @@ function renderProgramsScreen(main){
     if(!req || req.status === 'rejected'){
       if(req && req.status === 'rejected'){
         actionHtml = `<div class="badge rejected">${i18n('badge_rejected_retry')}</div>
+          ${req.rejectReason ? `<div class="hint" style="color:#b3261e;margin:6px 0;">${TT('سبب الرفض:', 'Reason:')} ${escapeHtml(req.rejectReason)}</div>` : ''}
           <button class="btn btn-primary enroll-btn" data-pid="${p.id}">${i18n('btn_reupload_receipt')}</button>`;
       } else {
         actionHtml = `<button class="btn btn-primary enroll-btn" data-pid="${p.id}">${i18n('btn_enroll_now')}</button>`;
@@ -4131,7 +4199,8 @@ window.__stceTraineeDelete = async function(tid, rids, deleteAccount){
 window.__stceOrphanRequests = function(){
   if(!window.__stceTrainerOK) return null;
   // لو قايمة المتدربين ما اتحملتش صح، كل الطلبات هتبان يتيمة غلط، فمش بنعرض حاجة.
-  if(state.traineeProfilesLoadFailed || !Array.isArray(state.traineeProfiles) || !state.traineeProfiles.length) return null;
+  // (لو مفيش ولا متدرب خالص، كل الطلبات يتيمة فعلًا، فمش بنعتبر القايمة الفاضية فشل.)
+  if(state.traineeProfilesLoadFailed || !Array.isArray(state.traineeProfiles)) return null;
   const ids = new Set(state.traineeProfiles.map(t => t.id));
   return (state.requests || []).filter(r => r.traineeId && !ids.has(r.traineeId)).sort((a, b) => (b.submittedAt || 0) - (a.submittedAt || 0)).map(stceReqInfo);
 };
@@ -6018,6 +6087,7 @@ function renderRequestsTab(el, p){
           <span class="badge ${r.status}">${r.status==='pending'?i18n('badge_pending'):r.status==='approved'?i18n('badge_approved_short'):i18n('badge_rejected_short')}</span>
           ${r.status==='approved' && r.manuallyLocked ? `<span class="badge rejected">${i18n('locked_manually')}</span>` : ''}
         </div>
+        ${r.status==='rejected' ? `<div class="hint" style="color:#b3261e;margin-top:4px;">${TT('سبب الرفض:', 'Reason:')} ${escapeHtml(r.rejectReason || '—')}</div><button class="btn btn-ghost stce-del-rejected" data-rid="${r.id}" style="margin-top:4px;">🗑️ ${TT('حذف الطلب', 'Delete request')}</button>` : ''}
         ${r.status==='approved' ? `<div class="hint" style="margin-top:6px;">
           ${r.firstEnteredAt ? i18n('label_first_entry', {date: new Date(r.firstEnteredAt).toLocaleString(state.lang==='en' ? 'en-US' : 'ar-EG')}) : i18n('not_entered_yet')}
           ${p.durationDays ? ' · ' + i18n('label_duration_days', {days: p.durationDays}) : ''}
@@ -6046,9 +6116,18 @@ function renderRequestsTab(el, p){
   }));
   el.querySelectorAll('.reject-btn').forEach(b => b.addEventListener('click', async () => {
     const r = state.requests.find(x => x.id === b.dataset.rid);
+    // إضافة: سبب الرفض بيتكتب ويوصل للمتدرب
+    let reason = '';
+    if(typeof window.__stceAskReason === 'function'){ reason = await window.__stceAskReason('sub', stceSuggestSubReason(r)); if(reason === null) return; }
+    r.rejectReason = reason; r.reviewedAt = Date.now();
     r.status = 'rejected';
     await saveRequests();
     renderAll();
+  }));
+  el.querySelectorAll('.stce-del-rejected').forEach(b => b.addEventListener('click', async () => {
+    const r = state.requests.find(x => x.id === b.dataset.rid); if(!r) return;
+    if(!confirm(TT(`هيتمسح طلب «${r.traineeName || ''}» المرفوض نهائيًا (بصورة الإيصال)، والمتدرب هيقدر يقدّم من جديد. تكمل؟`, `Permanently delete ${r.traineeName || ''}'s rejected request (with receipt)? They can apply again.`))) return;
+    try{ await window.__stceDeleteRequests([r.id]); }catch(e){ console.error(e); alert(TT('ماقدرناش نمسح الطلب. غالبًا قواعد الأمان مش سامحة بالمسح.', 'Could not delete the request. Security rules probably block deletion.')); }
   }));
   el.querySelectorAll('.lock-toggle-btn').forEach(b => b.addEventListener('click', async () => {
     const r = state.requests.find(x => x.id === b.dataset.rid);
