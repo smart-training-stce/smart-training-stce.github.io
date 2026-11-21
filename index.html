@@ -471,6 +471,7 @@ document.addEventListener('click', function(e){
       <button data-role="trainee" class="active" data-i18n="role_trainee">وضع المتدرب</button>
       <button data-role="trainer" data-i18n="role_trainer">وضع المحاضر</button>
     </div>
+    <button type="button" class="btn btn-ghost" id="stceLogoutBtn" style="display:none;margin-inline-start:6px;padding:6px 12px;">🚪 خروج</button>
   </div>
 </header>
 
@@ -2719,6 +2720,80 @@ async function loadProgramsForCurrentContext(){
   }
 }
 
+/* ===== إضافة: الجلسة (Refresh ما يخرّجش + زرار خروج + خروج تلقائي للمحاضر) =====
+   - المحاضر بيفضل داخل بعد Refresh أو قفل المتصفح، لحد ما يدوس «🚪 خروج» أو يفضل
+     15 دقيقة من غير نشاط (أي لمس/كتابة، أو المنصة شغالة على حاجة زي تخزين الصوت أو
+     الذكاء الاصطناعي، أو صوت شغال).
+   - المحاضر يقدر يتفرج على وضع المتدرب من غير ما يخرج، لكن الرجوع لوضع المحاضر بيطلب
+     كلمة السر، عشان أي متدرب على نفس الجهاز ما يدخلش وضع المحاضر.
+   - المتدرب ليه «🚪 خروج» بيقفل حسابه على الجهاز ده، والرجوع بكلمة السر بتاعته. */
+const STCE_IDLE_MS = 15 * 60 * 1000, STCE_WARN_MS = 60 * 1000;
+const TT = (a, e) => state.lang === 'en' ? e : a;
+const lsGet = k => { try{ return localStorage.getItem(k); }catch(e){ return null; } };
+const lsSet = (k, v) => { try{ if(v === null) localStorage.removeItem(k); else localStorage.setItem(k, v); }catch(e){} };
+function stceTouch(force){ const now = Date.now(); if(force || !window.__stceLastTouch || now - window.__stceLastTouch > 15000){ window.__stceLastTouch = now; if(trainerAuth.currentUser) lsSet('stce-trainer-last', String(now)); } }
+function stceTrainerFresh(){ const t = Number(lsGet('stce-trainer-last') || 0); return lsGet('stce-trainer-stay') === '1' && t && (Date.now() - t) < STCE_IDLE_MS; }
+function stceTrainerSaved(asRole){ lsSet('stce-trainer-stay', '1'); lsSet('stce-last-role', asRole); stceTouch(true); }
+function stceClearTrainerSaved(){ lsSet('stce-trainer-stay', null); lsSet('stce-last-role', null); lsSet('stce-trainer-last', null); }
+async function stceTrainerLogout(reason){
+  try{ await trainerAuth.signOut(); }catch(e){ console.error(e); }
+  stceClearTrainerSaved();
+  state.trainerPreview = false; state.isSuperAdmin = false;
+  state.mediaSettings = { pexelsApiKey: '', youtubeApiKey: '' }; state.adminPassword = null;
+  roleSwitchEpoch++;
+  state.role = 'trainee';
+  try{ await loadMyTraineeProfile(); await loadMyRequests(); await loadProgramsForCurrentContext(); await loadMyOrgStatus(); }catch(err){ console.error(err); }
+  stopAllSpeech(); renderAll();
+  if(reason === 'idle') alert(TT('اتعمل خروج من وضع المحاضر تلقائيًا لأنه مفيش نشاط من 15 دقيقة.', 'You were signed out of trainer mode after 15 minutes of inactivity.'));
+}
+function stceUpdateLogoutBtn(){
+  const b = document.getElementById('stceLogoutBtn'); if(!b) return;
+  const show = !!trainerAuth.currentUser || !!(state.traineeProfile && lsGet('stce-trainee-locked') !== state.traineeProfile.id);
+  b.style.display = show ? '' : 'none';
+  b.textContent = TT('🚪 خروج', '🚪 Sign out');
+}
+(function stceIdleWatch(){
+  ['pointerdown', 'keydown', 'touchstart', 'wheel', 'scroll'].forEach(ev => window.addEventListener(ev, () => { stceTouch(); stceHideIdleWarn(); }, { passive: true, capture: true }));
+  // أي طلب من المنصة لخدمات الصوت أو الذكاء الاصطناعي (زي تخزين الصوت) بيتحسب نشاط.
+  const of = window.fetch.bind(window);
+  window.fetch = function(input){ try{ const u = String((input && input.url) || input || ''); if(/workers\.dev|googleapis\.com/.test(u)) stceTouch(); }catch(e){} return of.apply(this, arguments); };
+  setInterval(() => {
+    if(!trainerAuth.currentUser) return;
+    try{ if(typeof isSpeakingNow === 'function' && isSpeakingNow()) stceTouch(); }catch(e){}
+    const idle = Date.now() - Number(lsGet('stce-trainer-last') || window.__stceLastTouch || Date.now());
+    if(idle >= STCE_IDLE_MS){ stceHideIdleWarn(); stceTrainerLogout('idle'); }
+    else if(idle >= STCE_IDLE_MS - STCE_WARN_MS) stceShowIdleWarn();
+  }, 10000);
+})();
+function stceShowIdleWarn(){
+  if(document.getElementById('stceIdleWarn')) return;
+  const d = document.createElement('div'); d.id = 'stceIdleWarn';
+  d.style.cssText = 'position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:100000;background:#0d1b2e;color:#ffe08a;border:2px solid #ffe08a;border-radius:12px;padding:12px 16px;font-weight:700;box-shadow:0 6px 24px rgba(0,0,0,.35);max-width:92vw;text-align:center;';
+  d.innerHTML = TT('مفيش نشاط من فترة: هيتعمل خروج من وضع المحاضر خلال دقيقة. ', 'No activity for a while: trainer mode will sign out in a minute. ') + `<button type="button" class="btn btn-primary" style="margin-inline-start:8px;">${TT('لسه شغال', 'I’m still here')}</button>`;
+  d.querySelector('button').addEventListener('click', () => { stceTouch(true); stceHideIdleWarn(); });
+  document.body.appendChild(d);
+}
+function stceHideIdleWarn(){ const d = document.getElementById('stceIdleWarn'); if(d) d.remove(); }
+// شاشة قفل حساب المتدرب بعد ما يدوس «خروج» على الجهاز ده
+function stceRenderTraineeLock(main){
+  main.className = 'panel wide';
+  main.innerHTML = `<div class="reg-wrap card" style="text-align:center;max-width:420px;margin:0 auto;">
+    <h2 style="margin-top:0;">${TT('أهلاً', 'Welcome back')} ${escapeHtml(state.traineeProfile.name || '')}</h2>
+    <div class="sub-text">${TT('اكتب كلمة السر بتاعتك عشان تدخل.', 'Enter your password to continue.')}</div>
+    <input type="password" id="stceUnlockPw" style="margin-top:14px;width:100%;" autocomplete="current-password">
+    <div class="hint" id="stceUnlockMsg" style="color:#b3261e;min-height:1.2em;"></div>
+    <button class="btn btn-primary" id="stceUnlockBtn" style="margin-top:8px;">${TT('دخول', 'Sign in')}</button>
+    <div class="hint" style="margin-top:10px;">${TT('نسيت كلمة السر؟ كلّم المحاضر يغيّرهالك.', 'Forgot your password? Ask your trainer to reset it.')}</div></div>`;
+  const go = async () => {
+    const pw = (document.getElementById('stceUnlockPw').value || '').trim();
+    if(!pw) return;
+    if(await sha256Hex(pw) === state.traineeProfile.password){ lsSet('stce-trainee-locked', null); renderAll(); }
+    else document.getElementById('stceUnlockMsg').textContent = TT('كلمة السر غلط.', 'Wrong password.');
+  };
+  document.getElementById('stceUnlockBtn').addEventListener('click', go);
+  document.getElementById('stceUnlockPw').addEventListener('keydown', e => { if(e.key === 'Enter') go(); });
+}
+
 async function loadState(){
   await authReady;
   await trainerAuthReady;
@@ -2730,10 +2805,23 @@ async function loadState(){
   // دخول كمحاضر من زيارة قبل كده (Firebase بيفتكر الجلسة)، بنقفل الجلسة دي
   // فورًا، عشان أي حد يفتح المنصة على نفس الجهاز (زي أجهزة معمل التدريب) ميدخلش
   // وضع المحاضر من غير ما يكتب الإيميل وكلمة السر بنفسه.
-  if(trainerAuth.currentUser){
+  // إضافة: لو المحاضر كان داخل ومفيش 15 دقيقة من غير نشاط، بيرجع لمكانه (Refresh ما يخرّجش).
+  const keepTrainer = !!trainerAuth.currentUser && stceTrainerFresh();
+  if(trainerAuth.currentUser && !keepTrainer){
     try{ await trainerAuth.signOut(); }catch(e){ console.error(e); }
+    stceClearTrainerSaved();
   }
   state.role = 'trainee';
+  state.trainerPreview = false;
+  if(keepTrainer){
+    try{
+      await resolveTrainerOrgContext();
+      if(state.isSuperAdmin || (state.myOrgId && state.myOrgActive)){
+        if(lsGet('stce-last-role') === 'trainer') state.role = 'trainer'; else state.trainerPreview = true;
+        stceTouch(true);
+      } else { try{ await trainerAuth.signOut(); }catch(e){} stceClearTrainerSaved(); state.isSuperAdmin = false; }
+    }catch(e){ console.error('trainer restore failed', e); }
+  }
 
   // نفس فكرة "trainees": طلبات الاشتراك (وفيها صور إيصالات الدفع) بتتقرا
   // كلها بس للمدرب؛ المتدرب العادي بيشوف بس طلباته هو (query مفلترة باسمه).
@@ -3068,6 +3156,7 @@ function latestRequestFor(programId){
 /* ================= RENDER DISPATCH ================= */
 function renderAll(){
   updateHeaderButtonsForRole();
+  stceUpdateLogoutBtn();
   if(state.role === 'trainer') renderTrainer();
   else renderTrainee();
   renderChat();
@@ -3107,6 +3196,12 @@ function renderTrainee(){
   if(!state.traineeProfile){
     sidebar.innerHTML = '';
     renderAuthScreen(main);
+    return;
+  }
+  if(state.traineeProfile.password && lsGet('stce-trainee-locked') === state.traineeProfile.id && !trainerAuth.currentUser){
+    sidebar.innerHTML = '';
+    stopAllSpeech();
+    stceRenderTraineeLock(main);
     return;
   }
 
@@ -8242,9 +8337,11 @@ document.getElementById('roleSwitch').addEventListener('click', async (e) => {
       // (trainerAuth) عن جلسة المتدرب المجهولة، عشان الرجوع لوضع المتدرب بعد
       // كده يفضل شايف نفس حساب المتدرب الأصلي بتاع الجهاز ده، مش يبدأ من
       // الصفر كل مرة.
-      const email = window.prompt(i18n('prompt_trainer_email'));
+      // إضافة: لو المحاضر كان بيتفرج على وضع المتدرب، جلسته لسه مفتوحة فبنطلب كلمة السر بس.
+      const keptEmail = (trainerAuth.currentUser && trainerAuth.currentUser.email) || '';
+      const email = keptEmail || window.prompt(i18n('prompt_trainer_email'));
       if(email === null) return;
-      const pw = window.prompt(i18n('prompt_trainer_password'));
+      const pw = window.prompt(keptEmail ? TT(`اكتب كلمة السر عشان ترجع لوضع المحاضر (${keptEmail})`, `Enter the password to return to trainer mode (${keptEmail})`) : i18n('prompt_trainer_password'));
       if(pw === null) return;
       try{
         await signInWithEmailAndPassword(trainerAuth, email.trim(), pw);
@@ -8264,7 +8361,7 @@ document.getElementById('roleSwitch').addEventListener('click', async (e) => {
         return;
       }
       if(myEpoch !== roleSwitchEpoch) return; // تبديل أحدث سبقنا - توقف هنا
-      state.role = 'trainer';
+      state.role = 'trainer'; state.trainerPreview = false; stceTrainerSaved('trainer');
       await loadAllTraineesForAdmin();
       await loadAllRequestsForAdmin();
       await loadProgramsForCurrentContext();
@@ -8276,7 +8373,9 @@ document.getElementById('roleSwitch').addEventListener('click', async (e) => {
     } else if(btn.dataset.role !== 'trainer' && state.role === 'trainer'){
       // الخروج من وضع المحاضر = تسجيل خروج حساب المحاضر نفسه، عشان محدش
       // يرجعله تاني على نفس الجهاز من غير الإيميل وكلمة السر.
-      try{ await trainerAuth.signOut(); }catch(e){ console.error(e); }
+      // إضافة: الانتقال لوضع المتدرب بقى «فرجة» بس، جلسة المحاضر بتفضل مفتوحة (الخروج من زرار 🚪)،
+      // والرجوع لوضع المحاضر بيطلب كلمة السر.
+      state.trainerPreview = true; stceTrainerSaved('preview');
       state.isSuperAdmin = false;
       // تنظيف أمني من الجولة 5: نمسح الإعدادات الإدارية من الذاكرة فورًا
       // عند الخروج من وضع STCE، بدل ما تفضل محتفظة بيها في state طول الجلسة.
@@ -8304,6 +8403,18 @@ document.getElementById('roleSwitch').addEventListener('click', async (e) => {
     // نعيد تفعيل كل الأزرار دومًا، نجح الفرع أو فشل أو توقَّف مبكرًا - هذا
     // يمنع أي زر يفضل معطَّل للأبد لو حصل استثناء غير متوقَّع.
     allRoleBtns.forEach(b => b.disabled = false);
+  }
+});
+document.getElementById('stceLogoutBtn').addEventListener('click', async () => {
+  if(trainerAuth.currentUser){
+    if(!confirm(TT('هتخرج من حساب المحاضر؟', 'Sign out of the trainer account?'))) return;
+    await stceTrainerLogout('button');
+    return;
+  }
+  if(state.traineeProfile){
+    if(!confirm(TT('هتخرج من حسابك على الجهاز ده. عشان ترجع هتحتاج كلمة السر. تكمل؟', 'You will be signed out on this device and will need your password to come back. Continue?'))) return;
+    lsSet('stce-trainee-locked', state.traineeProfile.id);
+    stopAllSpeech(); renderAll();
   }
 });
 document.getElementById('chatToggle').addEventListener('click', () => document.getElementById('chatPanel').classList.toggle('hidden'));
@@ -8822,7 +8933,11 @@ function showLangWelcomeOverlay(){
 }
 
 (async function init(){
-  const chosenLang = await showLangWelcomeOverlay();
+  // إضافة: شاشة الترحيب بتظهر مع كل فتح جديد للمنصة، لكن مش مع Refresh في نفس التاب.
+  let chosenLang = null;
+  try{ chosenLang = sessionStorage.getItem('stce-welcomed-lang'); }catch(e){}
+  if(chosenLang !== 'ar' && chosenLang !== 'en') chosenLang = await showLangWelcomeOverlay();
+  try{ sessionStorage.setItem('stce-welcomed-lang', chosenLang); }catch(e){}
   state.lang = (chosenLang === 'en') ? 'en' : 'ar';
   try{ localStorage.setItem('stce-lang', state.lang); }catch(e){ console.error(e); }
   document.documentElement.setAttribute('lang', state.lang);
